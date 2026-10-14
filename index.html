@@ -1,0 +1,951 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DdDesignReport — Desain laporan dengan drag and drop</title>
+<meta name="description" content="Library reporting dengan designer drag and drop ala pengolah kata. Render ke PDF, HTML, XLSX, XLS, dan CSV dari Go, Java, Kotlin, dan Node.js.">
+<style>
+  :root {
+    --bg: #ffffff; --soft: #f5f7fb; --card: #ffffff; --text: #162033; --muted: #5b667a; --line: #e3e8f0;
+    --accent: #2457d6; --accent-soft: #e8efff; --accent-text: #ffffff; --warm: #f59e0b; --ok: #15803d;
+    --code-bg: #0f172a; --code-text: #e2e8f0; --inline-code: #eef2f8; --shadow: 0 10px 30px rgba(22, 32, 51, .10);
+    color-scheme: light;
+  }
+  :root[data-theme="dark"] {
+    --bg: #0c111b; --soft: #121a28; --card: #151e2e; --text: #e6ebf4; --muted: #9aa6ba; --line: #263247;
+    --accent: #7aa2ff; --accent-soft: #1a2742; --accent-text: #0c111b; --warm: #fbbf24; --ok: #4ade80;
+    --code-bg: #070b13; --code-text: #dbe4f3; --inline-code: #1b2537; --shadow: 0 10px 30px rgba(0, 0, 0, .45);
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0c111b; --soft: #121a28; --card: #151e2e; --text: #e6ebf4; --muted: #9aa6ba; --line: #263247;
+      --accent: #7aa2ff; --accent-soft: #1a2742; --accent-text: #0c111b; --warm: #fbbf24; --ok: #4ade80;
+      --code-bg: #070b13; --code-text: #dbe4f3; --inline-code: #1b2537; --shadow: 0 10px 30px rgba(0, 0, 0, .45);
+    color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box }
+  html { scroll-behavior: smooth; scroll-padding-top: 76px }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif }
+  a { color: var(--accent) }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 0 24px }
+
+  /* top bar */
+  .top { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line) }
+  .top .wrap { display: flex; align-items: center; gap: 20px; height: 60px }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; color: var(--text); text-decoration: none; letter-spacing: -.01em }
+  .brand i { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; background: var(--accent); color: var(--accent-text); font-style: normal; font-size: 15px }
+  .top nav { display: flex; gap: 4px; margin-left: auto }
+  .top nav a { padding: 6px 12px; border-radius: 8px; color: var(--muted); text-decoration: none; font-size: 15px; font-weight: 500 }
+  .top nav a:hover, .top nav a:focus-visible { background: var(--soft); color: var(--text) }
+  .theme { border: 1px solid var(--line); background: var(--card); color: var(--text); border-radius: 8px; width: 36px; height: 36px; cursor: pointer; font-size: 16px }
+
+  /* hero */
+  .hero { background: radial-gradient(1000px 420px at 85% -10%, var(--accent-soft), transparent 70%), var(--bg); border-bottom: 1px solid var(--line) }
+  .hero .wrap { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 48px; align-items: center; padding-top: 64px; padding-bottom: 64px }
+  .eyebrow { display: inline-block; padding: 4px 12px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-size: 13px; font-weight: 700; letter-spacing: .02em }
+  h1 { font-size: clamp(34px, 5vw, 54px); line-height: 1.08; letter-spacing: -.03em; margin: 16px 0 }
+  h1 em { font-style: normal; color: var(--accent) }
+  .lead { font-size: 19px; color: var(--muted); max-width: 56ch; margin: 0 0 26px }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 26px }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 20px; border-radius: 10px; font-weight: 700; text-decoration: none; border: 1px solid var(--line); background: var(--card); color: var(--text); cursor: pointer; font-size: 15px }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text) }
+  .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow) }
+  .formats { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 0; margin: 0; list-style: none; font-size: 14px }
+  .formats li { border: 1px solid var(--line); background: var(--card); border-radius: 6px; padding: 2px 10px; font-weight: 700; font-size: 13px }
+  .formats li.label { border: 0; background: none; padding: 0; font-weight: 400; color: var(--muted) }
+  .paper { position: relative; background: #fff; border-radius: 6px; box-shadow: var(--shadow), 0 0 0 1px var(--line); overflow: hidden }
+  .paper iframe { position: absolute; left: 0; top: 0; border: 0; transform-origin: 0 0; pointer-events: none; background: #fff }
+  .hero .paper { transform: rotate(1.5deg); max-width: 440px; margin: 0 auto; width: 100% }
+
+  /* page sections */
+  .strip { padding: 72px 0; border-bottom: 1px solid var(--line) }
+  .strip.soft { background: var(--soft) }
+  .kicker { color: var(--accent); font-weight: 800; font-size: 13px; letter-spacing: .08em; text-transform: uppercase }
+  h2 { font-size: clamp(26px, 3.4vw, 36px); line-height: 1.15; letter-spacing: -.02em; margin: 8px 0 12px }
+  .sub { color: var(--muted); font-size: 18px; max-width: 64ch; margin: 0 0 32px }
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 0; margin: 0; list-style: none; counter-reset: s }
+  .steps li { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 22px; counter-increment: s }
+  .steps li::before { content: counter(s); display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--accent); color: var(--accent-text); font-weight: 800; margin-bottom: 12px }
+  .steps h3 { margin: 0 0 6px; font-size: 18px }
+  .steps p { margin: 0; color: var(--muted); font-size: 15px }
+
+  /* gallery */
+  .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 22px }
+  .tcard { display: flex; flex-direction: column; background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden }
+  .tcard .shot { background: var(--soft); padding: 16px; border-bottom: 1px solid var(--line); display: grid; place-items: center; height: 250px }
+  .tcard .paper { box-shadow: 0 4px 14px rgba(22, 32, 51, .16), 0 0 0 1px var(--line) }
+  .tcard .body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 6px; flex: 1 }
+  .tcard h3 { margin: 0; font-size: 17px }
+  .tcard p { margin: 0; color: var(--muted); font-size: 14px; flex: 1 }
+  .tcard .links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px }
+  .tcard .links a, .tcard .links button { font: inherit; font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 7px; border: 1px solid var(--line); background: var(--soft); color: var(--text); text-decoration: none; cursor: pointer }
+  .tcard .links button { background: var(--accent); border-color: var(--accent); color: var(--accent-text) }
+  .notice { background: var(--accent-soft); border-left: 4px solid var(--accent); border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 16px 0; max-width: 76ch }
+  .notice.warn { background: color-mix(in srgb, var(--warm) 14%, var(--bg)); border-color: var(--warm) }
+
+  /* demo */
+  .demo-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 12px }
+  .demo-bar select { font: inherit; padding: 7px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--text) }
+  .demo-bar span { color: var(--muted); font-size: 14px }
+  .demo { color-scheme: light; border-radius: 12px; overflow: auto; max-height: 760px; box-shadow: var(--shadow); border: 1px solid var(--line); background: #f3f3f3 }
+
+  /* docs layout */
+  .docs { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 48px; padding-top: 56px; padding-bottom: 96px }
+  .toc { scrollbar-width: thin; position: sticky; top: 76px; align-self: start; max-height: calc(100vh - 92px); overflow-y: auto; font-size: 14.5px; padding-right: 8px }
+  .toc h4 { margin: 18px 0 6px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted) }
+  .toc h4:first-child { margin-top: 0 }
+  .toc a { display: block; padding: 4px 10px; border-left: 2px solid var(--line); color: var(--muted); text-decoration: none }
+  .toc a:hover { color: var(--text) }
+  .toc a.on { color: var(--accent); border-color: var(--accent); font-weight: 700 }
+  article section { padding-bottom: 44px; margin-bottom: 44px; border-bottom: 1px solid var(--line) }
+  article section:last-child { border-bottom: 0 }
+  article h2 { font-size: 28px }
+  article h3 { font-size: 19px; margin: 30px 0 8px }
+  article p, article ul, article ol { max-width: 74ch }
+  article li { margin: 4px 0 }
+  .chapter { margin: 0 0 26px; padding: 18px 22px; border-radius: 14px; background: var(--soft); border: 1px solid var(--line) }
+  .chapter .kicker { display: block }
+  .chapter p { margin: 4px 0 0; color: var(--muted) }
+  code { font: 13.5px/1.5 ui-monospace, "Cascadia Code", Consolas, monospace; background: var(--inline-code); padding: 2px 6px; border-radius: 5px }
+  pre { position: relative; background: var(--code-bg); color: var(--code-text); border-radius: 12px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 }
+  pre code { background: none; padding: 0; color: inherit; font-size: 13.5px }
+  .copy { position: absolute; top: 8px; right: 8px; font: 600 12px system-ui, sans-serif; padding: 4px 10px; border-radius: 6px; border: 1px solid #334155; background: #1e293b; color: #e2e8f0; cursor: pointer; opacity: .75 }
+  .copy:hover, .copy:focus-visible { opacity: 1 }
+  .scroll { overflow-x: auto; margin: 14px 0 }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px }
+  th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--line) }
+  th { font-size: 12.5px; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); white-space: nowrap }
+  td:first-child { white-space: nowrap }
+  .yes { color: var(--ok); font-weight: 800 }
+  .no { color: var(--muted) }
+
+  /* tabs */
+  .tabs { margin: 14px 0 }
+  .tabs [role=tablist] { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid var(--line) }
+  .tabs [role=tab] { font: inherit; font-size: 14px; font-weight: 600; padding: 7px 14px; border: 0; border-bottom: 2px solid transparent; background: none; color: var(--muted); cursor: pointer; margin-bottom: -1px }
+  .tabs [role=tab][aria-selected=true] { color: var(--accent); border-color: var(--accent) }
+  .tabs [role=tabpanel] pre { margin-top: 10px }
+
+  /* numbered tutorial */
+  .tutorial { list-style: none; padding: 0; margin: 0; counter-reset: t; max-width: none }
+  .tutorial > li { position: relative; padding: 0 0 26px 54px; counter-increment: t; margin: 0 }
+  .tutorial > li::before { content: counter(t); position: absolute; left: 0; top: 0; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--accent); color: var(--accent-text); font-weight: 800 }
+  .tutorial > li::after { content: ''; position: absolute; left: 17px; top: 42px; bottom: 6px; width: 2px; background: var(--line) }
+  .tutorial > li:last-child::after { display: none }
+  .tutorial h3 { margin: 4px 0 6px }
+
+  /* band diagram */
+  .diagram { display: grid; grid-template-columns: minmax(0, 290px) minmax(0, 1fr); gap: 28px; align-items: start; margin: 18px 0 }
+  .sheet { background: #fff; color: #1b2433; border-radius: 6px; box-shadow: var(--shadow), 0 0 0 1px var(--line); padding: 14px; display: flex; flex-direction: column; gap: 5px; font-size: 12px; aspect-ratio: 210/297 }
+  .sheet div { border-radius: 4px; padding: 5px 8px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; gap: 6px }
+  .sheet small { font-weight: 500; opacity: .8 }
+  .b-head { background: #dbeafe } .b-col { background: #e0e7ff } .b-gh { background: #fef3c7 } .b-det { background: #dcfce7 }
+  .b-gf { background: #fde68a } .b-sum { background: #fce7f3 }
+  .sheet .b-foot { background: #dbeafe; margin-top: auto }
+  .legend { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; max-width: none }
+  .legend li { display: grid; grid-template-columns: 14px 1fr; gap: 10px; align-items: start; margin: 0 }
+  .legend i { width: 14px; height: 14px; border-radius: 4px; margin-top: 6px }
+  .legend b { display: block }
+  .legend span { color: var(--muted); font-size: 14.5px }
+
+  /* data -> template -> result */
+  .flow3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 16px 0 }
+  .flow3 > div { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; min-width: 0 }
+  .flow3 h4 { margin: 0 0 6px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted) }
+  .flow3 pre { margin: 0; padding: 10px 12px }
+  .flow3 pre code { font-size: 12.5px }
+  .flow3 .result { font-size: 15px; background: #fff; color: #1b2433; border-radius: 8px; padding: 10px 12px; box-shadow: 0 0 0 1px var(--line) }
+
+  /* element cards */
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; margin: 16px 0 }
+  .cards > div { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px }
+  .cards b { display: block; margin-bottom: 2px }
+  .cards span { color: var(--muted); font-size: 14.5px }
+  .cards .ico { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 9px; background: var(--accent-soft); color: var(--accent); font-size: 17px; font-weight: 800; margin-bottom: 10px }
+
+  details.recipe { border: 1px solid var(--line); border-radius: 12px; background: var(--card); margin: 10px 0; max-width: 820px }
+  details.recipe summary { cursor: pointer; padding: 13px 16px; font-weight: 700 }
+  details.recipe[open] summary { border-bottom: 1px solid var(--line) }
+  details.recipe > div { padding: 4px 16px 14px }
+  footer { border-top: 1px solid var(--line); padding: 28px 0; color: var(--muted); font-size: 14px }
+
+  @media (max-width: 900px) {
+    .hero .wrap { grid-template-columns: 1fr; padding-top: 40px; padding-bottom: 40px }
+    .steps, .flow3, .diagram { grid-template-columns: minmax(0, 1fr) }
+    .docs { grid-template-columns: minmax(0, 1fr); gap: 0 }
+    td:first-child { white-space: normal }
+    .toc { display: none }
+    .top .wrap { gap: 10px }
+    .top nav { flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; margin-left: 0 }
+    .top nav a { white-space: nowrap; padding: 6px 9px }
+    .brand { font-size: 0 }
+    .brand i { font-size: 15px }
+    .strip { padding: 48px 0 }
+    .wrap { padding: 0 16px }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto } .btn:hover { transform: none } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top"><i>D</i>DdDesignReport</a>
+    <nav aria-label="Utama">
+      <a href="#template">Template</a>
+      <a href="#coba">Coba</a>
+      <a class="keep" href="#mulai">Mulai</a>
+      <a href="#panduan">Panduan</a>
+      <a href="#resep">Resep</a>
+      <a href="#backend">Backend</a>
+      <a href="#referensi">Referensi</a>
+    </nav>
+    <button class="theme" type="button" id="theme" aria-label="Ganti tema terang/gelap" title="Ganti tema">◐</button>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ============================ HERO ============================ -->
+<div class="hero">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow">Library reporting · lisensi MIT</span>
+      <h1>Desain laporan seperti di <em>Word</em>, cetak dari backend mana pun</h1>
+      <p class="lead">Susun faktur, struk, slip gaji, atau laporan penjualan dengan drag and drop. Simpan sebagai satu file JSON, lalu biarkan backend Anda mengisinya dengan data dan mengubahnya menjadi dokumen.</p>
+      <div class="cta">
+        <a class="btn primary" href="#mulai">Mulai dalam 5 menit →</a>
+        <a class="btn" href="#template">Lihat 8 template siap pakai</a>
+      </div>
+      <ul class="formats" aria-label="Format hasil dan bahasa backend">
+        <li class="label">Hasil:</li><li>PDF</li><li>HTML</li><li>XLSX</li><li>XLS</li><li>CSV</li>
+        <li class="label">&nbsp;Backend:</li><li>Go</li><li>Java</li><li>Kotlin</li><li>Node.js</li>
+      </ul>
+    </div>
+    <div class="paper" data-preview="invoice" data-w="595" data-h="842" role="img" aria-label="Contoh hasil: faktur"></div>
+  </div>
+</div>
+
+<!-- ============================ HOW ============================ -->
+<div class="strip soft">
+  <div class="wrap">
+    <span class="kicker">Cara kerjanya</span>
+    <h2>Tiga langkah, tanpa menulis kode tata letak</h2>
+    <p class="sub">Yang mendesain tidak perlu bisa memprogram, dan yang memprogram tidak perlu mengatur posisi teks.</p>
+    <ol class="steps">
+      <li><h3>Desain</h3><p>Buka designer di browser. Sisipkan teks, tabel, gambar, chart, dan barcode, lalu atur dengan ribbon seperti di pengolah kata.</p></li>
+      <li><h3>Simpan</h3><p>Designer menghasilkan satu template JSON. Tempat data akan muncul ditandai dengan <code>{{nama_field}}</code>.</p></li>
+      <li><h3>Cetak</h3><p>Backend memanggil satu fungsi: template + data → PDF, HTML, Excel, atau CSV. Hasilnya sama di semua bahasa.</p></li>
+    </ol>
+  </div>
+</div>
+
+<!-- ============================ GALLERY ============================ -->
+<div class="strip" id="template">
+  <div class="wrap">
+    <span class="kicker">Template siap pakai</span>
+    <h2>Mulai dari contoh, bukan dari halaman kosong</h2>
+    <p class="sub">Semua pratinjau di bawah adalah hasil cetak asli library ini, bukan gambar. Buka di designer untuk mengubahnya, atau unduh JSON-nya.</p>
+    <div class="gallery" id="gallery"><p class="notice warn">Galeri butuh halaman ini dibuka lewat web server (bukan <code>file://</code>), misalnya <code>npx serve</code>.</p></div>
+  </div>
+</div>
+
+<!-- ============================ DEMO ============================ -->
+<div class="strip soft" id="coba">
+  <div class="wrap">
+    <span class="kicker">Coba sekarang</span>
+    <h2>Designer, langsung di halaman ini</h2>
+    <p class="sub">Buka tab <b>Insert</b> untuk menambah elemen. Klik ganda teks untuk mengetik. Ini designer yang sama dengan yang akan Anda pasang di aplikasi.</p>
+    <div class="demo-bar">
+      <label for="demo-template"><b>Muat template:</b></label>
+      <select id="demo-template"><option value="">Halaman kosong</option></select>
+      <span id="demo-msg" role="status">Pratinjau dan ekspor butuh backend; jalankan designer lengkapnya di <a href="#mulai">langkah Mulai</a>.</span>
+    </div>
+    <div class="demo"><div id="demo">Demo butuh halaman ini dibuka lewat web server (bukan <code>file://</code>).</div></div>
+  </div>
+</div>
+
+<!-- ============================ DOCS ============================ -->
+<div class="wrap docs">
+<aside class="toc" aria-label="Daftar isi">
+  <h4>Mulai</h4>
+  <a href="#mulai">Mulai dalam 5 menit</a>
+  <a href="#designer">Memakai designer</a>
+  <h4>Panduan</h4>
+  <a href="#panduan">Band: kerangka laporan</a>
+  <a href="#data">Data &amp; placeholder</a>
+  <a href="#hitung">Perhitungan &amp; total</a>
+  <a href="#grouping">Kelompok &amp; subtotal</a>
+  <a href="#elemen">Elemen</a>
+  <a href="#teks">Format teks</a>
+  <a href="#tabel">Tabel</a>
+  <a href="#chart">Chart</a>
+  <a href="#barcode">Barcode &amp; QR</a>
+  <a href="#halaman">Halaman &amp; latar</a>
+  <a href="#output">Format hasil</a>
+  <h4>Resep</h4>
+  <a href="#resep">Bagaimana cara…?</a>
+  <h4>Backend</h4>
+  <a href="#backend">Memanggil dari backend</a>
+  <a href="#pasang-designer">Memasang designer</a>
+  <a href="#font">Font non-Latin</a>
+  <h4>Referensi</h4>
+  <a href="#referensi">Template JSON</a>
+  <a href="#ref-elemen">Properti elemen</a>
+  <a href="#ref-binary">Binary ddreport</a>
+  <a href="#test">Test</a>
+  <a href="#batasan">Batasan</a>
+</aside>
+
+<article>
+
+<!-- ---------- MULAI ---------- -->
+<section id="mulai">
+  <div class="chapter"><span class="kicker">Mulai</span><h2>Mulai dalam 5 menit</h2><p>Dari nol sampai PDF pertama. Yang dibutuhkan hanya <a href="https://go.dev/dl/">Go</a> untuk mem-build satu binary.</p></div>
+  <ol class="tutorial">
+    <li>
+      <h3>Build binary <code>ddreport</code></h3>
+      <p>Satu binary ini menjalankan designer sekaligus menjadi mesin cetak untuk Java, Kotlin, dan Node.js.</p>
+<pre><code>git clone https://github.com/gvjavx/DdDesignReport
+cd DdDesignReport
+go build -o ddreport ./cmd/ddreport</code></pre>
+    </li>
+    <li>
+      <h3>Jalankan designer</h3>
+<pre><code>./ddreport -serve 127.0.0.1:8080</code></pre>
+      <p>Buka <code>http://127.0.0.1:8080</code> di browser.</p>
+    </li>
+    <li>
+      <h3>Pilih template, lalu ubah</h3>
+      <p>Di bagian atas pilih <b>Templates… → Faktur</b>. Klik ganda judulnya untuk mengganti teks, atau pakai tab <b>Insert</b> untuk menambah elemen.</p>
+    </li>
+    <li>
+      <h3>Lihat hasilnya</h3>
+      <p>Buka tab <b>View → Preview</b>. Data contohnya ada di <b>Sample data for preview and export</b> dan bisa Anda ganti. Tombol <b>PDF / HTML / XLSX / XLS / CSV</b> mengunduh hasilnya langsung.</p>
+    </li>
+    <li>
+      <h3>Simpan template</h3>
+      <p>Klik <b>Save template</b>. Anda mendapat <code>report.json</code>; simpan di project atau database Anda.</p>
+    </li>
+    <li>
+      <h3>Cetak dari backend</h3>
+      <p>Kirim template dan data, terima dokumennya.</p>
+      <div class="tabs" data-tabs="lang">
+        <div role="tablist" aria-label="Bahasa">
+          <button role="tab" data-tab="go">Go</button><button role="tab" data-tab="java">Java</button><button role="tab" data-tab="kotlin">Kotlin</button><button role="tab" data-tab="node">Node.js</button><button role="tab" data-tab="http">HTTP</button>
+        </div>
+        <div role="tabpanel" data-panel="go"><pre><code>import ddreport "github.com/gvjavx/DdDesignReport"
+
+template, _ := os.ReadFile("report.json")
+data := map[string]any{"number": "INV-001", "rows": rows}
+
+pdf, err := ddreport.Render(template, data, "pdf")</code></pre></div>
+        <div role="tabpanel" data-panel="java"><pre><code>import io.ddreport.DdReport;
+
+String template = Files.readString(Path.of("report.json"));
+byte[] pdf = DdReport.render(template, dataJson, "pdf");
+Files.write(Path.of("report.pdf"), pdf);</code></pre></div>
+        <div role="tabpanel" data-panel="kotlin"><pre><code>import io.ddreport.DdReport
+
+val template = File("report.json").readText()
+val pdf = DdReport.render(template, dataJson, "pdf")
+File("report.pdf").writeBytes(pdf)</code></pre></div>
+        <div role="tabpanel" data-panel="node"><pre><code>const { render } = require('ddreport')
+
+const template = JSON.parse(fs.readFileSync('report.json', 'utf8'))
+const pdf = render(template, { number: 'INV-001', rows }, 'pdf')
+fs.writeFileSync('report.pdf', pdf)</code></pre></div>
+        <div role="tabpanel" data-panel="http"><pre><code>curl -X POST "http://127.0.0.1:8080/render?format=pdf" \
+  -d '{"template": {...}, "data": {...}}' -o report.pdf</code></pre></div>
+      </div>
+      <p>Ganti <code>"pdf"</code> dengan <code>"html"</code>, <code>"xlsx"</code>, <code>"xls"</code>, atau <code>"csv"</code> untuk format lain. Detail tiap bahasa ada di <a href="#backend">Backend</a>.</p>
+    </li>
+  </ol>
+</section>
+
+<section id="designer">
+  <h2>Memakai designer</h2>
+  <p>Designer terdiri dari ribbon di atas, halaman di tengah, dan panel properti di kanan.</p>
+  <div class="scroll"><table>
+    <tr><th>Saya ingin…</th><th>Caranya</th></tr>
+    <tr><td>Menambah elemen</td><td>Tab <b>Insert</b>: klik tombolnya, atau seret tombolnya ke bagian halaman yang dituju.</td></tr>
+    <tr><td>Mengetik teks</td><td>Klik ganda teks atau sel tabel. Klik di tempat lain untuk menyimpan, <code>Esc</code> untuk membatalkan. <code>Enter</code> membuat baris baru pada teks dan menyelesaikan pengisian sel.</td></tr>
+    <tr><td>Menebalkan sebagian teks</td><td>Saat mengetik, blok kata yang dimaksud lalu tekan <b>B</b>, <i>I</i>, atau <u>U</u>.</td></tr>
+    <tr><td>Memilih beberapa elemen</td><td><code>Shift</code>+klik, seret kotak di area kosong, atau <code>Ctrl+A</code>.</td></tr>
+    <tr><td>Memindah</td><td>Geser dengan mouse (menempel ke tepi elemen lain; tahan <code>Alt</code> untuk mematikan) atau tombol panah. Geser ke band lain untuk memindahkannya ke sana.</td></tr>
+    <tr><td>Mengubah ukuran</td><td>Tarik sudut kanan bawah elemen. Tarik tepi bawah sebuah band untuk mengubah tingginya.</td></tr>
+    <tr><td>Meratakan</td><td>Pilih beberapa elemen, lalu tombol di grup <b>Arrange</b> (tab Home).</td></tr>
+    <tr><td>Mengatur kertas</td><td>Tab <b>Layout</b>: ukuran, orientasi, margin, warna dan gambar latar.</td></tr>
+    <tr><td>Membatalkan</td><td><code>Ctrl+Z</code>, sampai 100 langkah. <code>Ctrl+Y</code> untuk mengulang. Memulai laporan baru atau memuat template juga bisa dibatalkan.</td></tr>
+  </table></div>
+  <h3>Isi ribbon</h3>
+  <div class="scroll"><table>
+    <tr><th>Tab</th><th>Isi</th></tr>
+    <tr><td><b>Home</b></td><td>Undo/redo; cut, copy, paste, duplicate, delete; font, ukuran, bold, italic, underline, warna teks, highlight; rata kiri/tengah/kanan, spasi baris, wrap; perataan dan distribusi elemen, bawa ke depan/belakang.</td></tr>
+    <tr><td><b>Insert</b></td><td>Text box, tabel (baris × kolom), gambar, kotak, garis, chart, barcode, dan daftar field siap sisip.</td></tr>
+    <tr><td><b>Layout</b></td><td>Kertas (A4, A5, Letter, Legal, F4, custom), orientasi, margin per sisi, latar, pengelompokan, halaman baru per kelompok, pemisah angka.</td></tr>
+    <tr><td><b>View</b></td><td>Zoom 25–300%, penggaris, snap, Preview.</td></tr>
+  </table></div>
+  <h3>Pintasan keyboard</h3>
+  <div class="scroll"><table>
+    <tr><th>Tombol</th><th>Aksi</th></tr>
+    <tr><td><code>Ctrl+Z</code> · <code>Ctrl+Y</code></td><td>Undo · redo</td></tr>
+    <tr><td><code>Ctrl+C</code> · <code>X</code> · <code>V</code> · <code>D</code></td><td>Copy · cut · paste · duplicate</td></tr>
+    <tr><td><code>Ctrl+B</code> · <code>I</code> · <code>U</code></td><td>Bold · italic · underline</td></tr>
+    <tr><td><code>Ctrl+A</code> · <code>Esc</code></td><td>Pilih semua · batalkan pilihan</td></tr>
+    <tr><td>Panah · <code>Shift</code>+panah</td><td>Geser 1pt · 10pt</td></tr>
+    <tr><td><code>Delete</code></td><td>Hapus yang dipilih</td></tr>
+  </table></div>
+  <p>Satuan di designer adalah point: 1px di layar = 1pt di kertas. A4 berukuran 595 × 842.</p>
+  <p>Designer menjaga elemen tetap di kertas: elemen tidak bisa keluar dari margin kiri dan kanan, dan band otomatis memanjang jika sebuah elemen melewati tepi bawahnya. Elemen baru tidak ditumpuk persis di atas elemen lain.</p>
+</section>
+
+<!-- ---------- PANDUAN ---------- -->
+<section id="panduan">
+  <div class="chapter"><span class="kicker">Panduan</span><h2>Band: kerangka laporan</h2><p>Satu konsep ini menjelaskan hampir semua perilaku laporan. Sisanya hanya soal mengisi.</p></div>
+  <p>Halaman laporan dibagi menjadi beberapa <b>band</b> (pita mendatar). Setiap band punya aturan <em>kapan</em> ia dicetak. Anda cukup menaruh elemen di band yang tepat; library yang mengurus pengulangan dan ganti halaman.</p>
+  <div class="diagram">
+    <div class="sheet" role="img" aria-label="Susunan band pada satu halaman: header, columnHeader, groupHeader, tiga baris detail, groupFooter, summary, dan footer di dasar halaman">
+      <div class="b-head">header <small>tiap halaman</small></div>
+      <div class="b-col">columnHeader <small>tiap halaman</small></div>
+      <div class="b-gh">groupHeader <small>awal kelompok</small></div>
+      <div class="b-det">detail <small>baris 1</small></div>
+      <div class="b-det">detail <small>baris 2</small></div>
+      <div class="b-det">detail <small>baris 3</small></div>
+      <div class="b-gf">groupFooter <small>akhir kelompok</small></div>
+      <div class="b-sum">summary <small>sekali di akhir</small></div>
+      <div class="b-foot">footer <small>tiap halaman</small></div>
+    </div>
+    <ul class="legend">
+      <li><i class="b-head"></i><div><b>header · footer</b><span>Di atas dan di bawah <em>setiap</em> halaman. Untuk logo, judul, nomor halaman.</span></div></li>
+      <li><i class="b-col"></i><div><b>columnHeader</b><span>Di bawah header, setiap halaman. Untuk judul kolom tabel, supaya terulang saat tabel berlanjut ke halaman berikutnya.</span></div></li>
+      <li><i class="b-det"></i><div><b>detail</b><span>Dicetak <em>sekali untuk setiap baris data</em>. Seratus baris data berarti seratus kali band ini.</span></div></li>
+      <li><i class="b-gh"></i><div><b>groupHeader · groupFooter</b><span>Sebelum dan sesudah tiap kelompok, jika <code>groupBy</code> diisi. Untuk nama kategori dan subtotal.</span></div></li>
+      <li><i class="b-sum"></i><div><b>summary</b><span>Sekali saja, setelah baris terakhir. Untuk total, chart, catatan, tanda tangan.</span></div></li>
+    </ul>
+  </div>
+  <div class="notice">Dokumen tanpa baris data, seperti surat atau sertifikat, cukup memakai <code>header</code> dan <code>summary</code>. Lihat template <b>Surat resmi</b> dan <b>Sertifikat</b>.</div>
+  <p>Posisi elemen (<code>x</code>, <code>y</code>) dihitung dari sudut kiri atas band-nya. Halaman baru dibuat otomatis saat band berikutnya tidak muat.</p>
+</section>
+
+<section id="data">
+  <h2>Data &amp; placeholder</h2>
+  <p>Data adalah JSON biasa: beberapa field bebas, ditambah daftar baris di bawah kunci <code>rows</code>. Di template, tulis nama field di antara kurung kurawal ganda.</p>
+  <div class="flow3">
+    <div><h4>1 · Data</h4><pre><code>{
+  "number": "INV-001",
+  "customer": { "name": "Budi" },
+  "rows": [
+    { "name": "Kopi",
+      "qty": 2,
+      "price": 18000 }
+  ]
+}</code></pre></div>
+    <div><h4>2 · Teks di template</h4><pre><code>Faktur {{number}}
+Kepada: {{customer.name}}
+
+{{name}}
+{{qty}} × {{price:0}}
+= {{qty * price:0}}</code></pre></div>
+    <div><h4>3 · Hasil</h4><div class="result">Faktur INV-001<br>Kepada: Budi<br><br>Kopi<br>2 × 18,000<br>= 36,000</div></div>
+  </div>
+  <div class="scroll"><table>
+    <tr><th>Tulis</th><th>Hasil</th></tr>
+    <tr><td><code>{{name}}</code></td><td>Nilai field <code>name</code>. Di band <code>detail</code> dicari di baris saat ini dulu, lalu di data utama.</td></tr>
+    <tr><td><code>{{customer.name}}</code></td><td>Field di dalam objek.</td></tr>
+    <tr><td><code>{{price:2}}</code></td><td>Angka dengan 2 desimal dan pemisah ribuan: <code>18,000.00</code>. Angka di belakang titik dua = jumlah desimal (0–12).</td></tr>
+    <tr><td><code>{{unit-price}}</code> · <code>{{nama barang}}</code></td><td>Nama field apa pun boleh dipakai, termasuk yang bertanda hubung atau berspasi, selama placeholder berisi nama itu saja.</td></tr>
+    <tr><td><code>{{page}}</code> · <code>{{pages}}</code></td><td>Nomor halaman dan jumlah halaman (di <code>header</code>, <code>columnHeader</code>, <code>footer</code>).</td></tr>
+  </table></div>
+  <p><b>Format Indonesia.</b> Isi <code>thousands</code> dengan <code>.</code> dan <code>decimal</code> dengan <code>,</code> (tab Layout → Data) agar <code>{{price:2}}</code> menjadi <code>18.000,00</code>.</p>
+  <p>Field yang tidak ada menghasilkan teks kosong. Array baris saja, tanpa objek pembungkus, juga diterima sebagai data. Nama kunci <code>rows</code> bisa diganti lewat <code>dataKey</code>.</p>
+</section>
+
+<section id="hitung">
+  <h2>Perhitungan &amp; total</h2>
+  <p>Template bisa menghitung sendiri, jadi backend cukup mengirim data mentah.</p>
+  <div class="scroll"><table>
+    <tr><th>Saya ingin…</th><th>Tulis</th></tr>
+    <tr><td>Jumlah per baris</td><td><code>{{qty * price:0}}</code></td></tr>
+    <tr><td>Harga setelah diskon</td><td><code>{{(price - discount) * qty:0}}</code></td></tr>
+    <tr><td>Total semua baris</td><td><code>{{sum(qty * price):0}}</code></td></tr>
+    <tr><td>Pajak 11% dari total</td><td><code>{{sum(qty * price) * 0.11:0}}</code></td></tr>
+    <tr><td>Kembalian</td><td><code>{{cash - sum(qty * price):0}}</code></td></tr>
+    <tr><td>Persentase terhadap total</td><td><code>{{qty * price / sum(qty * price) * 100:1}}%</code></td></tr>
+    <tr><td>Jumlah baris</td><td><code>{{count()}}</code></td></tr>
+    <tr><td>Rata-rata, terkecil, terbesar</td><td><code>{{avg(price):2}}</code> · <code>{{min(price)}}</code> · <code>{{max(price)}}</code></td></tr>
+  </table></div>
+  <ul>
+    <li>Operator: <code>+</code> <code>-</code> <code>*</code> <code>/</code> dan kurung. Perkalian dan pembagian dihitung lebih dulu.</li>
+    <li>Fungsi <code>sum</code>, <code>avg</code>, <code>min</code>, <code>max</code>, <code>count</code> menghitung atas banyak baris. Isinya boleh berupa perhitungan.</li>
+    <li><code>count()</code> menghitung semua baris; <code>count(f)</code> hanya baris yang <code>f</code>-nya berupa angka.</li>
+    <li>Di dalam perhitungan, nama field yang bukan satu kata ditulis dalam kurung siku: <code>{{[unit-price] * qty}}</code>, <code>{{sum([harga satuan])}}</code>.</li>
+  </ul>
+  <div class="notice warn">Hanya nilai bertipe <b>angka</b> yang dihitung. <code>"18000"</code> (dalam tanda kutip) adalah teks. Jika ada nilai bukan angka, pembagian dengan nol, atau hasil yang terlalu besar, hasilnya kosong, bukan angka yang salah.</div>
+  <p>Total yang dipakai di setiap baris, misalnya persentase terhadap total, dihitung sekali saja, jadi laporan besar tetap cepat.</p>
+</section>
+
+<section id="grouping">
+  <h2>Kelompok &amp; subtotal</h2>
+  <p>Isi <b>Group by</b> (tab Layout) dengan nama field, misalnya <code>category</code>. Baris dengan nilai yang sama dikumpulkan menjadi satu kelompok, urut sesuai kemunculan pertamanya, jadi data tidak perlu diurutkan lebih dulu.</p>
+<pre><code>groupBy      category
+groupHeader  {{category}} ({{count()}} produk)
+detail       {{name}}            {{qty * price:0}}
+groupFooter  Subtotal            {{sum(qty * price):0}}
+summary      Total               {{sum(qty * price):0}}</code></pre>
+  <p>Rumus yang sama memberi hasil berbeda tergantung band-nya:</p>
+  <ul>
+    <li>di <code>groupHeader</code>, <code>detail</code>, <code>groupFooter</code>: dihitung atas <b>kelompok itu</b>,</li>
+    <li>di <code>summary</code>, <code>header</code>, <code>footer</code>: dihitung atas <b>seluruh baris</b>.</li>
+  </ul>
+  <p>Centang <b>New page per group</b> agar setiap kelompok mulai di halaman baru. Judul kelompok tidak pernah tertinggal sendirian di dasar halaman: jika baris pertamanya tidak muat, keduanya pindah bersama.</p>
+</section>
+
+<section id="elemen">
+  <h2>Elemen</h2>
+  <div class="cards">
+    <div><span class="ico">T</span><b>Text</b><span>Teks dengan placeholder. Bisa membungkus dan memanjangkan band.</span></div>
+    <div><span class="ico">▦</span><b>Table</b><span>Kisi sel bergaris. Satu baris di band detail = tabel data.</span></div>
+    <div><span class="ico">◩</span><b>Picture</b><span>Logo, tanda tangan, stempel. PNG, JPEG, atau GIF.</span></div>
+    <div><span class="ico">▭</span><b>Rectangle</b><span>Kotak dengan garis dan warna isi. Untuk bingkai dan latar.</span></div>
+    <div><span class="ico">─</span><b>Line</b><span>Garis mendatar atau tegak.</span></div>
+    <div><span class="ico">◔</span><b>Chart</b><span>Batang, batang mendatar, garis, pie, donut.</span></div>
+    <div><span class="ico">▩</span><b>Barcode</b><span>QR code atau Code 128 dari teks atau field.</span></div>
+  </div>
+  <h3>Teks panjang: centang Wrap</h3>
+  <p>Tanpa <b>Wrap</b> (<code>grow</code>), teks yang melebihi kotaknya terpotong. Dengan Wrap, teks turun ke baris berikutnya dan band ikut bertambah tinggi: elemen di bawahnya turun, dan kotak serta garis tegak di sekelilingnya ikut memanjang. Kata yang lebih lebar dari kotaknya (URL, nomor panjang) dipecah di tengah.</p>
+  <p>Beberapa teks Wrap dalam satu band saling memperhitungkan: teks yang bertumpuk mendorong bergantian (dorongannya dijumlahkan), sedangkan teks yang bersebelahan mengikuti yang paling tinggi.</p>
+  <h3>Gambar</h3>
+  <p>Gambar disimpan di dalam template sebagai data URI (<code>data:image/png;base64,…</code>); designer melakukannya otomatis saat Anda memilih file. Alamat gambar di internet tidak diterima: pencetakan gagal dengan pesan <code>image: src must be a data:image/...;base64 URI</code>.</p>
+</section>
+
+<section id="teks">
+  <h2>Format teks</h2>
+  <p>Pilih elemen, lalu pakai grup <b>Font</b> dan <b>Paragraph</b> di tab Home: jenis font (Helvetica, Times, Courier), ukuran, bold, italic, underline, warna teks, highlight, rata, dan spasi baris.</p>
+  <h3>Format sebagian teks</h3>
+  <p>Di designer: klik ganda teksnya, blok kata yang dimaksud, tekan B / I / U. Di JSON hasilnya berupa tag <code>&lt;b&gt;</code>, <code>&lt;i&gt;</code>, <code>&lt;u&gt;</code>:</p>
+<pre><code>Total: &lt;b&gt;{{sum(price):2}}&lt;/b&gt; &lt;i&gt;(belum termasuk pajak)&lt;/i&gt;</code></pre>
+  <p>Hanya tiga tag itu yang dikenali. Tanda <code>&lt;</code> lain, termasuk yang berasal dari data, dicetak apa adanya, jadi data pengguna tidak bisa menyisipkan HTML. Untuk mencetak tulisan <code>&lt;b&gt;</code> itu sendiri, tulis <code>&amp;lt;b&gt;</code>; designer melakukannya otomatis saat Anda mengetiknya.</p>
+  <p>Huruf yang tidak ada di font PDF bawaan (aksara non-Latin, emoji) dicetak sebagai <code>?</code>. Lihat <a href="#font">Font non-Latin</a>.</p>
+</section>
+
+<section id="tabel">
+  <h2>Tabel</h2>
+  <p>Tab <b>Insert</b>: isi jumlah baris × kolom, klik <b>Table</b>. Klik ganda sel untuk mengisi; isinya boleh placeholder. Di panel kanan atur jumlah baris dan kolom, lebar kolom (<code>3,1,1</code> = kolom pertama tiga kali lebih lebar), tebal dan warna garis. Klik sebuah sel lalu tombol rata untuk mengatur rata kolom itu.</p>
+  <h3>Tabel yang barisnya mengikuti data</h3>
+  <p>Pakai dua tabel satu baris dengan lebar kolom yang sama:</p>
+  <ol>
+    <li>di band <code>columnHeader</code>: judul kolom (bold, beri warna latar),</li>
+    <li>di band <code>detail</code>: placeholder, misalnya <code>{{name}}</code>, <code>{{qty}}</code>, <code>{{qty * price:0}}</code>.</li>
+  </ol>
+  <p>Karena band <code>detail</code> dicetak sekali per baris data, hasilnya satu tabel utuh. Centang <b>Wrap</b> pada tabel detail agar baris ikut tinggi saat isinya panjang. Kolom tabel ini juga menjadi kolom di Excel dan CSV. Lihat template <b>Faktur</b> dan <b>Daftar stok</b>.</p>
+</section>
+
+<section id="chart">
+  <h2>Chart</h2>
+  <p>Chart menggambar data baris. Isi <b>label</b> dengan field pengelompok dan <b>value</b> dengan field angka atau perhitungan. Nilai dengan label yang sama dijumlahkan, jadi <code>label: category</code> dan <code>value: qty * price</code> langsung memberi penjualan per kategori.</p>
+  <div class="scroll"><table>
+    <tr><th>Jenis</th><th>Bentuk</th><th>Cocok untuk</th></tr>
+    <tr><td><code>bar</code></td><td>Batang tegak, nilai di atasnya</td><td>Membandingkan beberapa kategori</td></tr>
+    <tr><td><code>hbar</code></td><td>Batang mendatar, label di kiri</td><td>Nama kategori yang panjang</td></tr>
+    <tr><td><code>line</code></td><td>Garis penghubung</td><td>Urutan waktu</td></tr>
+    <tr><td><code>pie</code></td><td>Lingkaran dengan legenda</td><td>Porsi dari keseluruhan</td></tr>
+    <tr><td><code>donut</code></td><td>Pie berlubang</td><td>Porsi dari keseluruhan</td></tr>
+  </table></div>
+  <p>Chart memakai cakupan yang sama dengan rumus: di <code>summary</code> ia merangkum seluruh baris, di <code>groupFooter</code> hanya kelompok itu. Chart muncul di PDF dan HTML, tidak di Excel dan CSV. Lihat template <b>Laporan penjualan</b> (donut dan batang) dan <b>Daftar stok</b> (batang mendatar).</p>
+</section>
+
+<section id="barcode">
+  <h2>Barcode &amp; QR</h2>
+  <p>Tab <b>Insert → Barcode</b>. Isi <b>text</b> dengan teks tetap, field, atau gabungan keduanya:</p>
+<pre><code>{{sku}}
+https://tokosaya.example/faktur/{{number}}</code></pre>
+  <div class="scroll"><table>
+    <tr><th>Format</th><th>Untuk</th><th>Isi</th></tr>
+    <tr><td><code>qr</code></td><td>Kamera ponsel: tautan, nomor verifikasi</td><td>Teks apa pun</td></tr>
+    <tr><td><code>code128</code></td><td>Pemindai kasir dan gudang: SKU, nomor transaksi</td><td>Huruf, angka, dan tanda baca dasar (ASCII)</td></tr>
+  </table></div>
+  <p>Sisakan ruang kosong di sekeliling kode agar mudah dipindai. Teks yang tidak bisa dijadikan kode (kosong, atau bukan ASCII untuk Code 128) tidak menggambar apa-apa. Lihat template <b>Label produk</b>, <b>Struk kasir</b>, dan <b>Sertifikat</b>.</p>
+</section>
+
+<section id="halaman">
+  <h2>Halaman &amp; latar</h2>
+  <div class="scroll"><table>
+    <tr><th>Pengaturan</th><th>Keterangan</th></tr>
+    <tr><td>Ukuran kertas</td><td>A4 595 × 842, A5 420 × 595, Letter 612 × 792, Legal 612 × 1008, F4 595 × 935, atau isi lebar dan tinggi sendiri (struk 80 mm = lebar 226).</td></tr>
+    <tr><td>Orientasi</td><td>Portrait atau Landscape.</td></tr>
+    <tr><td>Margin</td><td>Atas, kanan, bawah, kiri, masing-masing sendiri.</td></tr>
+    <tr><td>Warna latar</td><td>Warna seluruh halaman.</td></tr>
+    <tr><td>Gambar latar</td><td>Gambar yang direntangkan memenuhi setiap halaman: kop surat, bingkai sertifikat, watermark. Siapkan gambar dengan rasio yang sama dengan kertasnya.</td></tr>
+  </table></div>
+</section>
+
+<section id="output">
+  <h2>Format hasil</h2>
+  <div class="scroll"><table>
+    <tr><th>Yang terbawa</th><th>PDF</th><th>HTML</th><th>XLSX</th><th>XLS</th><th>CSV</th></tr>
+    <tr><td>Tata letak persis seperti desain</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">–</td><td class="no">–</td><td class="no">–</td></tr>
+    <tr><td>Gambar, chart, barcode, latar</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">–</td><td class="no">–</td><td class="no">–</td></tr>
+    <tr><td>Baris data, subtotal, total</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+    <tr><td>Angka tetap angka (bisa dijumlah)</td><td class="no">–</td><td class="no">–</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+    <tr><td>Bold, format angka, lebar kolom</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">–</td></tr>
+  </table></div>
+  <h3>Bagaimana desain menjadi tabel Excel</h3>
+  <p>Untuk XLSX, XLS, dan CSV, setiap teks dan sel tabel di band <code>detail</code> menjadi satu <b>kolom</b>, urut seperti dibaca: dari atas ke bawah, lalu kiri ke kanan. Setiap baris data menjadi satu baris.</p>
+  <p>Band lain (judul kolom, judul dan subtotal kelompok, ringkasan) menambah satu baris untuk setiap baris teksnya. Tiap teks masuk ke kolom yang sejajar dengannya, sehingga subtotal jatuh tepat di bawah kolom angkanya. Band <code>header</code> dan <code>footer</code> tidak ikut.</p>
+  <p>Laporan tanpa band <code>detail</code>, seperti surat atau sertifikat, tidak punya kolom: teksnya diekspor baris demi baris seperti dibaca, termasuk band <code>header</code>.</p>
+  <ul>
+    <li>Teks yang isinya tepat satu placeholder angka, seperti <code>{{qty * price:2}}</code>, ditulis sebagai angka.</li>
+    <li><code>xls</code> ditulis sebagai XML Spreadsheet 2003. Excel menampilkan satu peringatan bahwa format dan ekstensi berbeda; pilih <b>Yes</b>.</li>
+    <li>Di CSV, teks yang berawalan seperti formula (<code>=</code>, <code>@</code>, <code>+</code>, <code>-</code>) diberi tanda kutip tunggal di depan, supaya isian pengguna tidak dijalankan sebagai formula. Angka seperti <code>-5</code> tidak diubah.</li>
+  </ul>
+</section>
+
+<!-- ---------- RESEP ---------- -->
+<section id="resep">
+  <div class="chapter"><span class="kicker">Resep</span><h2>Bagaimana cara…?</h2><p>Jawaban singkat untuk hal yang paling sering ditanyakan.</p></div>
+  <details class="recipe"><summary>…menampilkan "Halaman 1 dari 5"?</summary><div><p>Taruh teks <code>Halaman {{page}} dari {{pages}}</code> di band <code>footer</code>.</p></div></details>
+  <details class="recipe"><summary>…menaruh total tepat di bawah tabel?</summary><div><p>Taruh teks <code>{{sum(qty * price):0}}</code> di band <code>summary</code>, rata kanan, dengan tepi kanan yang sama dengan kolom jumlahnya. Band <code>summary</code> dicetak tepat setelah baris terakhir.</p></div></details>
+  <details class="recipe"><summary>…membuat baris tabel berbingkai yang mengikuti data?</summary><div><p>Tabel satu baris di <code>columnHeader</code> untuk judul, tabel satu baris di <code>detail</code> untuk isi. Lihat <a href="#tabel">Tabel</a>.</p></div></details>
+  <details class="recipe"><summary>…membiarkan deskripsi panjang turun ke baris berikutnya?</summary><div><p>Pilih teks atau tabelnya, centang <b>Wrap</b> di tab Home. Baris akan memanjang sesuai isinya.</p></div></details>
+  <details class="recipe"><summary>…menulis angka dengan format rupiah?</summary><div><p>Di tab Layout → Data isi pemisah ribuan <code>.</code> dan desimal <code>,</code>. Lalu tulis <code>Rp {{price:0}}</code>.</p></div></details>
+  <details class="recipe"><summary>…memasang kop surat atau watermark?</summary><div><p>Tab Layout → Background → <b>Picture</b>, pilih gambar seukuran kertas. Atau susun kop dari teks dan garis di band <code>header</code> seperti template <b>Surat resmi</b>.</p></div></details>
+  <details class="recipe"><summary>…mencetak satu halaman untuk setiap pelanggan?</summary><div><p>Isi <b>Group by</b> dengan field pelanggan dan centang <b>New page per group</b>.</p></div></details>
+  <details class="recipe"><summary>…mencetak satu label per barang?</summary><div><p>Buat kertas seukuran label dan beri band <code>detail</code> tinggi yang sama dengan area cetaknya. Setiap baris data akan menempati satu halaman. Lihat template <b>Label produk</b>.</p></div></details>
+  <details class="recipe"><summary>…menambahkan QR untuk verifikasi dokumen?</summary><div><p>Tab Insert → Barcode, format <code>qr</code>, isi <code>https://situsanda.example/verify/{{id}}</code>.</p></div></details>
+  <details class="recipe"><summary>…membuat laporan mendatar (landscape)?</summary><div><p>Tab Layout → Orientation → <b>Landscape</b>.</p></div></details>
+  <details class="recipe"><summary>…membuat dokumen tanpa tabel, seperti surat?</summary><div><p>Kosongkan band <code>detail</code>. Taruh kop di <code>header</code> dan isi surat di <code>summary</code>; centang Wrap pada paragrafnya agar bagian tanda tangan turun mengikuti panjang isi.</p></div></details>
+  <details class="recipe"><summary>…menampilkan huruf Arab, Jepang, atau aksara lain di PDF?</summary><div><p>Berikan font TrueType yang memuat aksara itu. Lihat <a href="#font">Font non-Latin</a>.</p></div></details>
+</section>
+
+<!-- ---------- BACKEND ---------- -->
+<section id="backend">
+  <div class="chapter"><span class="kicker">Backend</span><h2>Memanggil dari backend</h2><p>Satu fungsi di setiap bahasa: template + data + format → dokumen.</p></div>
+  <div class="tabs" data-tabs="lang">
+    <div role="tablist" aria-label="Bahasa">
+      <button role="tab" data-tab="go">Go</button><button role="tab" data-tab="java">Java</button><button role="tab" data-tab="kotlin">Kotlin</button><button role="tab" data-tab="node">Node.js</button><button role="tab" data-tab="http">HTTP</button>
+    </div>
+    <div role="tabpanel" data-panel="go">
+      <p>Go memakai library-nya langsung, tanpa binary.</p>
+<pre><code>go get github.com/gvjavx/DdDesignReport</code></pre>
+<pre><code>import ddreport "github.com/gvjavx/DdDesignReport"
+
+template, _ := os.ReadFile("invoice.json")
+data := map[string]any{
+    "number": "INV-001",
+    "rows":   rows, // slice of struct atau map
+}
+
+// "pdf" | "html" | "xlsx" | "xls" | "csv"
+pdf, err := ddreport.Render(template, data, "pdf")</code></pre>
+      <p><code>data</code> boleh berupa apa pun yang bisa di-marshal ke JSON: map, struct dengan tag <code>json</code>, atau <code>json.RawMessage</code>. Nama field di placeholder mengikuti nama JSON-nya.</p>
+    </div>
+    <div role="tabpanel" data-panel="java">
+      <p>Salin <code>java/io/ddreport/DdReport.java</code> ke project, atau pasang sebagai jar. Tidak ada dependency lain. Butuh <a href="#ref-binary">binary ddreport</a>.</p>
+<pre><code>mvn -f java/pom.xml install</code></pre>
+<pre><code>&lt;dependency&gt;
+  &lt;groupId&gt;io.ddreport&lt;/groupId&gt;
+  &lt;artifactId&gt;ddreport&lt;/artifactId&gt;
+  &lt;version&gt;0.1.0&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+<pre><code>import io.ddreport.DdReport;
+
+byte[] pdf = DdReport.render(templateJson, dataJson, "pdf");
+Files.write(Path.of("report.pdf"), pdf);</code></pre>
+      <p>Dua argumen pertama adalah string JSON; serialisasikan objek data dengan Jackson atau Gson. Kegagalan dilempar sebagai <code>IOException</code>.</p>
+    </div>
+    <div role="tabpanel" data-panel="kotlin">
+      <p>Kotlin memakai class Java yang sama: salin <code>java/io/ddreport/DdReport.java</code>, atau pasang jar-nya dengan <code>mvn -f java/pom.xml install</code> dan pakai <code>implementation("io.ddreport:ddreport:0.1.0")</code> dari <code>mavenLocal()</code>. Butuh <a href="#ref-binary">binary ddreport</a>.</p>
+<pre><code>import io.ddreport.DdReport
+
+val xlsx = DdReport.render(templateJson, dataJson, "xlsx")
+File("report.xlsx").writeBytes(xlsx)</code></pre>
+    </div>
+    <div role="tabpanel" data-panel="node">
+      <p>Butuh <a href="#ref-binary">binary ddreport</a>.</p>
+<pre><code>npm install ./DdDesignReport/node</code></pre>
+<pre><code>const { render } = require('ddreport')
+
+const pdf = render(template, data, 'pdf') // Buffer
+res.type('application/pdf').send(pdf)</code></pre>
+      <p><code>template</code> dan <code>data</code> adalah objek biasa. <code>render</code> berjalan sinkron dan melempar <code>Error</code> jika gagal.</p>
+    </div>
+    <div role="tabpanel" data-panel="http">
+      <p>Dari bahasa apa pun, lewat mode <code>-serve</code>.</p>
+<pre><code>ddreport -serve 127.0.0.1:8080
+
+curl -X POST "http://127.0.0.1:8080/render?format=pdf" \
+  -d '{"template": {...}, "data": {...}}' -o report.pdf</code></pre>
+      <p>Respons berisi dokumen dengan <code>Content-Type</code> yang sesuai, atau status 400 dengan pesan error. Ukuran body dibatasi 32 MB, dan koneksi yang macet diputus otomatis.</p>
+      <div class="notice warn">Endpoint ini tidak punya autentikasi. Jalankan di <code>127.0.0.1</code> atau di belakang backend Anda sendiri, jangan dibuka langsung ke internet.</div>
+    </div>
+  </div>
+</section>
+
+<section id="pasang-designer">
+  <h2>Memasang designer di aplikasi Anda</h2>
+  <p>Designer adalah satu file ES module tanpa dependency dan tanpa build step. Salin <code>designer/designer.js</code>, atau pasang foldernya sebagai paket:</p>
+<pre><code>npm install ./DdDesignReport/designer</code></pre>
+<pre><code>import { createDesigner, emptyTemplate } from 'ddreport-designer'
+
+const designer = createDesigner(document.getElementById('designer'), {
+  template: savedTemplate,
+  onChange: template =&gt; save(template),
+  preview: async template =&gt; {
+    const res = await fetch('/api/report/preview', {
+      method: 'POST',
+      body: JSON.stringify(template),
+    })
+    return res.text()
+  },
+})
+
+designer.getTemplate()      // salinan template saat ini
+designer.setTemplate(other) // mengganti template; pengguna bisa membatalkannya dengan Ctrl+Z</code></pre>
+  <div class="scroll"><table>
+    <tr><th>Opsi</th><th>Keterangan</th></tr>
+    <tr><td><code>template</code></td><td>Template awal. Kosongkan untuk mulai dari A4 kosong. Template yang rusak atau dari versi lama diperbaiki saat dimuat, bukan ditolak.</td></tr>
+    <tr><td><code>lang</code></td><td><code>'en'</code> (default) atau <code>'id'</code> untuk antarmuka berbahasa Indonesia. Di aplikasi standalone: tambahkan <code>?lang=id</code> pada alamatnya, atau klik tautan bahasa di kanan atas.</td></tr>
+    <tr><td><code>onChange(template)</code></td><td>Dipanggil setiap ada perubahan. Objeknya adalah objek kerja designer, jangan diubah; pakai <code>getTemplate()</code> jika butuh salinan.</td></tr>
+    <tr><td><code>preview(template)</code></td><td>Opsional. Fungsi async yang mengembalikan HTML hasil cetak (format <code>"html"</code> dari backend Anda). Jika diisi, tombol Preview muncul di tab View.</td></tr>
+  </table></div>
+  <p>Dokumentasi ini memakai nama tombol versi Inggris (Home, Insert, Layout, View, Wrap); dengan <code>lang: 'id'</code> namanya menjadi Beranda, Sisipkan, Tata Letak, Tampilan, Bungkus.</p>
+  <p>Bisa dipakai di framework apa pun: panggil <code>createDesigner</code> pada elemen DOM setelah komponen ter-mount. Template siap pakai ada di <code>designer/templates/</code>; tiap file berisi <code>template</code> dan <code>data</code> contohnya.</p>
+</section>
+
+<section id="font">
+  <h2>Font non-Latin</h2>
+  <p>Font bawaan PDF hanya mencakup huruf Latin, yang cukup untuk bahasa Indonesia dan Inggris. Untuk aksara lain (Arab, Cyrillic, Jepang, dan sebagainya) berikan font TrueType yang memuat aksara itu.</p>
+  <div class="tabs" data-tabs="font">
+    <div role="tablist" aria-label="Cara memberi font">
+      <button role="tab" data-tab="go">Go</button><button role="tab" data-tab="bin">Java, Kotlin, Node.js, HTTP</button>
+    </div>
+    <div role="tabpanel" data-panel="go"><pre><code>// set sekali saat aplikasi mulai
+ddreport.Font, _ = os.ReadFile("NotoSans-Regular.ttf")
+ddreport.FontBold, _ = os.ReadFile("NotoSans-Bold.ttf") // opsional</code></pre></div>
+    <div role="tabpanel" data-panel="bin"><pre><code>export DDREPORT_FONT=/fonts/NotoSans-Regular.ttf
+export DDREPORT_FONT_BOLD=/fonts/NotoSans-Bold.ttf</code></pre></div>
+  </div>
+  <p>Jika font bold tidak diberikan, teks bold memakai font regular. Dengan font sendiri, pilihan Helvetica/Times/Courier diabaikan dan italic memakai bentuk tegak. Hasil HTML memakai font browser dan tidak terpengaruh.</p>
+</section>
+
+<!-- ---------- REFERENSI ---------- -->
+<section id="referensi">
+  <div class="chapter"><span class="kicker">Referensi</span><h2>Template JSON</h2><p>Template adalah JSON biasa, jadi bisa juga dibuat atau diubah lewat kode.</p></div>
+<pre><code>{
+  "page": {
+    "width": 595, "height": 842,
+    "marginTop": 36, "marginRight": 36, "marginBottom": 36, "marginLeft": 36,
+    "background": "", "backgroundImage": ""
+  },
+  "dataKey": "rows",
+  "groupBy": "category",
+  "groupPageBreak": false,
+  "thousands": ".",
+  "decimal": ",",
+  "bands": {
+    "header":       { "height": 60, "elements": [] },
+    "columnHeader": { "height": 20, "elements": [] },
+    "groupHeader":  { "height": 20, "elements": [] },
+    "detail": {
+      "height": 18,
+      "elements": [
+        { "type": "text", "x": 0, "y": 3, "w": 300, "h": 14, "text": "{{name}}", "grow": true },
+        { "type": "text", "x": 380, "y": 3, "w": 140, "h": 14, "text": "{{qty * price:2}}", "align": "right" }
+      ]
+    },
+    "groupFooter":  { "height": 20, "elements": [] },
+    "summary":      { "height": 30, "elements": [] },
+    "footer":       { "height": 30, "elements": [] }
+  }
+}</code></pre>
+  <div class="scroll"><table>
+    <tr><th>Field</th><th>Default</th><th>Keterangan</th></tr>
+    <tr><td><code>page.width</code> · <code>height</code></td><td>595 · 842</td><td>Ukuran halaman dalam point. Tukar keduanya untuk landscape.</td></tr>
+    <tr><td><code>page.marginTop</code> …</td><td>0</td><td>Margin per sisi. Sisi yang tidak diisi memakai <code>page.margin</code>.</td></tr>
+    <tr><td><code>page.background</code></td><td>kosong</td><td>Warna latar, <code>#rrggbb</code>.</td></tr>
+    <tr><td><code>page.backgroundImage</code></td><td>kosong</td><td>Gambar latar sebagai data URI.</td></tr>
+    <tr><td><code>dataKey</code></td><td><code>rows</code></td><td>Kunci daftar baris di dalam data.</td></tr>
+    <tr><td><code>groupBy</code></td><td>kosong</td><td>Field pengelompokan.</td></tr>
+    <tr><td><code>groupPageBreak</code></td><td><code>false</code></td><td>Halaman baru untuk setiap kelompok.</td></tr>
+    <tr><td><code>thousands</code> · <code>decimal</code></td><td><code>,</code> · <code>.</code></td><td>Pemisah untuk <code>{{f:N}}</code>.</td></tr>
+    <tr><td><code>bands.*.height</code></td><td>0</td><td>Tinggi band.</td></tr>
+  </table></div>
+  <div class="notice warn">Cetak gagal dengan pesan <code>bands do not fit on the page</code> jika header, footer, dan satu band isi tidak muat dalam satu halaman.</div>
+</section>
+
+<section id="ref-elemen">
+  <h2>Properti elemen</h2>
+  <p>Semua elemen punya <code>type</code>, <code>x</code>, <code>y</code>, <code>w</code>, <code>h</code>. Warna ditulis <code>#rrggbb</code>.</p>
+  <div class="scroll"><table>
+    <tr><th>type</th><th>Properti</th><th>Keterangan</th></tr>
+    <tr><td><code>text</code></td><td><code>text</code>, <code>font</code>, <code>fontSize</code> (10), <code>lineHeight</code> (1.2), <code>bold</code>, <code>italic</code>, <code>underline</code>, <code>align</code>, <code>color</code>, <code>fill</code>, <code>grow</code></td><td><code>font</code>: <code>Helvetica</code>, <code>Times</code>, <code>Courier</code>. <code>align</code>: <code>left</code>, <code>center</code>, <code>right</code>. <code>fill</code> = highlight.</td></tr>
+    <tr><td><code>table</code></td><td><code>cells</code>, <code>cols</code>, <code>aligns</code>, <code>border</code>, <code>color</code>, <code>fill</code>, <code>grow</code>, dan properti font milik <code>text</code></td><td><code>cells</code>: teks per sel, baris demi baris. <code>cols</code>: lebar relatif. <code>aligns</code>: rata per kolom. <code>color</code>: warna garis.</td></tr>
+    <tr><td><code>image</code></td><td><code>src</code></td><td>Data URI. PDF menerima PNG, JPEG, dan GIF.</td></tr>
+    <tr><td><code>rect</code></td><td><code>border</code>, <code>color</code>, <code>fill</code></td><td>Tebal garis, warna garis, warna isi (kosong = transparan).</td></tr>
+    <tr><td><code>line</code></td><td><code>border</code>, <code>color</code></td><td>Mendatar jika <code>w</code> ≥ <code>h</code>, tegak jika sebaliknya.</td></tr>
+    <tr><td><code>chart</code></td><td><code>chart</code>, <code>label</code>, <code>value</code>, <code>color</code></td><td><code>chart</code>: <code>bar</code>, <code>hbar</code>, <code>line</code>, <code>pie</code>, <code>donut</code>. <code>value</code> boleh perhitungan.</td></tr>
+    <tr><td><code>barcode</code></td><td><code>text</code>, <code>format</code>, <code>color</code></td><td><code>format</code>: <code>qr</code> (default) atau <code>code128</code>. <code>text</code> boleh berisi placeholder.</td></tr>
+  </table></div>
+</section>
+
+<section id="ref-binary">
+  <h2>Binary ddreport</h2>
+  <p>Java, Kotlin, dan Node.js mencetak lewat binary <code>ddreport</code>, sehingga hasilnya identik dengan Go. Build sekali per platform, lalu taruh di <code>PATH</code> atau tunjuk lewat <code>DDREPORT_BIN</code>.</p>
+  <div class="tabs" data-tabs="shell">
+    <div role="tablist" aria-label="Shell"><button role="tab" data-tab="bash">Bash / Git Bash</button><button role="tab" data-tab="ps">PowerShell</button></div>
+    <div role="tabpanel" data-panel="bash"><pre><code>go build -o ddreport ./cmd/ddreport
+export DDREPORT_BIN="$PWD/ddreport"</code></pre></div>
+    <div role="tabpanel" data-panel="ps"><pre><code>go build -o ddreport.exe ./cmd/ddreport
+$env:DDREPORT_BIN = "$PWD\ddreport.exe"</code></pre></div>
+  </div>
+  <p>Binary membaca <code>{"template": ..., "data": ...}</code> dari stdin dan menulis dokumen ke stdout:</p>
+<pre><code>ddreport -format pdf &lt; request.json &gt; report.pdf</code></pre>
+  <div class="scroll"><table>
+    <tr><th>Flag / variabel</th><th>Keterangan</th></tr>
+    <tr><td><code>-format</code></td><td><code>pdf</code> (default), <code>html</code>, <code>xlsx</code>, <code>xls</code>, <code>csv</code></td></tr>
+    <tr><td><code>-serve alamat</code></td><td>Menjalankan designer (dengan template siap pakai) dan endpoint <code>POST /render</code></td></tr>
+    <tr><td><code>DDREPORT_BIN</code></td><td>Lokasi binary, dibaca oleh wrapper Java dan Node.js</td></tr>
+    <tr><td><code>DDREPORT_FONT</code> · <code>_BOLD</code></td><td>Lihat <a href="#font">Font non-Latin</a></td></tr>
+  </table></div>
+  <p>Jika gagal, binary keluar dengan kode 1 dan pesan di stderr; wrapper meneruskannya sebagai exception.</p>
+</section>
+
+<section id="test">
+  <h2>Test</h2>
+  <p>Core Go punya unit test untuk setiap bagian mesin cetak (placeholder, perhitungan, format angka, pembungkusan teks, tabel, chart, barcode, ganti halaman, ekspor), test keamanan terhadap template berisi HTML berbahaya, dan test yang mencetak setiap template siap pakai ke semua format. Wrapper diuji terhadap binary sungguhan.</p>
+<pre><code>go test ./...                         # core, binary, semua template, dan test regresi
+go build -o ddreport ./cmd/ddreport
+export DDREPORT_BIN="$PWD/ddreport"
+node --test node/test.js              # wrapper Node.js
+javac -d out java/io/ddreport/DdReport.java java/DdReportTest.java
+java -cp out DdReportTest             # wrapper Java</code></pre>
+  <p>Designer punya halaman test sendiri: sajikan folder <code>designer/</code> dengan web server (<code>npx serve designer</code>) lalu buka <code>/test.html</code>. Halaman itu menjalankan 67 pemeriksaan pada designer dan menampilkan yang gagal.</p>
+</section>
+
+<section id="batasan">
+  <h2>Batasan</h2>
+  <ul>
+    <li>Pengelompokan hanya satu tingkat.</li>
+    <li>Chart belum punya sumbu nilai, nilai negatif digambar sebagai nol, dan label bisa bertumpuk jika kategorinya banyak.</li>
+    <li>Pilihan font terbatas pada Helvetica, Times, dan Courier, kecuali Anda memberikan font TrueType sendiri.</li>
+    <li>Sel tabel tidak bisa digabung, dan format berlaku untuk seluruh tabel (rata teks per kolom).</li>
+    <li>Tinggi teks Wrap diukur dengan font PDF. Di hasil HTML, baris terakhir bisa terpotong jika font browser lebih lebar.</li>
+    <li>XLSX dan XLS berisi satu sheet; hanya bold, format angka, dan lebar kolom yang terbawa.</li>
+    <li>Wrapper Java, Kotlin, dan Node.js menjalankan satu proses per dokumen.</li>
+    <li>Paket belum dipublikasikan ke Maven Central maupun npm; pemasangan masih dari repository.</li>
+    <li>Designer diuji di Chrome. Di layar sentuh, elemen bisa digeser tetapi pegangan ubah-ukuran bawaan browser tidak tersedia; pakai kolom <code>w</code> dan <code>h</code>.</li>
+  </ul>
+</section>
+
+</article>
+</div>
+</main>
+
+<footer><div class="wrap">DdDesignReport · lisensi MIT · <a href="https://github.com/gvjavx/DdDesignReport">GitHub</a></div></footer>
+
+<script>
+// theme: follows the system until the visitor picks one
+const root = document.documentElement
+try { const t = localStorage.getItem('theme'); if (t) root.dataset.theme = t } catch {}
+document.getElementById('theme').onclick = () => {
+  const dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches
+  root.dataset.theme = dark ? 'light' : 'dark'
+  try { localStorage.setItem('theme', root.dataset.theme) } catch {}
+}
+
+// copy buttons on code blocks
+for (const pre of document.querySelectorAll('pre')) {
+  const b = document.createElement('button')
+  b.className = 'copy'
+  b.type = 'button'
+  b.textContent = 'Salin'
+  b.onclick = async () => {
+    try { await navigator.clipboard.writeText(pre.querySelector('code').textContent); b.textContent = 'Tersalin ✓' } catch { b.textContent = 'Gagal menyalin' }
+    setTimeout(() => { b.textContent = 'Salin' }, 1500)
+  }
+  pre.append(b)
+}
+
+// tabs: picking a language once switches every group of language tabs
+function pick(group, tab) {
+  for (const tabs of document.querySelectorAll(`.tabs[data-tabs="${group}"]`)) {
+    const buttons = [...tabs.querySelectorAll('[role=tab]')]
+    const chosen = buttons.find(b => b.dataset.tab === tab) || buttons[0]
+    for (const b of buttons) b.setAttribute('aria-selected', b === chosen)
+    for (const p of tabs.querySelectorAll('[role=tabpanel]')) p.hidden = p.dataset.panel !== chosen.dataset.tab
+  }
+}
+for (const tabs of document.querySelectorAll('.tabs')) {
+  tabs.addEventListener('click', ev => { const b = ev.target.closest('[role=tab]'); if (b) pick(tabs.dataset.tabs, b.dataset.tab) })
+  pick(tabs.dataset.tabs)
+}
+
+// table of contents: highlight the section being read
+const links = new Map([...document.querySelectorAll('.toc a')].map(a => [a.getAttribute('href').slice(1), a]))
+const spy = new IntersectionObserver(entries => {
+  for (const e of entries) if (e.isIntersecting) for (const [id, a] of links) a.classList.toggle('on', id === e.target.id)
+}, { rootMargin: '-80px 0px -70% 0px' })
+for (const id of links.keys()) spy.observe(document.getElementById(id))
+
+// a rendered report, scaled to fit its frame
+function paper(box, id, w, h) {
+  box.style.aspectRatio = `${w} / ${h}`
+  const frame = document.createElement('iframe')
+  frame.src = `previews/${id}.html`
+  const pxW = w * 96 / 72 // the report is sized in points, the frame in CSS pixels
+  frame.width = pxW; frame.height = h * 96 / 72
+  frame.tabIndex = -1
+  frame.setAttribute('sandbox', '')
+  frame.setAttribute('scrolling', 'no')
+  frame.title = 'Pratinjau ' + id
+  box.append(frame)
+  new ResizeObserver(() => { frame.style.transform = `scale(${box.clientWidth / pxW})` }).observe(box)
+}
+for (const box of document.querySelectorAll('[data-preview]')) paper(box, box.dataset.preview, +box.dataset.w, +box.dataset.h)
+</script>
+
+<script type="module">
+// designer.js, templates/ and previews/ are copied from the library by `node sync.js`
+import { createDesigner } from './designer.js'
+
+const demo = document.getElementById('demo'), select = document.getElementById('demo-template'), msg = document.getElementById('demo-msg')
+demo.textContent = ''
+const designer = createDesigner(demo)
+
+async function load(id) {
+  if (!id) return designer.setTemplate()
+  try {
+    designer.setTemplate((await (await fetch(`templates/${id}.json`)).json()).template)
+  } catch (err) { msg.textContent = 'Template tidak bisa dimuat: ' + err.message }
+}
+select.onchange = () => load(select.value)
+
+const list = await (await fetch('previews/index.json')).json()
+select.append(...list.map(t => new Option(t.name, t.id)))
+document.getElementById('gallery').replaceChildren(...list.map(t => {
+  const card = document.createElement('div')
+  card.className = 'tcard'
+  card.innerHTML = `<div class="shot"><div class="paper"></div></div>
+    <div class="body"><h3></h3><p></p>
+      <div class="links"><button type="button">Buka di designer</button><a href="previews/${t.id}.pdf" target="_blank" rel="noopener">PDF</a><a href="previews/${t.id}.html" target="_blank" rel="noopener">HTML</a><a href="templates/${t.id}.json" download>JSON</a></div>
+    </div>`
+  card.querySelector('h3').textContent = t.name
+  card.querySelector('p').textContent = t.description
+  // fit the paper inside the 218px tall window, whatever its shape
+  const box = card.querySelector('.paper')
+  box.style.width = Math.min(218 * t.width / t.height, 218) + 'px'
+  paper(box, t.id, t.width, t.height)
+  card.querySelector('button').onclick = () => {
+    select.value = t.id
+    load(t.id)
+    document.getElementById('coba').scrollIntoView()
+  }
+  return card
+}))
+</script>
+</body>
+</html>

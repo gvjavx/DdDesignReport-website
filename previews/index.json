@@ -1,0 +1,58 @@
+[
+  {
+    "id": "invoice",
+    "name": "Faktur",
+    "description": "Faktur penjualan dengan tabel barang, pajak, total, dan QR nomor faktur.",
+    "width": 595,
+    "height": 842
+  },
+  {
+    "id": "sales-report",
+    "name": "Laporan penjualan",
+    "description": "Laporan berkelompok per kategori dengan subtotal, total, dan dua chart.",
+    "width": 595,
+    "height": 842
+  },
+  {
+    "id": "receipt",
+    "name": "Struk kasir",
+    "description": "Struk untuk printer thermal 80 mm dengan total, kembalian, dan barcode.",
+    "width": 226,
+    "height": 520
+  },
+  {
+    "id": "payslip",
+    "name": "Slip gaji",
+    "description": "Slip gaji A5 mendatar: pendapatan dan potongan berkelompok, lalu gaji bersih.",
+    "width": 595,
+    "height": 420
+  },
+  {
+    "id": "certificate",
+    "name": "Sertifikat",
+    "description": "Sertifikat mendatar satu halaman dengan bingkai, latar berwarna, dan QR verifikasi.",
+    "width": 842,
+    "height": 595
+  },
+  {
+    "id": "letter",
+    "name": "Surat resmi",
+    "description": "Surat dengan kop, isi yang panjangnya mengikuti teks, dan blok tanda tangan.",
+    "width": 595,
+    "height": 842
+  },
+  {
+    "id": "stock",
+    "name": "Daftar stok",
+    "description": "Daftar stok mendatar per kategori dengan nilai persediaan dan chart batang horizontal.",
+    "width": 842,
+    "height": 595
+  },
+  {
+    "id": "labels",
+    "name": "Label produk",
+    "description": "Label 10 × 6 cm, satu label per baris data, dengan Code 128 dan QR.",
+    "width": 283,
+    "height": 170
+  }
+]
