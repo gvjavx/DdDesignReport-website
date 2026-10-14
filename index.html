@@ -90,7 +90,8 @@
   .demo-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 12px }
   .demo-bar select { font: inherit; padding: 7px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--text) }
   .demo-bar span { color: var(--muted); font-size: 14px }
-  .demo { color-scheme: light; border-radius: 12px; overflow: auto; max-height: 760px; box-shadow: var(--shadow); border: 1px solid var(--line); background: #f3f3f3 }
+  .demo { height: min(760px, 86vh); border-radius: 12px; box-shadow: var(--shadow) }
+  .demo > div { height: 100% }
 
   /* docs layout */
   .docs { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 48px; padding-top: 56px; padding-bottom: 96px }
@@ -368,7 +369,7 @@ fs.writeFileSync('report.pdf', pdf)</code></pre></div>
 
 <section id="designer">
   <h2>Memakai designer</h2>
-  <p>Designer terdiri dari ribbon di atas, halaman di tengah, dan panel properti di kanan.</p>
+  <p>Designer terdiri dari ribbon di atas, halaman di tengah, panel properti di kanan, dan bilah status di bawah. Di layar sempit panel properti pindah ke bawah halaman dan terlipat, dan halaman otomatis dipaskan ke lebar layar.</p>
   <div class="scroll"><table>
     <tr><th>Saya ingin…</th><th>Caranya</th></tr>
     <tr><td>Menambah elemen</td><td>Tab <b>Insert</b>: klik tombolnya, atau seret tombolnya ke bagian halaman yang dituju.</td></tr>
@@ -376,7 +377,8 @@ fs.writeFileSync('report.pdf', pdf)</code></pre></div>
     <tr><td>Menebalkan sebagian teks</td><td>Saat mengetik, blok kata yang dimaksud lalu tekan <b>B</b>, <i>I</i>, atau <u>U</u>.</td></tr>
     <tr><td>Memilih beberapa elemen</td><td><code>Shift</code>+klik, seret kotak di area kosong, atau <code>Ctrl+A</code>.</td></tr>
     <tr><td>Memindah</td><td>Geser dengan mouse (menempel ke tepi elemen lain; tahan <code>Alt</code> untuk mematikan) atau tombol panah. Geser ke band lain untuk memindahkannya ke sana.</td></tr>
-    <tr><td>Mengubah ukuran</td><td>Tarik sudut kanan bawah elemen. Tarik tepi bawah sebuah band untuk mengubah tingginya.</td></tr>
+    <tr><td>Mengubah ukuran</td><td>Tarik pegangan biru di sudut kanan bawah elemen terpilih (juga dengan sentuhan). Tarik tepi bawah sebuah band untuk mengubah tingginya.</td></tr>
+    <tr><td>Memperbesar tampilan</td><td>Bilah status di bawah: tombol − dan +, penggeser, klik persentasenya untuk kembali ke 100%, atau tombol paskan lebar.</td></tr>
     <tr><td>Meratakan</td><td>Pilih beberapa elemen, lalu tombol di grup <b>Arrange</b> (tab Home).</td></tr>
     <tr><td>Mengatur kertas</td><td>Tab <b>Layout</b>: ukuran, orientasi, margin, warna dan gambar latar.</td></tr>
     <tr><td>Membatalkan</td><td><code>Ctrl+Z</code>, sampai 100 langkah. <code>Ctrl+Y</code> untuk mengulang. Memulai laporan baru atau memuat template juga bisa dibatalkan.</td></tr>
@@ -387,7 +389,7 @@ fs.writeFileSync('report.pdf', pdf)</code></pre></div>
     <tr><td><b>Home</b></td><td>Undo/redo; cut, copy, paste, duplicate, delete; font, ukuran, bold, italic, underline, warna teks, highlight; rata kiri/tengah/kanan, spasi baris, wrap; perataan dan distribusi elemen, bawa ke depan/belakang.</td></tr>
     <tr><td><b>Insert</b></td><td>Text box, tabel (baris × kolom), gambar, kotak, garis, chart, barcode, dan daftar field siap sisip.</td></tr>
     <tr><td><b>Layout</b></td><td>Kertas (A4, A5, Letter, Legal, F4, custom), orientasi, margin per sisi, latar, pengelompokan, halaman baru per kelompok, pemisah angka.</td></tr>
-    <tr><td><b>View</b></td><td>Zoom 25–300%, penggaris, snap, Preview.</td></tr>
+    <tr><td><b>View</b></td><td>Penggaris, snap, Preview. Zoom (25–300%) ada di bilah status.</td></tr>
   </table></div>
   <h3>Pintasan keyboard</h3>
   <div class="scroll"><table>
@@ -708,11 +710,13 @@ designer.setTemplate(other) // mengganti template; pengguna bisa membatalkannya 
   <div class="scroll"><table>
     <tr><th>Opsi</th><th>Keterangan</th></tr>
     <tr><td><code>template</code></td><td>Template awal. Kosongkan untuk mulai dari A4 kosong. Template yang rusak atau dari versi lama diperbaiki saat dimuat, bukan ditolak.</td></tr>
+    <tr><td><code>theme</code></td><td><code>'light'</code> (default), <code>'dark'</code>, atau <code>'auto'</code> untuk mengikuti pengaturan sistem. Kertas laporannya sendiri selalu putih.</td></tr>
     <tr><td><code>lang</code></td><td><code>'en'</code> (default) atau <code>'id'</code> untuk antarmuka berbahasa Indonesia. Di aplikasi standalone: tambahkan <code>?lang=id</code> pada alamatnya, atau klik tautan bahasa di kanan atas.</td></tr>
     <tr><td><code>onChange(template)</code></td><td>Dipanggil setiap ada perubahan. Objeknya adalah objek kerja designer, jangan diubah; pakai <code>getTemplate()</code> jika butuh salinan.</td></tr>
     <tr><td><code>preview(template)</code></td><td>Opsional. Fungsi async yang mengembalikan HTML hasil cetak (format <code>"html"</code> dari backend Anda). Jika diisi, tombol Preview muncul di tab View.</td></tr>
   </table></div>
   <p>Dokumentasi ini memakai nama tombol versi Inggris (Home, Insert, Layout, View, Wrap); dengan <code>lang: 'id'</code> namanya menjadi Beranda, Sisipkan, Tata Letak, Tampilan, Bungkus.</p>
+  <p>Designer mengisi elemen tempatnya dipasang dan menyesuaikan diri dengan <em>lebar elemen itu</em>, bukan lebar jendela, jadi tetap rapi di dalam panel samping atau dialog. Beri elemen itu tinggi (misalnya <code>height: 80vh</code>) agar halaman bisa digulir di dalamnya. Warna aksen bisa diganti lewat CSS: <code>.ddr { --a: #0f766e }</code>.</p>
   <p>Bisa dipakai di framework apa pun: panggil <code>createDesigner</code> pada elemen DOM setelah komponen ter-mount. Template siap pakai ada di <code>designer/templates/</code>; tiap file berisi <code>template</code> dan <code>data</code> contohnya.</p>
 </section>
 
@@ -823,7 +827,7 @@ export DDREPORT_BIN="$PWD/ddreport"
 node --test node/test.js              # wrapper Node.js
 javac -d out java/io/ddreport/DdReport.java java/DdReportTest.java
 java -cp out DdReportTest             # wrapper Java</code></pre>
-  <p>Designer punya halaman test sendiri: sajikan folder <code>designer/</code> dengan web server (<code>npx serve designer</code>) lalu buka <code>/test.html</code>. Halaman itu menjalankan 67 pemeriksaan pada designer dan menampilkan yang gagal.</p>
+  <p>Designer punya halaman test sendiri: sajikan folder <code>designer/</code> dengan web server (<code>npx serve designer</code>) lalu buka <code>/test.html</code>. Halaman itu menjalankan 81 pemeriksaan pada designer dan menampilkan yang gagal.</p>
 </section>
 
 <section id="batasan">
@@ -837,7 +841,7 @@ java -cp out DdReportTest             # wrapper Java</code></pre>
     <li>XLSX dan XLS berisi satu sheet; hanya bold, format angka, dan lebar kolom yang terbawa.</li>
     <li>Wrapper Java, Kotlin, dan Node.js menjalankan satu proses per dokumen.</li>
     <li>Paket belum dipublikasikan ke Maven Central maupun npm; pemasangan masih dari repository.</li>
-    <li>Designer diuji di Chrome. Di layar sentuh, elemen bisa digeser tetapi pegangan ubah-ukuran bawaan browser tidak tersedia; pakai kolom <code>w</code> dan <code>h</code>.</li>
+    <li>Designer diuji di Chrome dengan mouse dan keyboard. Firefox, Safari, dan perangkat layar sentuh belum diuji.</li>
   </ul>
 </section>
 
