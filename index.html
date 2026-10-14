@@ -379,6 +379,7 @@ fs.writeFileSync('report.pdf', pdf)</code></pre></div>
     <tr><td>Memindah</td><td>Geser dengan mouse (menempel ke tepi elemen lain; tahan <code>Alt</code> untuk mematikan) atau tombol panah. Geser ke band lain untuk memindahkannya ke sana.</td></tr>
     <tr><td>Mengubah ukuran</td><td>Tarik pegangan biru di sudut kanan bawah elemen terpilih (juga dengan sentuhan). Tarik tepi bawah sebuah band untuk mengubah tingginya.</td></tr>
     <tr><td>Memperbesar tampilan</td><td>Bilah status di bawah: tombol − dan +, penggeser, klik persentasenya untuk kembali ke 100%, atau tombol paskan lebar.</td></tr>
+    <tr><td>Menghapus elemen</td><td>Klik tombol merah <b>×</b> di sudut kanan atas elemen terpilih, seret elemen ke tempat sampah yang muncul di atas halaman saat menggeser, atau tekan <code>Delete</code>. Beberapa elemen terpilih bisa diseret ke tempat sampah sekaligus. <code>Ctrl+Z</code> mengembalikannya.</td></tr>
     <tr><td>Meratakan</td><td>Pilih beberapa elemen, lalu tombol di grup <b>Arrange</b> (tab Home).</td></tr>
     <tr><td>Mengatur kertas</td><td>Tab <b>Layout</b>: ukuran, orientasi, margin, warna dan gambar latar.</td></tr>
     <tr><td>Membatalkan</td><td><code>Ctrl+Z</code>, sampai 100 langkah. <code>Ctrl+Y</code> untuk mengulang. Memulai laporan baru atau memuat template juga bisa dibatalkan.</td></tr>
@@ -827,7 +828,7 @@ export DDREPORT_BIN="$PWD/ddreport"
 node --test node/test.js              # wrapper Node.js
 javac -d out java/io/ddreport/DdReport.java java/DdReportTest.java
 java -cp out DdReportTest             # wrapper Java</code></pre>
-  <p>Designer punya halaman test sendiri: sajikan folder <code>designer/</code> dengan web server (<code>npx serve designer</code>) lalu buka <code>/test.html</code>. Halaman itu menjalankan 81 pemeriksaan pada designer dan menampilkan yang gagal.</p>
+  <p>Designer punya halaman test sendiri: sajikan folder <code>designer/</code> dengan web server (<code>npx serve designer</code>) lalu buka <code>/test.html</code>. Halaman itu menjalankan 97 pemeriksaan pada designer dan menampilkan yang gagal.</p>
 </section>
 
 <section id="batasan">
