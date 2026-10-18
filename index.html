@@ -354,10 +354,10 @@ Files.write(Path.of("report.pdf"), pdf);</code></pre></div>
 val template = File("report.json").readText()
 val pdf = DdReport.render(template, dataJson, "pdf")
 File("report.pdf").writeBytes(pdf)</code></pre></div>
-        <div role="tabpanel" data-panel="node"><pre><code>const { render } = require('ddreport')
+        <div role="tabpanel" data-panel="node"><pre><code>const { renderAsync } = require('ddreport')
 
 const template = JSON.parse(fs.readFileSync('report.json', 'utf8'))
-const pdf = render(template, { number: 'INV-001', rows }, 'pdf')
+const pdf = await renderAsync(template, { number: 'INV-001', rows }, 'pdf')
 fs.writeFileSync('report.pdf', pdf)</code></pre></div>
         <div role="tabpanel" data-panel="http"><pre><code>curl -X POST "http://127.0.0.1:8080/render?format=pdf" \
   -d '{"template": {...}, "data": {...}}' -o report.pdf</code></pre></div>
@@ -552,13 +552,13 @@ summary      Total               {{sum(qty * price):0}}</code></pre>
   <p>Chart menggambar data baris. Isi <b>label</b> dengan field pengelompok dan <b>value</b> dengan field angka atau perhitungan. Nilai dengan label yang sama dijumlahkan, jadi <code>label: category</code> dan <code>value: qty * price</code> langsung memberi penjualan per kategori.</p>
   <div class="scroll"><table>
     <tr><th>Jenis</th><th>Bentuk</th><th>Cocok untuk</th></tr>
-    <tr><td><code>bar</code></td><td>Batang tegak, nilai di atasnya</td><td>Membandingkan beberapa kategori</td></tr>
-    <tr><td><code>hbar</code></td><td>Batang mendatar, label di kiri</td><td>Nama kategori yang panjang</td></tr>
+    <tr><td><code>bar</code></td><td>Batang tegak, nilai di atasnya, skala nilai di kiri</td><td>Membandingkan beberapa kategori</td></tr>
+    <tr><td><code>hbar</code></td><td>Batang mendatar, label di kiri, skala nilai di bawah</td><td>Nama kategori yang panjang</td></tr>
     <tr><td><code>line</code></td><td>Garis penghubung</td><td>Urutan waktu</td></tr>
     <tr><td><code>pie</code></td><td>Lingkaran dengan legenda</td><td>Porsi dari keseluruhan</td></tr>
     <tr><td><code>donut</code></td><td>Pie berlubang</td><td>Porsi dari keseluruhan</td></tr>
   </table></div>
-  <p>Chart memakai cakupan yang sama dengan rumus: di <code>summary</code> ia merangkum seluruh baris, di <code>groupFooter</code> hanya kelompok itu. Chart muncul di PDF dan HTML, tidak di Excel dan CSV. Lihat template <b>Laporan penjualan</b> (donut dan batang) dan <b>Daftar stok</b> (batang mendatar).</p>
+  <p>Chart memakai cakupan yang sama dengan rumus: di <code>summary</code> ia merangkum seluruh baris, di <code>groupFooter</code> hanya kelompok itu. Skala nilai <code>bar</code>, <code>hbar</code>, dan <code>line</code> selalu memuat nol, jadi nilai negatif tampil di bawah garis nol (<code>pie</code> dan <code>donut</code> menggambarnya sebagai nol). Jika kategorinya rapat, label ditampilkan selang-seling agar tidak bertumpuk. Chart muncul di PDF dan HTML, tidak di Excel dan CSV. Lihat template <b>Laporan penjualan</b> (donut dan batang) dan <b>Daftar stok</b> (batang mendatar).</p>
 </section>
 
 <section id="barcode">
@@ -670,11 +670,11 @@ File("report.xlsx").writeBytes(xlsx)</code></pre>
     <div role="tabpanel" data-panel="node">
       <p>Butuh <a href="#ref-binary">binary ddreport</a>.</p>
 <pre><code>npm install ./DdDesignReport/node</code></pre>
-<pre><code>const { render } = require('ddreport')
+<pre><code>const { renderAsync } = require('ddreport')
 
-const pdf = render(template, data, 'pdf') // Buffer
+const pdf = await renderAsync(template, data, 'pdf') // Buffer
 res.type('application/pdf').send(pdf)</code></pre>
-      <p><code>template</code> dan <code>data</code> adalah objek biasa. <code>render</code> berjalan sinkron dan melempar <code>Error</code> jika gagal.</p>
+      <p><code>template</code> dan <code>data</code> adalah objek biasa. <code>renderAsync</code> mengembalikan Promise dan tidak memblokir event loop; <code>render</code> adalah versi sinkronnya. Keduanya melempar <code>Error</code> berisi pesan dari binary jika gagal.</p>
     </div>
     <div role="tabpanel" data-panel="http">
       <p>Dari bahasa apa pun, lewat mode <code>-serve</code>.</p>
@@ -835,12 +835,10 @@ java -cp out DdReportTest             # wrapper Java</code></pre>
   <h2>Batasan</h2>
   <ul>
     <li>Pengelompokan hanya satu tingkat.</li>
-    <li>Chart belum punya sumbu nilai, nilai negatif digambar sebagai nol, dan label bisa bertumpuk jika kategorinya banyak.</li>
     <li>Pilihan font terbatas pada Helvetica, Times, dan Courier, kecuali Anda memberikan font TrueType sendiri.</li>
     <li>Sel tabel tidak bisa digabung, dan format berlaku untuk seluruh tabel (rata teks per kolom).</li>
-    <li>Tinggi teks Wrap diukur dengan font PDF. Di hasil HTML, baris terakhir bisa terpotong jika font browser lebih lebar.</li>
     <li>XLSX dan XLS berisi satu sheet; hanya bold, format angka, dan lebar kolom yang terbawa.</li>
-    <li>Wrapper Java, Kotlin, dan Node.js menjalankan satu proses per dokumen.</li>
+    <li>Wrapper Java, Kotlin, dan Node.js menjalankan satu proses per dokumen. Di Node.js, pakai <code>renderAsync</code> agar server tidak terblokir selama proses itu berjalan.</li>
     <li>Paket belum dipublikasikan ke Maven Central maupun npm; pemasangan masih dari repository.</li>
     <li>Designer diuji di Chrome dengan mouse dan keyboard. Firefox, Safari, dan perangkat layar sentuh belum diuji.</li>
   </ul>
