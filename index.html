@@ -306,11 +306,11 @@
 
 <!-- ---------- MULAI ---------- -->
 <section id="mulai">
-  <div class="chapter"><span class="kicker">Mulai</span><h2>Mulai dalam 5 menit</h2><p>Dari nol sampai PDF pertama. Yang dibutuhkan hanya <a href="https://go.dev/dl/">Go</a> untuk mem-build satu binary.</p></div>
+  <div class="chapter"><span class="kicker">Mulai</span><h2>Mulai dalam 5 menit</h2><p>Dari nol sampai PDF pertama. Yang dibutuhkan hanya satu binary.</p></div>
   <ol class="tutorial">
     <li>
-      <h3>Build binary <code>ddreport</code></h3>
-      <p>Satu binary ini menjalankan designer sekaligus menjadi mesin cetak untuk Java, Kotlin, dan Node.js.</p>
+      <h3>Unduh binary <code>ddreport</code></h3>
+      <p>Satu binary ini menjalankan designer sekaligus menjadi mesin cetak untuk Java, Kotlin, dan Node.js. Ambil yang sesuai sistem Anda dari <a href="https://github.com/gvjavx/DdDesignReport/releases/latest">GitHub Release</a> (<code>ddreport-linux-amd64</code>, <code>ddreport-darwin-arm64</code>, <code>ddreport-windows-amd64.exe</code>, ...) dan ganti namanya menjadi <code>ddreport</code>, atau build sendiri dengan <a href="https://go.dev/dl/">Go</a>:</p>
 <pre><code>git clone https://github.com/gvjavx/DdDesignReport
 cd DdDesignReport
 go build -o ddreport ./cmd/ddreport</code></pre>
@@ -735,8 +735,8 @@ val xlsx = DdReport.render(templateJson, dataJson, "xlsx")
 File("report.xlsx").writeBytes(xlsx)</code></pre>
     </div>
     <div role="tabpanel" data-panel="node">
-      <p>Butuh <a href="#ref-binary">binary ddreport</a>.</p>
-<pre><code>npm install ./DdDesignReport/node</code></pre>
+      <p>Binary untuk sistemnya ikut terpasang (paket <code>@ddreport/&lt;sistem&gt;</code>); <code>DDREPORT_BIN</code> menunjuk <a href="#ref-binary">binary ddreport</a> lain bila perlu.</p>
+<pre><code>npm install ddreport</code></pre>
 <pre><code>const { renderAsync } = require('ddreport')
 
 const pdf = await renderAsync(template, data, 'pdf') // Buffer
@@ -757,8 +757,8 @@ curl -X POST "http://127.0.0.1:8080/render?format=pdf" \
 
 <section id="pasang-designer">
   <h2>Memasang designer di aplikasi Anda</h2>
-  <p>Designer adalah satu file ES module tanpa dependency dan tanpa build step. Salin <code>designer/designer.js</code>, atau pasang foldernya sebagai paket:</p>
-<pre><code>npm install ./DdDesignReport/designer</code></pre>
+  <p>Designer adalah satu file ES module tanpa dependency dan tanpa build step. Pasang dari npm, atau salin <code>designer/designer.js</code>:</p>
+<pre><code>npm install ddreport-designer</code></pre>
 <pre><code>import { createDesigner, emptyTemplate } from 'ddreport-designer'
 
 const designer = createDesigner(document.getElementById('designer'), {
@@ -886,7 +886,7 @@ export DDREPORT_FONT_BOLD=/fonts/NotoSans-Bold.ttf</code></pre></div>
 
 <section id="ref-binary">
   <h2>Binary ddreport</h2>
-  <p>Java, Kotlin, dan Node.js mencetak lewat binary <code>ddreport</code>, sehingga hasilnya identik dengan Go. Build sekali per platform, lalu taruh di <code>PATH</code> atau tunjuk lewat <code>DDREPORT_BIN</code>.</p>
+  <p>Java, Kotlin, dan Node.js mencetak lewat binary <code>ddreport</code>, sehingga hasilnya identik dengan Go. Paket npm dan Maven sudah membawa binary untuk Windows, Linux, dan macOS (x64 dan arm64). Untuk memakai binary lain, unduh dari <a href="https://github.com/gvjavx/DdDesignReport/releases/latest">GitHub Release</a> atau build sendiri, lalu taruh di <code>PATH</code> atau tunjuk lewat <code>DDREPORT_BIN</code>.</p>
   <div class="tabs" data-tabs="shell">
     <div role="tablist" aria-label="Shell"><button role="tab" data-tab="bash">Bash / Git Bash</button><button role="tab" data-tab="ps">PowerShell</button></div>
     <div role="tabpanel" data-panel="bash"><pre><code>go build -o ddreport ./cmd/ddreport
@@ -926,7 +926,6 @@ java -cp out DdReportTest             # wrapper Java</code></pre>
     <li>Chart di kanvas designer digambar dari data contoh tanpa skala nilai, dan QR code di kanvas adalah gambaran bentuknya; kode yang bisa dipindai dan chart lengkap ada di hasil cetak dan Preview.</li>
     <li>XLSX dan XLS membawa bold, format angka, lebar kolom, warna latar, dan warna teks; garis sel dan gabungan sel tidak.</li>
     <li>Wrapper Java, Kotlin, dan Node.js menjalankan satu proses per dokumen, dengan batas waktu 1 menit (bisa diubah). Di Node.js, pakai <code>renderAsync</code> agar server tidak terblokir selama proses itu berjalan.</li>
-    <li>Paket belum dipublikasikan ke Maven Central maupun npm; pemasangan masih dari repository.</li>
     <li>Designer diuji otomatis di Chromium (Chrome, Edge), Firefox, dan WebKit (mesin Safari) di setiap push; perangkat layar sentuh sungguhan belum diuji.</li>
   </ul>
 </section>
