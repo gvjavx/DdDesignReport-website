@@ -17,6 +17,6 @@ node sync.js                      # library di ../DdDesignReport
 node sync.js /path/ke/DdDesignReport
 ```
 
-Script ini menyalin `designer.js` dan template siap pakai dari library, lalu mencetak ulang setiap template ke `previews/` (HTML dan PDF) dengan binary `ddreport` yang sesungguhnya. Binary diambil dari `DDREPORT_BIN`, atau di-build otomatis dengan Go.
+Script ini menyalin `designer.js`, font bundel, dan template siap pakai dari library, lalu mencetak ulang setiap template ke `previews/` (HTML dan PDF) dengan binary `ddreport` yang sesungguhnya. Binary diambil dari `DDREPORT_BIN`, atau di-build otomatis dengan Go.
 
-`designer.js`, `templates/`, dan `previews/` adalah hasil `sync.js`; jangan diubah dengan tangan. Isi dokumentasi ada di `index.html`.
+`designer.js`, `fonts/`, `templates/`, dan `previews/` adalah hasil `sync.js`; jangan diubah dengan tangan. Isi dokumentasi ada di `index.html`.

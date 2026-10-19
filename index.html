@@ -292,7 +292,7 @@
   <h4>Backend</h4>
   <a href="#backend">Memanggil dari backend</a>
   <a href="#pasang-designer">Memasang designer</a>
-  <a href="#font">Font non-Latin</a>
+  <a href="#font">Font</a>
   <h4>Referensi</h4>
   <a href="#referensi">Template JSON</a>
   <a href="#ref-elemen">Properti elemen</a>
@@ -390,7 +390,7 @@ fs.writeFileSync('report.pdf', pdf)</code></pre></div>
     <tr><td><b>Home</b></td><td>Undo/redo; cut, copy, paste, duplicate, delete; font, ukuran, bold, italic, underline, warna teks, highlight; rata kiri/tengah/kanan, spasi baris, wrap; perataan dan distribusi elemen, bawa ke depan/belakang.</td></tr>
     <tr><td><b>Insert</b></td><td>Text box, tabel (baris × kolom), gambar, kotak, garis, chart, barcode, dan daftar field siap sisip.</td></tr>
     <tr><td><b>Layout</b></td><td>Kertas (A4, A5, Letter, Legal, F4, custom), orientasi, margin per sisi, latar, pengelompokan, halaman baru per kelompok, pemisah angka.</td></tr>
-    <tr><td><b>View</b></td><td>Penggaris, snap, Preview. Zoom (25–300%) ada di bilah status.</td></tr>
+    <tr><td><b>View</b></td><td>Penggaris, snap, Preview. Zoom (25–300%) ada di bilah status, dan bisa langsung di kanvas dengan <code>Ctrl</code> + scroll, pinch di trackpad, atau cubit dua jari di layar sentuh.</td></tr>
   </table></div>
   <h3>Pintasan keyboard</h3>
   <div class="scroll"><table>
@@ -399,6 +399,8 @@ fs.writeFileSync('report.pdf', pdf)</code></pre></div>
     <tr><td><code>Ctrl+C</code> · <code>X</code> · <code>V</code> · <code>D</code></td><td>Copy · cut · paste · duplicate</td></tr>
     <tr><td><code>Ctrl+B</code> · <code>I</code> · <code>U</code></td><td>Bold · italic · underline</td></tr>
     <tr><td><code>Ctrl+A</code> · <code>Esc</code></td><td>Pilih semua · batalkan pilihan</td></tr>
+    <tr><td><code>Ctrl+=</code> · <code>Ctrl+-</code> · <code>Ctrl+0</code></td><td>Perbesar · perkecil · zoom 100%</td></tr>
+    <tr><td><code>Ctrl</code> + scroll</td><td>Zoom di titik kursor</td></tr>
     <tr><td>Panah · <code>Shift</code>+panah</td><td>Geser 1pt · 10pt</td></tr>
     <tr><td><code>Delete</code></td><td>Hapus yang dipilih</td></tr>
   </table></div>
@@ -480,14 +482,20 @@ Kepada: {{customer.name}}
     <tr><td>Persentase terhadap total</td><td><code>{{qty * price / sum(qty * price) * 100:1}}%</code></td></tr>
     <tr><td>Jumlah baris</td><td><code>{{count()}}</code></td></tr>
     <tr><td>Rata-rata, terkecil, terbesar</td><td><code>{{avg(price):2}}</code> · <code>{{min(price)}}</code> · <code>{{max(price)}}</code></td></tr>
+    <tr><td>Teks sesuai kondisi</td><td><code>{{if(paid, 'LUNAS', 'BELUM LUNAS')}}</code> · <code>{{if(stock &lt; minimum, 'Pesan ulang')}}</code></td></tr>
+    <tr><td>Huruf besar, pembulatan</td><td><code>{{upper(name)}}</code> · <code>{{round(price / 3, 2)}}</code></td></tr>
+    <tr><td>Tanggal</td><td><code>{{date:dd MMMM yyyy}}</code> → 19 Oktober 2026 · <code>{{now:dd/MM/yyyy HH:mm}}</code> (waktu cetak)</td></tr>
   </table></div>
   <ul>
     <li>Operator: <code>+</code> <code>-</code> <code>*</code> <code>/</code> dan kurung. Perkalian dan pembagian dihitung lebih dulu.</li>
+    <li>Perbandingan <code>=</code> <code>!=</code> <code>&lt;</code> <code>&gt;</code> <code>&lt;=</code> <code>&gt;=</code>, digabung dengan <code>and</code>, <code>or</code>, <code>not</code>. Teks ditulis dalam kutip tunggal: <code>status = 'lunas'</code>.</li>
+    <li>Fungsi <code>if(kondisi, jika ya, jika tidak)</code>, <code>upper</code>, <code>lower</code>, <code>round(x, desimal)</code>.</li>
+    <li>Pola tanggal: <code>yyyy</code> <code>yy</code> <code>MMMM</code> <code>MMM</code> <code>MM</code> <code>M</code> <code>dd</code> <code>d</code> <code>EEEE</code> <code>EEE</code> <code>HH</code> <code>mm</code> <code>ss</code>; teks lain dalam <code>'kutip'</code>. Nama bulan dan hari berbahasa Indonesia dengan <b>Dates in: Indonesian</b> di tab Layout (<code>"locale": "id"</code>). Tanggal dibaca dari teks ISO (<code>2026-10-19</code>, <code>2026-10-19T08:30:00Z</code>) atau Unix time.</li>
     <li>Fungsi <code>sum</code>, <code>avg</code>, <code>min</code>, <code>max</code>, <code>count</code> menghitung atas banyak baris. Isinya boleh berupa perhitungan.</li>
     <li><code>count()</code> menghitung semua baris; <code>count(f)</code> hanya baris yang <code>f</code>-nya berupa angka.</li>
     <li>Di dalam perhitungan, nama field yang bukan satu kata ditulis dalam kurung siku: <code>{{[unit-price] * qty}}</code>, <code>{{sum([harga satuan])}}</code>.</li>
   </ul>
-  <div class="notice warn">Hanya nilai bertipe <b>angka</b> yang dihitung. <code>"18000"</code> (dalam tanda kutip) adalah teks. Jika ada nilai bukan angka, pembagian dengan nol, atau hasil yang terlalu besar, hasilnya kosong, bukan angka yang salah.</div>
+  <div class="notice">Angka yang dikirim sebagai teks (<code>"18000"</code>, seperti dari BigDecimal atau kolom numeric database) juga dihitung. Nilai yang memang bukan angka, pembagian dengan nol, atau hasil yang terlalu besar memberi hasil kosong, bukan angka yang salah. Hasil tanpa <code>:N</code> tidak menampilkan sisa pembulatan: <code>0.1 + 0.2</code> menjadi <code>0.3</code>.</div>
   <p>Total yang dipakai di setiap baris, misalnya persentase terhadap total, dihitung sekali saja, jadi laporan besar tetap cepat.</p>
 </section>
 
@@ -504,7 +512,8 @@ summary      Total               {{sum(qty * price):0}}</code></pre>
     <li>di <code>groupHeader</code>, <code>detail</code>, <code>groupFooter</code>: dihitung atas <b>kelompok itu</b>,</li>
     <li>di <code>summary</code>, <code>header</code>, <code>footer</code>: dihitung atas <b>seluruh baris</b>.</li>
   </ul>
-  <p>Centang <b>New page per group</b> agar setiap kelompok mulai di halaman baru. Judul kelompok tidak pernah tertinggal sendirian di dasar halaman: jika baris pertamanya tidak muat, keduanya pindah bersama.</p>
+  <p>Centang <b>New page per group</b> agar setiap kelompok mulai di halaman baru. Judul kelompok tidak pernah tertinggal sendirian di dasar halaman: jika baris pertamanya tidak muat, keduanya pindah bersama. Kelompok yang berlanjut ke halaman berikutnya mendapat judulnya lagi di atas halaman itu.</p>
+  <p><b>Sort by</b> mengurutkan baris lebih dulu, misalnya <code>category, -total</code> (tanda <code>-</code> untuk menurun). Band <code>groupHeader</code> dan <code>groupFooter</code> yang berisi elemen tetap dicetak tanpa Group by, sekali di sekitar semua baris.</p>
 </section>
 
 <section id="elemen">
@@ -514,36 +523,53 @@ summary      Total               {{sum(qty * price):0}}</code></pre>
     <div><span class="ico">▦</span><b>Table</b><span>Kisi sel bergaris. Satu baris di band detail = tabel data.</span></div>
     <div><span class="ico">◩</span><b>Picture</b><span>Logo, tanda tangan, stempel. PNG, JPEG, atau GIF.</span></div>
     <div><span class="ico">▭</span><b>Rectangle</b><span>Kotak dengan garis dan warna isi. Untuk bingkai dan latar.</span></div>
-    <div><span class="ico">─</span><b>Line</b><span>Garis mendatar atau tegak.</span></div>
+    <div><span class="ico">─</span><b>Line</b><span>Garis mendatar, tegak, atau miring (panel kanan: direction).</span></div>
     <div><span class="ico">◔</span><b>Chart</b><span>Batang, batang mendatar, garis, pie, donut.</span></div>
-    <div><span class="ico">▩</span><b>Barcode</b><span>QR code atau Code 128 dari teks atau field.</span></div>
+    <div><span class="ico">▩</span><b>Barcode</b><span>QR code atau Code 128 dari teks atau field, dengan teks di bawahnya bila dicentang.</span></div>
   </div>
   <h3>Teks panjang: centang Wrap</h3>
   <p>Tanpa <b>Wrap</b> (<code>grow</code>), teks yang melebihi kotaknya terpotong. Dengan Wrap, teks turun ke baris berikutnya dan band ikut bertambah tinggi: elemen di bawahnya turun, dan kotak serta garis tegak di sekelilingnya ikut memanjang. Kata yang lebih lebar dari kotaknya (URL, nomor panjang) dipecah di tengah.</p>
+  <p>Teks yang lebih panjang dari satu halaman, misalnya isi surat, berlanjut ke halaman berikutnya baris demi baris, tanpa ada yang terpotong. Footer yang memanjang tetap berada di dalam margin bawah.</p>
+  <h3>Tampil jika</h3>
+  <p>Setiap elemen punya kolom <b>show when</b> (<code>showIf</code>) di panel kanan, misalnya <code>paid = 'yes'</code> atau <code>stock &lt; minimum</code>. Jika kondisinya salah, elemen tidak dicetak; di Excel dan CSV selnya kosong. Elemen dengan kondisi diberi garis putus-putus jingga di designer. Kondisi yang salah tulis tetap menampilkan elemennya agar kesalahannya terlihat.</p>
   <p>Beberapa teks Wrap dalam satu band saling memperhitungkan: teks yang bertumpuk mendorong bergantian (dorongannya dijumlahkan), sedangkan teks yang bersebelahan mengikuti yang paling tinggi.</p>
   <h3>Gambar</h3>
-  <p>Gambar disimpan di dalam template sebagai data URI (<code>data:image/png;base64,…</code>); designer melakukannya otomatis saat Anda memilih file. Alamat gambar di internet tidak diterima: pencetakan gagal dengan pesan <code>image: src must be a data:image/...;base64 URI</code>.</p>
+  <p>Gambar disimpan di dalam template sebagai data URI (<code>data:image/png;base64,…</code>); designer melakukannya otomatis saat Anda memilih file. Alamat gambar di internet tidak diterima, begitu pula SVG dan WebP: pencetakan gagal dengan pesan <code>image: src must be a PNG, JPEG or GIF data URI</code>.</p>
+  <p>Gambar juga bisa diambil dari data: isi <b>picture from data</b> dengan placeholder, misalnya <code>{{photo}}</code>, dan kirim data URI di field itu (foto produk, tanda tangan, logo per perusahaan). Gambar yang kosong atau rusak dibiarkan kosong tanpa menggagalkan laporan.</p>
 </section>
 
 <section id="teks">
   <h2>Format teks</h2>
-  <p>Pilih elemen, lalu pakai grup <b>Font</b> dan <b>Paragraph</b> di tab Home: jenis font (Helvetica, Times, Courier), ukuran, bold, italic, underline, warna teks, highlight, rata, dan spasi baris.</p>
+  <p>Pilih elemen, lalu pakai grup <b>Font</b> dan <b>Paragraph</b> di tab Home: jenis font (lihat <a href="#font">Font</a>), ukuran, bold, italic, underline, warna teks, highlight, rata, dan spasi baris.</p>
   <h3>Format sebagian teks</h3>
   <p>Di designer: klik ganda teksnya, blok kata yang dimaksud, tekan B / I / U. Di JSON hasilnya berupa tag <code>&lt;b&gt;</code>, <code>&lt;i&gt;</code>, <code>&lt;u&gt;</code>:</p>
 <pre><code>Total: &lt;b&gt;{{sum(price):2}}&lt;/b&gt; &lt;i&gt;(belum termasuk pajak)&lt;/i&gt;</code></pre>
   <p>Hanya tiga tag itu yang dikenali. Tanda <code>&lt;</code> lain, termasuk yang berasal dari data, dicetak apa adanya, jadi data pengguna tidak bisa menyisipkan HTML. Untuk mencetak tulisan <code>&lt;b&gt;</code> itu sendiri, tulis <code>&amp;lt;b&gt;</code>; designer melakukannya otomatis saat Anda mengetiknya.</p>
-  <p>Huruf yang tidak ada di font PDF bawaan (aksara non-Latin, emoji) dicetak sebagai <code>?</code>. Lihat <a href="#font">Font non-Latin</a>.</p>
+  <p>Huruf yang tidak ada di font PDF bawaan (aksara non-Latin, emoji) dicetak sebagai <code>?</code>. Pakai salah satu font bundel atau font sendiri; lihat <a href="#font">Font</a>.</p>
 </section>
 
 <section id="tabel">
   <h2>Tabel</h2>
   <p>Tab <b>Insert</b>: isi jumlah baris × kolom, klik <b>Table</b>. Klik ganda sel untuk mengisi; isinya boleh placeholder. Di panel kanan atur jumlah baris dan kolom, lebar kolom (<code>3,1,1</code> = kolom pertama tiga kali lebih lebar), tebal dan warna garis. Klik sebuah sel lalu tombol rata untuk mengatur rata kolom itu.</p>
+  <h3>Warna, garis, judul, dan baris total</h3>
+  <p>Semua diatur di panel kanan saat tabel dipilih:</p>
+  <div class="scroll"><table>
+    <tr><th>Panel</th><th>JSON</th><th>Arti</th></tr>
+    <tr><td>header row · header fill · header text</td><td><code>header</code>, <code>headerFill</code>, <code>headerColor</code></td><td>Baris pertama menjadi judul: tebal, dengan warna latar dan teks sendiri.</td></tr>
+    <tr><td>total row · total row fill · total row text</td><td><code>footer</code>, <code>footerFill</code>, <code>footerColor</code></td><td>Baris terakhir menjadi baris total (footer), tebal. Mencentangnya menambah satu baris di bawah; pada tabel satu baris, baris itu sendiri yang menjadi baris total.</td></tr>
+    <tr><td>banded rows</td><td><code>stripe</code></td><td>Warna latar baris isi selang-seling.</td></tr>
+    <tr><td>text colour · line colour</td><td><code>textColor</code>, <code>color</code></td><td>Warna teks isi dan warna garis.</td></tr>
+    <tr><td>lines</td><td><code>grid</code></td><td><code>all</code> (semua garis), <code>outer</code> (bingkai luar saja), <code>rows</code> (garis antar-baris saja).</td></tr>
+  </table></div>
+  <p>Warna yang belum dipilih tampak pudar; tombol <b>×</b> di sebelahnya mengosongkannya lagi. Isi tabel juga bisa memakai fill, font, dan ukuran dari ribbon.</p>
   <h3>Tabel yang barisnya mengikuti data</h3>
   <p>Pakai dua tabel satu baris dengan lebar kolom yang sama:</p>
   <ol>
     <li>di band <code>columnHeader</code>: judul kolom (bold, beri warna latar),</li>
-    <li>di band <code>detail</code>: placeholder, misalnya <code>{{name}}</code>, <code>{{qty}}</code>, <code>{{qty * price:0}}</code>.</li>
+    <li>di band <code>detail</code>: placeholder, misalnya <code>{{name}}</code>, <code>{{qty}}</code>, <code>{{qty * price:0}}</code>,</li>
+    <li>opsional, di band <code>summary</code>: baris total dengan <code>{{sum(qty * price):0}}</code>; centang <b>total row</b> agar bergaya footer.</li>
   </ol>
+  <p>Di pola ini tiap baris data adalah tabelnya sendiri, jadi <b>banded rows</b> tidak berlaku; beri warna judul lewat <b>header row</b> pada tabel judul.</p>
   <p>Karena band <code>detail</code> dicetak sekali per baris data, hasilnya satu tabel utuh. Centang <b>Wrap</b> pada tabel detail agar baris ikut tinggi saat isinya panjang. Kolom tabel ini juga menjadi kolom di Excel dan CSV. Lihat template <b>Faktur</b> dan <b>Daftar stok</b>.</p>
 </section>
 
@@ -603,7 +629,9 @@ https://tokosaya.example/faktur/{{number}}</code></pre>
   <ul>
     <li>Teks yang isinya tepat satu placeholder angka, seperti <code>{{qty * price:2}}</code>, ditulis sebagai angka.</li>
     <li><code>xls</code> ditulis sebagai XML Spreadsheet 2003. Excel menampilkan satu peringatan bahwa format dan ekstensi berbeda; pilih <b>Yes</b>.</li>
+    <li>CSV diawali BOM UTF-8 agar Excel membaca huruf seperti <code>é</code> dengan benar. Untuk Excel berbahasa Indonesia atau Eropa, yang memakai <code>;</code> sebagai pemisah, pilih <b>CSV separator</b> <code>;</code> di tab Layout.</li>
     <li>Di CSV, teks yang berawalan seperti formula (<code>=</code>, <code>@</code>, <code>+</code>, <code>-</code>) diberi tanda kutip tunggal di depan, supaya isian pengguna tidak dijalankan sebagai formula. Angka seperti <code>-5</code> tidak diubah.</li>
+
   </ul>
 </section>
 
@@ -621,7 +649,7 @@ https://tokosaya.example/faktur/{{number}}</code></pre>
   <details class="recipe"><summary>…menambahkan QR untuk verifikasi dokumen?</summary><div><p>Tab Insert → Barcode, format <code>qr</code>, isi <code>https://situsanda.example/verify/{{id}}</code>.</p></div></details>
   <details class="recipe"><summary>…membuat laporan mendatar (landscape)?</summary><div><p>Tab Layout → Orientation → <b>Landscape</b>.</p></div></details>
   <details class="recipe"><summary>…membuat dokumen tanpa tabel, seperti surat?</summary><div><p>Kosongkan band <code>detail</code>. Taruh kop di <code>header</code> dan isi surat di <code>summary</code>; centang Wrap pada paragrafnya agar bagian tanda tangan turun mengikuti panjang isi.</p></div></details>
-  <details class="recipe"><summary>…menampilkan huruf Arab, Jepang, atau aksara lain di PDF?</summary><div><p>Berikan font TrueType yang memuat aksara itu. Lihat <a href="#font">Font non-Latin</a>.</p></div></details>
+  <details class="recipe"><summary>…menampilkan huruf Arab, Jepang, atau aksara lain di PDF?</summary><div><p>Berikan font TrueType yang memuat aksara itu. Lihat <a href="#font">Font</a>.</p></div></details>
 </section>
 
 <!-- ---------- BACKEND ---------- -->
@@ -714,7 +742,9 @@ designer.setTemplate(other) // mengganti template; pengguna bisa membatalkannya 
     <tr><td><code>theme</code></td><td><code>'light'</code> (default), <code>'dark'</code>, atau <code>'auto'</code> untuk mengikuti pengaturan sistem. Kertas laporannya sendiri selalu putih.</td></tr>
     <tr><td><code>lang</code></td><td><code>'en'</code> (default) atau <code>'id'</code> untuk antarmuka berbahasa Indonesia. Di aplikasi standalone: tambahkan <code>?lang=id</code> pada alamatnya, atau klik tautan bahasa di kanan atas.</td></tr>
     <tr><td><code>onChange(template)</code></td><td>Dipanggil setiap ada perubahan. Objeknya adalah objek kerja designer, jangan diubah; pakai <code>getTemplate()</code> jika butuh salinan.</td></tr>
-    <tr><td><code>preview(template)</code></td><td>Opsional. Fungsi async yang mengembalikan HTML hasil cetak (format <code>"html"</code> dari backend Anda). Jika diisi, tombol Preview muncul di tab View.</td></tr>
+    <tr><td><code>fontBase</code></td><td>Opsional. URL tempat font bundel disajikan, misalnya <code>'/fonts/'</code> (<code>ddreport -serve</code> menyajikannya di sana; di Go, sajikan <code>ddreport.BundledFonts</code>). Tanpa ini kanvas memakai font yang terpasang di perangkat; hasil cetak tidak terpengaruh.</td></tr>
+    <tr><td><code>fonts</code></td><td>Opsional. Nama font tambahan yang Anda daftarkan di backend, misalnya <code>['Inter']</code>, agar muncul di pilihan font.</td></tr>
+    <tr><td><code>preview(template)</code></td><td>Opsional. Fungsi async yang mengembalikan HTML hasil cetak (format <code>"html"</code> dari backend Anda). Jika diisi, tombol Preview muncul di tab View dan di bilah status. Hasilnya tampil per halaman, dipaskan ke lebar dialog, dengan jumlah halaman; jika fungsi ini melempar error, pesannya ditampilkan di dialog.</td></tr>
   </table></div>
   <p>Dokumentasi ini memakai nama tombol versi Inggris (Home, Insert, Layout, View, Wrap); dengan <code>lang: 'id'</code> namanya menjadi Beranda, Sisipkan, Tata Letak, Tampilan, Bungkus.</p>
   <p>Designer mengisi elemen tempatnya dipasang dan menyesuaikan diri dengan <em>lebar elemen itu</em>, bukan lebar jendela, jadi tetap rapi di dalam panel samping atau dialog. Beri elemen itu tinggi (misalnya <code>height: 80vh</code>) agar halaman bisa digulir di dalamnya. Warna aksen bisa diganti lewat CSS: <code>.ddr { --a: #0f766e }</code>.</p>
@@ -722,8 +752,25 @@ designer.setTemplate(other) // mengganti template; pengguna bisa membatalkannya 
 </section>
 
 <section id="font">
-  <h2>Font non-Latin</h2>
-  <p>Font bawaan PDF hanya mencakup huruf Latin, yang cukup untuk bahasa Indonesia dan Inggris. Untuk aksara lain (Arab, Cyrillic, Jepang, dan sebagainya) berikan font TrueType yang memuat aksara itu.</p>
+  <h2>Font</h2>
+  <p>Pilihan font di designer:</p>
+  <div class="scroll"><table>
+    <tr><th>Font</th><th>Jenis</th><th>Asal</th></tr>
+    <tr><td>Helvetica, Times, Courier</td><td>sans, serif, monospace</td><td>bawaan PDF, huruf Latin saja</td></tr>
+    <tr><td>Roboto, Open Sans, Lato, Montserrat</td><td>sans</td><td>dibundel</td></tr>
+    <tr><td>Lora, Playfair Display</td><td>serif</td><td>dibundel</td></tr>
+    <tr><td>Great Vibes</td><td>tulisan tangan, cocok untuk sertifikat</td><td>dibundel (hanya regular)</td></tr>
+  </table></div>
+  <p>Font bundel berlisensi SIL Open Font License, mencakup huruf Latin, Kiril, Yunani, dan Vietnam, dan ikut disematkan ke PDF dan HTML (hanya bentuk yang dipakai), jadi hasilnya sama di perangkat mana pun.</p>
+  <h3>Font sendiri</h3>
+  <p>Siapkan file <code>Nama-Regular.ttf</code>, dan bila ada <code>Nama-Bold.ttf</code>, <code>Nama-Italic.ttf</code>, <code>Nama-BoldItalic.ttf</code>. <code>NamaFont-Bold.ttf</code> menjadi font bernama "Nama Font".</p>
+<pre><code>// Go
+ddreport.AddFonts(os.DirFS("fonts-saya"))
+// binary (Java, Kotlin, Node.js, HTTP)
+export DDREPORT_FONTS=/path/ke/fonts-saya</code></pre>
+  <p>Lalu tambahkan namanya ke designer: <code>createDesigner(el, { fonts: ['Inter'] })</code>.</p>
+  <h3>Mengganti font bawaan</h3>
+  <p>Untuk aksara yang tidak ada di font bundel (Arab, Jepang, dan sebagainya), Anda juga bisa mengganti font bawaan PDF untuk seluruh laporan:</p>
   <div class="tabs" data-tabs="font">
     <div role="tablist" aria-label="Cara memberi font">
       <button role="tab" data-tab="go">Go</button><button role="tab" data-tab="bin">Java, Kotlin, Node.js, HTTP</button>
@@ -734,7 +781,7 @@ ddreport.FontBold, _ = os.ReadFile("NotoSans-Bold.ttf") // opsional</code></pre>
     <div role="tabpanel" data-panel="bin"><pre><code>export DDREPORT_FONT=/fonts/NotoSans-Regular.ttf
 export DDREPORT_FONT_BOLD=/fonts/NotoSans-Bold.ttf</code></pre></div>
   </div>
-  <p>Jika font bold tidak diberikan, teks bold memakai font regular. Dengan font sendiri, pilihan Helvetica/Times/Courier diabaikan dan italic memakai bentuk tegak. Hasil HTML memakai font browser dan tidak terpengaruh.</p>
+  <p>Jika font bold tidak diberikan, teks bold memakai font regular. Dengan font pengganti, pilihan Helvetica/Times/Courier diabaikan dan italic memakai bentuk tegak; font bundel dan font yang didaftarkan tetap dipakai apa adanya.</p>
 </section>
 
 <!-- ---------- REFERENSI ---------- -->
@@ -787,8 +834,8 @@ export DDREPORT_FONT_BOLD=/fonts/NotoSans-Bold.ttf</code></pre></div>
   <p>Semua elemen punya <code>type</code>, <code>x</code>, <code>y</code>, <code>w</code>, <code>h</code>. Warna ditulis <code>#rrggbb</code>.</p>
   <div class="scroll"><table>
     <tr><th>type</th><th>Properti</th><th>Keterangan</th></tr>
-    <tr><td><code>text</code></td><td><code>text</code>, <code>font</code>, <code>fontSize</code> (10), <code>lineHeight</code> (1.2), <code>bold</code>, <code>italic</code>, <code>underline</code>, <code>align</code>, <code>color</code>, <code>fill</code>, <code>grow</code></td><td><code>font</code>: <code>Helvetica</code>, <code>Times</code>, <code>Courier</code>. <code>align</code>: <code>left</code>, <code>center</code>, <code>right</code>. <code>fill</code> = highlight.</td></tr>
-    <tr><td><code>table</code></td><td><code>cells</code>, <code>cols</code>, <code>aligns</code>, <code>border</code>, <code>color</code>, <code>fill</code>, <code>grow</code>, dan properti font milik <code>text</code></td><td><code>cells</code>: teks per sel, baris demi baris. <code>cols</code>: lebar relatif. <code>aligns</code>: rata per kolom. <code>color</code>: warna garis.</td></tr>
+    <tr><td><code>text</code></td><td><code>text</code>, <code>font</code>, <code>fontSize</code> (10), <code>lineHeight</code> (1.2), <code>bold</code>, <code>italic</code>, <code>underline</code>, <code>align</code>, <code>color</code>, <code>fill</code>, <code>grow</code></td><td><code>font</code>: <code>Helvetica</code>, <code>Times</code>, <code>Courier</code>, atau nama font bundel / terdaftar. <code>align</code>: <code>left</code>, <code>center</code>, <code>right</code>. <code>fill</code> = highlight.</td></tr>
+    <tr><td><code>table</code></td><td><code>cells</code>, <code>cols</code>, <code>aligns</code>, <code>border</code>, <code>color</code>, <code>fill</code>, <code>grow</code>, <code>grid</code>, <code>textColor</code>, <code>stripe</code>, <code>header</code>, <code>headerFill</code>, <code>headerColor</code>, <code>footer</code>, <code>footerFill</code>, <code>footerColor</code>, dan properti font milik <code>text</code></td><td><code>cells</code>: teks per sel, baris demi baris. <code>cols</code>: lebar relatif. <code>aligns</code>: rata per kolom. <code>color</code>: warna garis. Sisanya lihat <a href="#tabel">Tabel</a>.</td></tr>
     <tr><td><code>image</code></td><td><code>src</code></td><td>Data URI. PDF menerima PNG, JPEG, dan GIF.</td></tr>
     <tr><td><code>rect</code></td><td><code>border</code>, <code>color</code>, <code>fill</code></td><td>Tebal garis, warna garis, warna isi (kosong = transparan).</td></tr>
     <tr><td><code>line</code></td><td><code>border</code>, <code>color</code></td><td>Mendatar jika <code>w</code> ≥ <code>h</code>, tegak jika sebaliknya.</td></tr>
@@ -814,7 +861,8 @@ $env:DDREPORT_BIN = "$PWD\ddreport.exe"</code></pre></div>
     <tr><td><code>-format</code></td><td><code>pdf</code> (default), <code>html</code>, <code>xlsx</code>, <code>xls</code>, <code>csv</code></td></tr>
     <tr><td><code>-serve alamat</code></td><td>Menjalankan designer (dengan template siap pakai) dan endpoint <code>POST /render</code></td></tr>
     <tr><td><code>DDREPORT_BIN</code></td><td>Lokasi binary, dibaca oleh wrapper Java dan Node.js</td></tr>
-    <tr><td><code>DDREPORT_FONT</code> · <code>_BOLD</code></td><td>Lihat <a href="#font">Font non-Latin</a></td></tr>
+    <tr><td><code>DDREPORT_FONT</code> · <code>_BOLD</code></td><td>Font pengganti untuk seluruh laporan. Lihat <a href="#font">Font</a></td></tr>
+    <tr><td><code>DDREPORT_FONTS</code></td><td>Folder font tambahan (<code>Nama-Regular.ttf</code>, ...). Lihat <a href="#font">Font</a></td></tr>
   </table></div>
   <p>Jika gagal, binary keluar dengan kode 1 dan pesan di stderr; wrapper meneruskannya sebagai exception.</p>
 </section>
@@ -834,11 +882,13 @@ java -cp out DdReportTest             # wrapper Java</code></pre>
 <section id="batasan">
   <h2>Batasan</h2>
   <ul>
-    <li>Pengelompokan hanya satu tingkat.</li>
-    <li>Pilihan font terbatas pada Helvetica, Times, dan Courier, kecuali Anda memberikan font TrueType sendiri.</li>
-    <li>Sel tabel tidak bisa digabung, dan format berlaku untuk seluruh tabel (rata teks per kolom).</li>
+    <li>Pengelompokan hanya satu tingkat, dan belum ada sub-report (misalnya daftar item di dalam tiap pesanan).</li>
+    <li>Chart dan barcode di kanvas designer tampil sebagai kotak keterangan; bentuk sebenarnya terlihat lewat Preview.</li>
+    <li>Lebar kolom tabel diatur dengan angka (<code>2,1,1</code>), belum dengan menyeret.</li>
+    <li>QR code tidak diberi ruang kosong di sekelilingnya; sisakan jarak dari elemen lain agar mudah dipindai.</li>
+    <li>Sel tabel tidak bisa digabung. Gaya diatur per tabel, per baris judul/total, dan per kolom (rata), belum per sel.</li>
     <li>XLSX dan XLS berisi satu sheet; hanya bold, format angka, dan lebar kolom yang terbawa.</li>
-    <li>Wrapper Java, Kotlin, dan Node.js menjalankan satu proses per dokumen. Di Node.js, pakai <code>renderAsync</code> agar server tidak terblokir selama proses itu berjalan.</li>
+    <li>Wrapper Java, Kotlin, dan Node.js menjalankan satu proses per dokumen, dengan batas waktu 1 menit (bisa diubah). Di Node.js, pakai <code>renderAsync</code> agar server tidak terblokir selama proses itu berjalan.</li>
     <li>Paket belum dipublikasikan ke Maven Central maupun npm; pemasangan masih dari repository.</li>
     <li>Designer diuji di Chrome dengan mouse dan keyboard. Firefox, Safari, dan perangkat layar sentuh belum diuji.</li>
   </ul>
@@ -917,7 +967,7 @@ import { createDesigner } from './designer.js'
 
 const demo = document.getElementById('demo'), select = document.getElementById('demo-template'), msg = document.getElementById('demo-msg')
 demo.textContent = ''
-const designer = createDesigner(demo)
+const designer = createDesigner(demo, { fontBase: 'fonts/' })
 
 async function load(id) {
   if (!id) return designer.setTemplate()
