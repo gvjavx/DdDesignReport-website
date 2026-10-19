@@ -713,12 +713,12 @@ pdf, err := ddreport.Render(template, data, "pdf")</code></pre>
 <pre><code>&lt;dependency&gt;
   &lt;groupId&gt;io.github.gvjavx&lt;/groupId&gt;
   &lt;artifactId&gt;ddreport&lt;/artifactId&gt;
-  &lt;version&gt;0.1.1&lt;/version&gt;
+  &lt;version&gt;0.1.2&lt;/version&gt;
 &lt;/dependency&gt;
 &lt;dependency&gt;
   &lt;groupId&gt;io.github.gvjavx&lt;/groupId&gt;
   &lt;artifactId&gt;ddreport&lt;/artifactId&gt;
-  &lt;version&gt;0.1.1&lt;/version&gt;
+  &lt;version&gt;0.1.2&lt;/version&gt;
   &lt;classifier&gt;linux-x64&lt;/classifier&gt;
 &lt;/dependency&gt;</code></pre>
 <pre><code>import io.ddreport.DdReport;
@@ -728,7 +728,7 @@ Files.write(Path.of("report.pdf"), pdf);</code></pre>
       <p>Dua argumen pertama adalah string JSON; serialisasikan objek data dengan Jackson atau Gson. Kegagalan dilempar sebagai <code>IOException</code>.</p>
     </div>
     <div role="tabpanel" data-panel="kotlin">
-      <p>Kotlin memakai class Java yang sama dari Maven Central: <code>implementation("io.github.gvjavx:ddreport:0.1.1")</code> dan <code>runtimeOnly("io.github.gvjavx:ddreport:0.1.1:linux-x64")</code>, dengan classifier untuk sistem tempat aplikasi berjalan.</p>
+      <p>Kotlin memakai class Java yang sama dari Maven Central: <code>implementation("io.github.gvjavx:ddreport:0.1.2")</code> dan <code>runtimeOnly("io.github.gvjavx:ddreport:0.1.2:linux-x64")</code>, dengan classifier untuk sistem tempat aplikasi berjalan.</p>
 <pre><code>import io.ddreport.DdReport
 
 val xlsx = DdReport.render(templateJson, dataJson, "xlsx")
