@@ -562,6 +562,18 @@ summary      Total               {{sum(qty * price):0}}</code></pre>
     <tr><td>lines</td><td><code>grid</code></td><td><code>all</code> (semua garis), <code>outer</code> (bingkai luar saja), <code>rows</code> (garis antar-baris saja).</td></tr>
   </table></div>
   <p>Warna yang belum dipilih tampak pudar; tombol <b>×</b> di sebelahnya mengosongkannya lagi. Isi tabel juga bisa memakai fill, font, dan ukuran dari ribbon.</p>
+  <h3>Sel: warna sendiri dan sel gabungan</h3>
+  <p>Klik sebuah sel. Bagian <b>Sel</b> di panel kanan mengatur warna latar, warna teks, rata, tebal, dan miring sel itu saja, di atas gaya baris dan kolomnya. Tombol <b>Merge right</b> dan <b>Merge down</b> menggabung sel dengan tetangganya (teksnya ikut dipindahkan, tidak ada yang hilang), <b>Unmerge</b> memisahkannya lagi. Gaya dan gabungan ikut bergeser saat baris atau kolom disisipkan atau dihapus.</p>
+  <ul>
+    <li>Seret garis antar kolom atau antar baris pada tabel terpilih untuk mengubah lebar kolom dan tinggi baris; angkanya juga bisa diisi di <b>column widths</b> dan <b>row heights</b>.</li>
+    <li><b>cell padding</b> mengatur jarak teks dari tepi sel (kosong = 3pt mendatar, 2pt tegak).</li>
+    <li>Saat mengetik di sel: <code>Enter</code> menyimpan, <code>Shift+Enter</code> baris baru, <code>Tab</code> / <code>Shift+Tab</code> ke sel berikutnya / sebelumnya. Sebagian teks sel bisa dibuat tebal, miring, atau bergaris bawah seperti di text box.</li>
+    <li>Sel yang disalin dari Excel bisa langsung ditempel (<code>Ctrl+V</code>) ke tabel, mulai dari sel yang diklik; baris dan kolom ditambah bila perlu.</li>
+  </ul>
+  <h3>Tabel data: daftar di dalam data</h3>
+  <p>Isi <b>rows from data</b> dengan nama daftar di data, misalnya <code>items</code>. Baris judul dan baris total dicetak sekali; baris di antaranya diulang untuk setiap item. Di baris yang diulang, <code>{{name}}</code> adalah field item dan <code>{{index}}</code> nomor urutnya; di judul dan baris total, <code>{{sum(qty * price):0}}</code> dan <code>{{count()}}</code> menghitung semua item. Di designer tabel ini bertanda <b>↻ items</b>.</p>
+<pre><code>{ "number": "SO-1", "items": [ { "name": "Kopi", "qty": 2, "price": 18000 }, ... ] }</code></pre>
+  <p>Taruh tabel data di band <code>detail</code> untuk mencetak daftar di setiap baris (setiap pesanan dengan itemnya sendiri), atau di <code>summary</code> untuk daftar di data utama. Tabel yang lebih panjang dari satu halaman berlanjut ke halaman berikutnya tanpa memotong baris, dan baris judulnya diulang di atas setiap halaman. Di XLSX dan CSV setiap item menjadi satu baris; warna latar dan warna teks sel ikut ke XLSX dan XLS.</p>
   <h3>Tabel yang barisnya mengikuti data</h3>
   <p>Pakai dua tabel satu baris dengan lebar kolom yang sama:</p>
   <ol>
@@ -835,7 +847,7 @@ export DDREPORT_FONT_BOLD=/fonts/NotoSans-Bold.ttf</code></pre></div>
   <div class="scroll"><table>
     <tr><th>type</th><th>Properti</th><th>Keterangan</th></tr>
     <tr><td><code>text</code></td><td><code>text</code>, <code>font</code>, <code>fontSize</code> (10), <code>lineHeight</code> (1.2), <code>bold</code>, <code>italic</code>, <code>underline</code>, <code>align</code>, <code>color</code>, <code>fill</code>, <code>grow</code></td><td><code>font</code>: <code>Helvetica</code>, <code>Times</code>, <code>Courier</code>, atau nama font bundel / terdaftar. <code>align</code>: <code>left</code>, <code>center</code>, <code>right</code>. <code>fill</code> = highlight.</td></tr>
-    <tr><td><code>table</code></td><td><code>cells</code>, <code>cols</code>, <code>aligns</code>, <code>border</code>, <code>color</code>, <code>fill</code>, <code>grow</code>, <code>grid</code>, <code>textColor</code>, <code>stripe</code>, <code>header</code>, <code>headerFill</code>, <code>headerColor</code>, <code>footer</code>, <code>footerFill</code>, <code>footerColor</code>, dan properti font milik <code>text</code></td><td><code>cells</code>: teks per sel, baris demi baris. <code>cols</code>: lebar relatif. <code>aligns</code>: rata per kolom. <code>color</code>: warna garis. Sisanya lihat <a href="#tabel">Tabel</a>.</td></tr>
+    <tr><td><code>table</code></td><td><code>cells</code>, <code>cols</code>, <code>aligns</code>, <code>border</code>, <code>color</code>, <code>fill</code>, <code>grow</code>, <code>grid</code>, <code>textColor</code>, <code>stripe</code>, <code>header</code>, <code>headerFill</code>, <code>headerColor</code>, <code>footer</code>, <code>footerFill</code>, <code>footerColor</code>, <code>heights</code>, <code>padding</code>, <code>cellStyle</code>, <code>data</code>, <code>valign</code>, dan properti font milik <code>text</code></td><td><code>cells</code>: teks per sel, baris demi baris. <code>cols</code>: lebar relatif. <code>aligns</code>: rata per kolom. <code>color</code>: warna garis. Sisanya lihat <a href="#tabel">Tabel</a>.</td></tr>
     <tr><td><code>image</code></td><td><code>src</code></td><td>Data URI. PDF menerima PNG, JPEG, dan GIF.</td></tr>
     <tr><td><code>rect</code></td><td><code>border</code>, <code>color</code>, <code>fill</code></td><td>Tebal garis, warna garis, warna isi (kosong = transparan).</td></tr>
     <tr><td><code>line</code></td><td><code>border</code>, <code>color</code></td><td>Mendatar jika <code>w</code> ≥ <code>h</code>, tegak jika sebaliknya.</td></tr>
@@ -882,11 +894,9 @@ java -cp out DdReportTest             # wrapper Java</code></pre>
 <section id="batasan">
   <h2>Batasan</h2>
   <ul>
-    <li>Pengelompokan hanya satu tingkat, dan belum ada sub-report (misalnya daftar item di dalam tiap pesanan).</li>
+    <li>Pengelompokan hanya satu tingkat. Daftar di dalam data (item tiap pesanan) dicetak lewat tabel data; belum ada sub-report bebas dengan band sendiri.</li>
     <li>Chart dan barcode di kanvas designer tampil sebagai kotak keterangan; bentuk sebenarnya terlihat lewat Preview.</li>
-    <li>Lebar kolom tabel diatur dengan angka (<code>2,1,1</code>), belum dengan menyeret.</li>
     <li>QR code tidak diberi ruang kosong di sekelilingnya; sisakan jarak dari elemen lain agar mudah dipindai.</li>
-    <li>Sel tabel tidak bisa digabung. Gaya diatur per tabel, per baris judul/total, dan per kolom (rata), belum per sel.</li>
     <li>XLSX dan XLS berisi satu sheet; hanya bold, format angka, dan lebar kolom yang terbawa.</li>
     <li>Wrapper Java, Kotlin, dan Node.js menjalankan satu proses per dokumen, dengan batas waktu 1 menit (bisa diubah). Di Node.js, pakai <code>renderAsync</code> agar server tidak terblokir selama proses itu berjalan.</li>
     <li>Paket belum dipublikasikan ke Maven Central maupun npm; pemasangan masih dari repository.</li>
