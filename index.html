@@ -283,6 +283,7 @@
   <a href="#elemen">Elemen</a>
   <a href="#teks">Format teks</a>
   <a href="#tabel">Tabel</a>
+  <a href="#subreport">Sub-laporan</a>
   <a href="#chart">Chart</a>
   <a href="#barcode">Barcode &amp; QR</a>
   <a href="#halaman">Halaman &amp; latar</a>
@@ -514,6 +515,26 @@ summary      Total               {{sum(qty * price):0}}</code></pre>
   </ul>
   <p>Centang <b>New page per group</b> agar setiap kelompok mulai di halaman baru. Judul kelompok tidak pernah tertinggal sendirian di dasar halaman: jika baris pertamanya tidak muat, keduanya pindah bersama. Kelompok yang berlanjut ke halaman berikutnya mendapat judulnya lagi di atas halaman itu.</p>
   <p><b>Sort by</b> mengurutkan baris lebih dulu, misalnya <code>category, -total</code> (tanda <code>-</code> untuk menurun). Band <code>groupHeader</code> dan <code>groupFooter</code> yang berisi elemen tetap dicetak tanpa Group by, sekali di sekitar semua baris.</p>
+  <h3>Sampai tiga tingkat</h3>
+  <p>Isi Group by dengan beberapa field, misalnya <code>region, city</code>. Band <b>kepala grup 2</b> / <b>kaki grup 2</b> (dan 3 untuk field ketiga) muncul di designer di dalam band grup pertama. Setiap tingkat punya subtotalnya sendiri, dan judul semua grup yang sedang berjalan diulang di atas halaman baru.</p>
+<pre><code>groupBy       region, city
+groupHeader   Wilayah {{region}}
+groupHeader2  Kota {{city}}
+detail        {{name}}        {{amt:0}}
+groupFooter2  Subtotal kota   {{sum(amt):0}}
+groupFooter   Total wilayah   {{sum(amt):0}}</code></pre>
+  <p>Centang <b>A sheet per group</b> agar XLSX dan XLS berisi satu sheet untuk setiap grup tingkat pertama, dinamai sesuai grupnya.</p>
+</section>
+
+<section id="subreport">
+  <h2>Sub-laporan</h2>
+  <p>Untuk daftar di dalam data yang butuh tata letak sendiri, bukan sekadar tabel: tab <b>Insert → Sub-report</b>, isi <b>rows from data</b> dengan nama daftarnya (misalnya <code>lines</code>), lalu <b>Edit sub-report…</b>. Terbuka designer kedua selebar kotak elemen, dengan band <b>header</b>, <b>column header</b>, grup (sampai tiga tingkat), <b>detail</b>, dan <b>summary</b>; Sort by dan Group by-nya bisa diisi sendiri. Band footer-nya tidak dipakai.</p>
+  <ul>
+    <li>Di band <code>detail</code> laporan induk, setiap baris mendapat sub-laporannya: setiap pesanan dengan rincian per jenisnya, setiap pegawai dengan riwayatnya.</li>
+    <li>Field induk tetap bisa dipakai di dalamnya (<code>{{number}}</code>); <code>{{index}}</code> adalah nomor item; agregat di header dan summary-nya menghitung semua item.</li>
+    <li>Band induk ikut memanjang. Sub-laporan yang lebih panjang dari satu halaman berlanjut tanpa memotong band-nya, dengan header dan column header diulang.</li>
+    <li>Di Excel dan CSV, setiap baris sub-laporan menjadi baris spreadsheet.</li>
+  </ul>
 </section>
 
 <section id="elemen">
@@ -560,6 +581,7 @@ summary      Total               {{sum(qty * price):0}}</code></pre>
     <tr><td>banded rows</td><td><code>stripe</code></td><td>Warna latar baris isi selang-seling.</td></tr>
     <tr><td>text colour · line colour</td><td><code>textColor</code>, <code>color</code></td><td>Warna teks isi dan warna garis.</td></tr>
     <tr><td>lines</td><td><code>grid</code></td><td><code>all</code> (semua garis), <code>outer</code> (bingkai luar saja), <code>rows</code> (garis antar-baris saja).</td></tr>
+    <tr><td>header line · total line · frame</td><td><code>headerLine</code>, <code>footerLine</code>, <code>frame</code></td><td>Garis lebih tebal (pt) di bawah baris judul, di atas baris total, dan di sekeliling tabel.</td></tr>
   </table></div>
   <p>Warna yang belum dipilih tampak pudar; tombol <b>×</b> di sebelahnya mengosongkannya lagi. Isi tabel juga bisa memakai fill, font, dan ukuran dari ribbon.</p>
   <h3>Sel: warna sendiri dan sel gabungan</h3>
@@ -609,7 +631,7 @@ https://tokosaya.example/faktur/{{number}}</code></pre>
     <tr><td><code>qr</code></td><td>Kamera ponsel: tautan, nomor verifikasi</td><td>Teks apa pun</td></tr>
     <tr><td><code>code128</code></td><td>Pemindai kasir dan gudang: SKU, nomor transaksi</td><td>Huruf, angka, dan tanda baca dasar (ASCII)</td></tr>
   </table></div>
-  <p>Sisakan ruang kosong di sekeliling kode agar mudah dipindai. Teks yang tidak bisa dijadikan kode (kosong, atau bukan ASCII untuk Code 128) tidak menggambar apa-apa. Lihat template <b>Label produk</b>, <b>Struk kasir</b>, dan <b>Sertifikat</b>.</p>
+  <p>QR code diberi ruang kosong dua modul di sekelilingnya, di dalam kotaknya, agar mudah dipindai di samping elemen lain. Centang <b>show text</b> untuk mencetak teksnya di bawah kode. Di designer kodenya tampil langsung di halaman. Teks yang tidak bisa dijadikan kode (kosong, atau bukan ASCII untuk Code 128) tidak menggambar apa-apa. Lihat template <b>Label produk</b>, <b>Struk kasir</b>, dan <b>Sertifikat</b>.</p>
 </section>
 
 <section id="halaman">
@@ -755,6 +777,7 @@ designer.setTemplate(other) // mengganti template; pengguna bisa membatalkannya 
     <tr><td><code>lang</code></td><td><code>'en'</code> (default) atau <code>'id'</code> untuk antarmuka berbahasa Indonesia. Di aplikasi standalone: tambahkan <code>?lang=id</code> pada alamatnya, atau klik tautan bahasa di kanan atas.</td></tr>
     <tr><td><code>onChange(template)</code></td><td>Dipanggil setiap ada perubahan. Objeknya adalah objek kerja designer, jangan diubah; pakai <code>getTemplate()</code> jika butuh salinan.</td></tr>
     <tr><td><code>fontBase</code></td><td>Opsional. URL tempat font bundel disajikan, misalnya <code>'/fonts/'</code> (<code>ddreport -serve</code> menyajikannya di sana; di Go, sajikan <code>ddreport.BundledFonts</code>). Tanpa ini kanvas memakai font yang terpasang di perangkat; hasil cetak tidak terpengaruh.</td></tr>
+    <tr><td><code>data</code></td><td>Opsional. Data contoh (field dan baris); chart di kanvas digambar darinya. Ubah dengan <code>designer.setData(data)</code>.</td></tr>
     <tr><td><code>fonts</code></td><td>Opsional. Nama font tambahan yang Anda daftarkan di backend, misalnya <code>['Inter']</code>, agar muncul di pilihan font.</td></tr>
     <tr><td><code>preview(template)</code></td><td>Opsional. Fungsi async yang mengembalikan HTML hasil cetak (format <code>"html"</code> dari backend Anda). Jika diisi, tombol Preview muncul di tab View dan di bilah status. Hasilnya tampil per halaman, dipaskan ke lebar dialog, dengan jumlah halaman; jika fungsi ini melempar error, pesannya ditampilkan di dialog.</td></tr>
   </table></div>
@@ -894,13 +917,12 @@ java -cp out DdReportTest             # wrapper Java</code></pre>
 <section id="batasan">
   <h2>Batasan</h2>
   <ul>
-    <li>Pengelompokan hanya satu tingkat. Daftar di dalam data (item tiap pesanan) dicetak lewat tabel data; belum ada sub-report bebas dengan band sendiri.</li>
-    <li>Chart dan barcode di kanvas designer tampil sebagai kotak keterangan; bentuk sebenarnya terlihat lewat Preview.</li>
-    <li>QR code tidak diberi ruang kosong di sekelilingnya; sisakan jarak dari elemen lain agar mudah dipindai.</li>
-    <li>XLSX dan XLS berisi satu sheet; hanya bold, format angka, dan lebar kolom yang terbawa.</li>
+    <li>Pengelompokan sampai tiga tingkat.</li>
+    <li>Chart di kanvas designer digambar dari data contoh tanpa skala nilai, dan QR code di kanvas adalah gambaran bentuknya; kode yang bisa dipindai dan chart lengkap ada di hasil cetak dan Preview.</li>
+    <li>XLSX dan XLS membawa bold, format angka, lebar kolom, warna latar, dan warna teks; garis sel dan gabungan sel tidak.</li>
     <li>Wrapper Java, Kotlin, dan Node.js menjalankan satu proses per dokumen, dengan batas waktu 1 menit (bisa diubah). Di Node.js, pakai <code>renderAsync</code> agar server tidak terblokir selama proses itu berjalan.</li>
     <li>Paket belum dipublikasikan ke Maven Central maupun npm; pemasangan masih dari repository.</li>
-    <li>Designer diuji di Chrome dengan mouse dan keyboard. Firefox, Safari, dan perangkat layar sentuh belum diuji.</li>
+    <li>Designer diuji otomatis di Chromium (Chrome, Edge), Firefox, dan WebKit (mesin Safari) di setiap push; perangkat layar sentuh sungguhan belum diuji.</li>
   </ul>
 </section>
 
