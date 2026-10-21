@@ -219,7 +219,7 @@
       <p class="lead">Susun faktur, struk, slip gaji, atau laporan penjualan dengan drag and drop. Simpan sebagai satu file JSON, lalu biarkan backend Anda mengisinya dengan data dan mengubahnya menjadi dokumen.</p>
       <div class="cta">
         <a class="btn primary" href="#mulai">Mulai dalam 5 menit →</a>
-        <a class="btn" href="#template">Lihat 8 template siap pakai</a>
+        <a class="btn" href="#template">Lihat 13 template siap pakai</a>
       </div>
       <ul class="formats" aria-label="Format hasil dan bahasa backend">
         <li class="label">Hasil:</li><li>PDF</li><li>HTML</li><li>XLSX</li><li>XLS</li><li>CSV</li>
@@ -259,10 +259,11 @@
   <div class="wrap">
     <span class="kicker">Coba sekarang</span>
     <h2>Designer, langsung di halaman ini</h2>
-    <p class="sub">Buka tab <b>Insert</b> untuk menambah elemen. Klik ganda teks untuk mengetik. Ini designer yang sama dengan yang akan Anda pasang di aplikasi.</p>
+    <p class="sub">Klik tombol di halaman kosong (atau tab <b>Insert</b>) untuk menambah elemen. Klik ganda teks untuk mengetik. <b>Mode mudah</b> hanya menampilkan alat yang dibutuhkan, masing-masing dengan namanya. Ini designer yang sama dengan yang akan Anda pasang di aplikasi.</p>
     <div class="demo-bar">
       <label for="demo-template"><b>Muat template:</b></label>
       <select id="demo-template"><option value="">Halaman kosong</option></select>
+      <label><input type="checkbox" id="demo-simple" checked> Mode mudah</label>
       <span id="demo-msg" role="status">Pratinjau dan ekspor butuh backend; jalankan designer lengkapnya di <a href="#mulai">langkah Mulai</a>.</span>
     </div>
     <div class="demo"><div id="demo">Demo butuh halaman ini dibuka lewat web server (bukan <code>file://</code>).</div></div>
@@ -374,7 +375,9 @@ fs.writeFileSync('report.pdf', pdf)</code></pre></div>
   <p>Designer terdiri dari ribbon di atas, halaman di tengah, panel properti di kanan, dan bilah status di bawah. Di layar sempit panel properti pindah ke bawah halaman dan terlipat, dan halaman otomatis dipaskan ke lebar layar.</p>
   <div class="scroll"><table>
     <tr><th>Saya ingin…</th><th>Caranya</th></tr>
+    <tr><td>Mulai dari halaman kosong</td><td>Klik <b>Text box</b>, <b>Table</b>, <b>Picture</b>, atau <b>Chart</b> di kotak <b>Start here</b> di tengah halaman.</td></tr>
     <tr><td>Menambah elemen</td><td>Tab <b>Insert</b>: klik tombolnya, atau seret tombolnya ke bagian halaman yang dituju.</td></tr>
+    <tr><td>Tampilan yang lebih sederhana</td><td><b>Mode mudah</b> (di aplikasi standalone aktif sejak awal): alat yang jarang dipakai disembunyikan dan setiap tombol diberi nama. Cocok untuk pemula, juga anak-anak.</td></tr>
     <tr><td>Mengetik teks</td><td>Klik ganda teks atau sel tabel. Klik di tempat lain untuk menyimpan, <code>Esc</code> untuk membatalkan. <code>Enter</code> membuat baris baru pada teks dan menyelesaikan pengisian sel.</td></tr>
     <tr><td>Menebalkan sebagian teks</td><td>Saat mengetik, blok kata yang dimaksud lalu tekan <b>B</b>, <i>I</i>, atau <u>U</u>.</td></tr>
     <tr><td>Memilih beberapa elemen</td><td><code>Shift</code>+klik, seret kotak di area kosong, atau <code>Ctrl+A</code>.</td></tr>
@@ -775,7 +778,8 @@ const designer = createDesigner(document.getElementById('designer'), {
 })
 
 designer.getTemplate()      // salinan template saat ini
-designer.setTemplate(other) // mengganti template; pengguna bisa membatalkannya dengan Ctrl+Z</code></pre>
+designer.setTemplate(other) // mengganti template; pengguna bisa membatalkannya dengan Ctrl+Z
+designer.destroy()          // saat designer dilepas dari halaman</code></pre>
   <div class="scroll"><table>
     <tr><th>Opsi</th><th>Keterangan</th></tr>
     <tr><td><code>template</code></td><td>Template awal. Kosongkan untuk mulai dari A4 kosong. Template yang rusak atau dari versi lama diperbaiki saat dimuat, bukan ditolak.</td></tr>
@@ -786,9 +790,28 @@ designer.setTemplate(other) // mengganti template; pengguna bisa membatalkannya 
     <tr><td><code>data</code></td><td>Opsional. Data contoh (field dan baris); chart di kanvas digambar darinya. Ubah dengan <code>designer.setData(data)</code>.</td></tr>
     <tr><td><code>fonts</code></td><td>Opsional. Nama font tambahan yang Anda daftarkan di backend, misalnya <code>['Inter']</code>, agar muncul di pilihan font.</td></tr>
     <tr><td><code>preview(template)</code></td><td>Opsional. Fungsi async yang mengembalikan HTML hasil cetak (format <code>"html"</code> dari backend Anda). Jika diisi, tombol Preview muncul di tab View dan di bilah status. Hasilnya tampil per halaman, dipaskan ke lebar dialog, dengan jumlah halaman; jika fungsi ini melempar error, pesannya ditampilkan di dialog.</td></tr>
+    <tr><td><code>simple</code></td><td>Opsional. <code>true</code> untuk mode mudah: grup Arrange, Margins, Grouping, sub-laporan, dan properti lanjutan (posisi, garis tabel, <code>showIf</code>, ...) disembunyikan; setiap tombol ribbon diberi nama; band grup baru muncul setelah Group by diisi.</td></tr>
+    <tr><td><code>hide</code></td><td>Opsional. Daftar nama yang disembunyikan: tab (<code>'Layout'</code>), grup ribbon (<code>'Arrange'</code>, atau <code>'Layout.Data'</code> untuk grup di satu tab saja), perintah (<code>'delete'</code>, <code>'preview'</code>), elemen (<code>'chart'</code>, <code>'subreport'</code>), atau pengaturan di ribbon dan panel properti (<code>'sortBy'</code>, <code>'showIf'</code>). Perintah yang disembunyikan juga tidak jalan lewat pintasan keyboard.</td></tr>
+    <tr><td><code>messages</code></td><td>Opsional. Teks antarmuka versi Anda sendiri, dengan teks Inggrisnya sebagai kunci: <code>{ 'Text box': 'Label' }</code>. Bisa untuk mengganti istilah atau menerjemahkan ke bahasa lain; daftar teksnya ada di objek <code>ID</code> di <code>designer.js</code>.</td></tr>
   </table></div>
+  <h3>Di React atau Vue</h3>
+<pre><code>// React
+function ReportDesigner({ template, onChange }) {
+  const ref = useRef(null)
+  useEffect(() =&gt; {
+    const d = createDesigner(ref.current, { template, onChange, simple: true })
+    return () =&gt; d.destroy()
+  }, [])
+  return &lt;div ref={ref} style={{ height: 600 }} /&gt;
+}
+
+// Vue
+const el = ref(null); let d
+onMounted(() =&gt; { d = createDesigner(el.value, { template, onChange }) })
+onBeforeUnmount(() =&gt; d.destroy())</code></pre>
+  <p>Paket npm membawa tipe TypeScript (autocomplete untuk semua opsi di atas) dan ketiga belas template siap pakai: <code>import invoice from 'ddreport-designer/templates/invoice.json'</code>, lalu <code>designer.setTemplate(invoice.template)</code> dan <code>designer.setData(invoice.data)</code>.</p>
   <p>Dokumentasi ini memakai nama tombol versi Inggris (Home, Insert, Layout, View, Wrap); dengan <code>lang: 'id'</code> namanya menjadi Beranda, Sisipkan, Tata Letak, Tampilan, Bungkus.</p>
-  <p>Designer mengisi elemen tempatnya dipasang dan menyesuaikan diri dengan <em>lebar elemen itu</em>, bukan lebar jendela, jadi tetap rapi di dalam panel samping atau dialog. Beri elemen itu tinggi (misalnya <code>height: 80vh</code>) agar halaman bisa digulir di dalamnya. Warna aksen bisa diganti lewat CSS: <code>.ddr { --a: #0f766e }</code>.</p>
+  <p>Designer mengisi elemen tempatnya dipasang dan menyesuaikan diri dengan <em>lebar elemen itu</em>, bukan lebar jendela, jadi tetap rapi di dalam panel samping atau dialog. Beri elemen itu tinggi (misalnya <code>height: 80vh</code>) agar halaman bisa digulir di dalamnya. Warna bisa diganti lewat CSS, misalnya <code>#designer.ddr { --a: #0f766e }</code>; variabel lainnya <code>--a-soft</code>, <code>--bg</code>, <code>--surface</code>, <code>--text</code>, <code>--muted</code>, <code>--line</code>, <code>--stage</code>, <code>--hover</code>.</p>
   <p>Bisa dipakai di framework apa pun: panggil <code>createDesigner</code> pada elemen DOM setelah komponen ter-mount. Template siap pakai ada di <code>designer/templates/</code>; tiap file berisi <code>template</code> dan <code>data</code> contohnya.</p>
 </section>
 
@@ -900,7 +923,7 @@ $env:DDREPORT_BIN = "$PWD\ddreport.exe"</code></pre></div>
   <div class="scroll"><table>
     <tr><th>Flag / variabel</th><th>Keterangan</th></tr>
     <tr><td><code>-format</code></td><td><code>pdf</code> (default), <code>html</code>, <code>xlsx</code>, <code>xls</code>, <code>csv</code></td></tr>
-    <tr><td><code>-serve alamat</code></td><td>Menjalankan designer (dengan template siap pakai) dan endpoint <code>POST /render</code></td></tr>
+    <tr><td><code>-serve alamat</code></td><td>Menjalankan designer (dengan template siap pakai) dan endpoint <code>POST /render</code>. Permintaan dari halaman situs lain di browser ditolak, jadi panggil endpoint ini dari backend Anda</td></tr>
     <tr><td><code>DDREPORT_BIN</code></td><td>Lokasi binary, dibaca oleh wrapper Java dan Node.js</td></tr>
     <tr><td><code>DDREPORT_FONT</code> · <code>_BOLD</code></td><td>Font pengganti untuk seluruh laporan. Lihat <a href="#font">Font</a></td></tr>
     <tr><td><code>DDREPORT_FONTS</code></td><td>Folder font tambahan (<code>Nama-Regular.ttf</code>, ...). Lihat <a href="#font">Font</a></td></tr>
@@ -917,7 +940,7 @@ export DDREPORT_BIN="$PWD/ddreport"
 node --test node/test.js              # wrapper Node.js
 javac -d out java/io/ddreport/DdReport.java java/DdReportTest.java
 java -cp out DdReportTest             # wrapper Java</code></pre>
-  <p>Designer punya halaman test sendiri: sajikan folder <code>designer/</code> dengan web server (<code>npx serve designer</code>) lalu buka <code>/test.html</code>. Halaman itu menjalankan 97 pemeriksaan pada designer dan menampilkan yang gagal.</p>
+  <p>Designer punya halaman test sendiri: sajikan folder <code>designer/</code> dengan web server (<code>npx serve designer</code>) lalu buka <code>/test.html</code>. Halaman itu menjalankan lebih dari 200 pemeriksaan pada designer dan menampilkan yang gagal; <code>node designer/run-tests.mjs</code> menjalankannya di Chromium, Firefox, dan WebKit sekaligus.</p>
 </section>
 
 <section id="batasan">
@@ -925,7 +948,7 @@ java -cp out DdReportTest             # wrapper Java</code></pre>
   <ul>
     <li>Pengelompokan sampai tiga tingkat.</li>
     <li>Chart di kanvas designer digambar dari data contoh tanpa skala nilai, dan QR code di kanvas adalah gambaran bentuknya; kode yang bisa dipindai dan chart lengkap ada di hasil cetak dan Preview.</li>
-    <li>XLSX dan XLS membawa bold, format angka, lebar kolom, warna latar, dan warna teks; garis sel dan gabungan sel tidak.</li>
+    <li>XLSX dan XLS membawa bold, format angka, lebar kolom, warna latar, warna teks, rata tengah/kanan, dan garis sel tabel (<code>grid</code> <code>all</code>); gabungan sel dan garis tabel <code>rows</code> / <code>outer</code> belum.</li>
     <li>Wrapper Java, Kotlin, dan Node.js menjalankan satu proses per dokumen, dengan batas waktu 1 menit (bisa diubah). Di Node.js, pakai <code>renderAsync</code> agar server tidak terblokir selama proses itu berjalan.</li>
     <li>Designer diuji otomatis di Chromium (Chrome, Edge), Firefox, dan WebKit (mesin Safari) di setiap push; perangkat layar sentuh sungguhan belum diuji.</li>
   </ul>
@@ -934,6 +957,14 @@ java -cp out DdReportTest             # wrapper Java</code></pre>
 <section id="versi">
   <h2>Riwayat versi</h2>
   <p>Daftar lengkapnya ada di <a href="https://github.com/gvjavx/DdDesignReport/blob/main/CHANGELOG.md">CHANGELOG.md</a>.</p>
+  <h3>Berikutnya (belum dirilis)</h3>
+  <ul>
+    <li><b>Designer lebih mudah:</b> mode mudah dengan nama di setiap tombol, tombol <b>Start here</b> di halaman kosong, dan properti bernama <i>dari kiri</i>, <i>dari atas</i>, <i>lebar</i>, <i>tinggi</i>. Lihat <a href="#designer">Memakai designer</a>.</li>
+    <li><b>Designer bisa disesuaikan:</b> opsi <code>hide</code> dan <code>messages</code>, <code>destroy()</code> untuk React dan Vue, tipe TypeScript, dan template di paket npm. Lihat <a href="#pasang-designer">Memasang designer</a>.</li>
+    <li><b>Lima template baru:</b> kuitansi, surat jalan, rapor siswa, daftar hadir, dan laporan laba rugi. Lihat <a href="#template">galeri template</a>.</li>
+    <li><b>Excel:</b> garis sel tabel dan rata tengah/kanan ikut ke XLSX dan XLS.</li>
+    <li><b>Perbaikan dan keamanan:</b> legenda pie tanpa irisan nol, pesan jelas untuk gambar rusak, <code>-serve</code> menolak permintaan dari situs lain, dan template dari orang lain tidak bisa membuat designer memuat alamat luar.</li>
+  </ul>
   <h3>0.1.3 · 20 Okt 2026</h3>
   <ul>
     <li>Semua paket npm terbit lewat <i>trusted publishing</i> dari GitHub Actions, tanpa token npm.</li>
@@ -1035,12 +1066,25 @@ import { createDesigner } from './designer.js'
 
 const demo = document.getElementById('demo'), select = document.getElementById('demo-template'), msg = document.getElementById('demo-msg')
 demo.textContent = ''
-const designer = createDesigner(demo, { fontBase: 'fonts/' })
+// switching the mode keeps the report: the designer is made again around it
+let designer, data
+const simple = document.getElementById('demo-simple')
+function make() {
+  const template = designer?.getTemplate()
+  designer?.destroy()
+  designer = createDesigner(demo, { fontBase: 'fonts/', simple: simple.checked, template, data })
+}
+make()
+simple.onchange = make
 
 async function load(id) {
-  if (!id) return designer.setTemplate()
+  data = undefined
+  if (!id) return designer.setTemplate(), designer.setData()
   try {
-    designer.setTemplate((await (await fetch(`templates/${id}.json`)).json()).template)
+    const file = await (await fetch(`templates/${id}.json`)).json()
+    data = file.data // the charts on the page are drawn from the template's own sample data
+    designer.setTemplate(file.template)
+    designer.setData(data)
   } catch (err) { msg.textContent = 'Template tidak bisa dimuat: ' + err.message }
 }
 select.onchange = () => load(select.value)

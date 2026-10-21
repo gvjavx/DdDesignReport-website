@@ -54,5 +54,40 @@
     "description": "Label 10 × 6 cm, satu label per baris data, dengan Code 128 dan QR.",
     "width": 283,
     "height": 170
+  },
+  {
+    "id": "kwitansi",
+    "name": "Kuitansi",
+    "description": "Kuitansi pembayaran A5 mendatar: penerima, jumlah dengan terbilang, tanda tangan, dan QR nomor kuitansi.",
+    "width": 595,
+    "height": 420
+  },
+  {
+    "id": "surat-jalan",
+    "name": "Surat jalan",
+    "description": "Surat jalan pengiriman barang: daftar barang dengan total, kendaraan, dan tanda tangan pengirim, sopir, dan penerima.",
+    "width": 595,
+    "height": 842
+  },
+  {
+    "id": "rapor",
+    "name": "Rapor siswa",
+    "description": "Rapor siswa yang ceria: nilai per mata pelajaran dengan predikat otomatis, rata-rata, kehadiran, catatan wali kelas, dan tanda tangan.",
+    "width": 595,
+    "height": 842
+  },
+  {
+    "id": "daftar-hadir",
+    "name": "Daftar hadir",
+    "description": "Daftar hadir acara: nomor urut, nama, instansi, kolom tanda tangan, jumlah peserta, dan penanggung jawab.",
+    "width": 595,
+    "height": 842
+  },
+  {
+    "id": "laba-rugi",
+    "name": "Laporan laba rugi",
+    "description": "Laba rugi per periode: pendapatan dan beban berkelompok dengan subtotal, laba atau rugi bersih otomatis, dan chart.",
+    "width": 595,
+    "height": 842
   }
 ]
