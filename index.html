@@ -958,7 +958,6 @@ node --test node/test.js              # wrapper Node.js
 javac -d out java/io/ddreport/DdReport.java java/DdReportTest.java
 java -cp out DdReportTest             # wrapper Java</code></pre>
   <p>Designer punya halaman test sendiri: sajikan folder <code>designer/</code> dengan web server (<code>npx serve designer</code>) lalu buka <code>/test.html</code>. Halaman itu menjalankan lebih dari 200 pemeriksaan pada designer dan menampilkan yang gagal; <code>node designer/run-tests.mjs</code> menjalankannya di Chromium, Firefox, dan WebKit sekaligus.</p>
-  <p>Untuk mencoba sendiri dengan tangan, <code>./run-local.sh</code> membangun binary dari kode saat ini dan membuka designer lengkap (Preview, ekspor, dan template siap pakai) di <code>http://127.0.0.1:8080</code>. Port lain: <code>./run-local.sh 9000</code>; tanpa membuka browser: <code>NO_BROWSER=1 ./run-local.sh</code>. <code>Ctrl+C</code> menghentikannya.</p>
 </section>
 
 <section id="batasan">
@@ -982,7 +981,6 @@ java -cp out DdReportTest             # wrapper Java</code></pre>
     <li><b>Mesin cetak:</b> <code>terbilang()</code> untuk angka dalam kata, dan <code>{{index}}</code> sebagai nomor baris di band detail. Lihat <a href="#hitung">Perhitungan &amp; total</a>.</li>
     <li><b>Kanvas designer:</b> QR dan Code 128 yang sama persis dengan hasil cetak, chart dengan skala nilai, dan cubit-zoom di layar sentuh yang tidak lagi mengubah pilihan.</li>
     <li><b>Backend:</b> <code>DdReport.Renderer</code> (Java, Kotlin) dan <code>createRenderer</code> (Node.js) yang menjaga proses tetap berjalan. Lihat <a href="#backend">Memanggil dari backend</a>.</li>
-    <li><b>Pengembangan:</b> <code>./run-local.sh</code> untuk mencoba designer lengkap secara lokal. Lihat <a href="#test">Test</a>.</li>
     <li><b>Perbaikan dan keamanan:</b> legenda pie tanpa irisan nol, pesan jelas untuk gambar rusak, <code>-serve</code> menolak permintaan dari situs lain, dan template dari orang lain tidak bisa membuat designer memuat alamat luar.</li>
   </ul>
   <h3>0.1.3 · 20 Okt 2026</h3>
