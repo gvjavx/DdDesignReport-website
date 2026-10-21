@@ -18,6 +18,7 @@ if (!bin) {
 }
 
 fs.copyFileSync(path.join(lib, 'designer', 'designer.js'), path.join(site, 'designer.js'))
+fs.copyFileSync(path.join(lib, 'logo.svg'), path.join(site, 'logo.svg'))
 fs.rmSync(path.join(site, 'templates'), { recursive: true, force: true })
 fs.rmSync(path.join(site, 'previews'), { recursive: true, force: true })
 fs.rmSync(path.join(site, 'fonts'), { recursive: true, force: true })

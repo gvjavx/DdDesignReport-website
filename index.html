@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>DdDesignReport — Desain laporan dengan drag and drop</title>
+<link rel="icon" type="image/svg+xml" href="logo.svg">
 <meta name="description" content="Library reporting dengan designer drag and drop ala pengolah kata. Render ke PDF, HTML, XLSX, XLS, dan CSV dari Go, Java, Kotlin, dan Node.js.">
 <style>
   :root {
@@ -36,7 +37,7 @@
   .top { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line) }
   .top .wrap { display: flex; align-items: center; gap: 20px; height: 60px }
   .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; color: var(--text); text-decoration: none; letter-spacing: -.01em }
-  .brand i { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; background: var(--accent); color: var(--accent-text); font-style: normal; font-size: 15px }
+  .brand img { flex: none; border-radius: 7px }
   .top nav { display: flex; gap: 4px; margin-left: auto }
   .top nav a { padding: 6px 12px; border-radius: 8px; color: var(--muted); text-decoration: none; font-size: 15px; font-weight: 500 }
   .top nav a:hover, .top nav a:focus-visible { background: var(--soft); color: var(--text) }
@@ -183,7 +184,6 @@
     .top nav { flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; margin-left: 0 }
     .top nav a { white-space: nowrap; padding: 6px 9px }
     .brand { font-size: 0 }
-    .brand i { font-size: 15px }
     .strip { padding: 48px 0 }
     .wrap { padding: 0 16px }
   }
@@ -194,7 +194,7 @@
 
 <header class="top">
   <div class="wrap">
-    <a class="brand" href="#top"><i>D</i>DdDesignReport</a>
+    <a class="brand" href="#top"><img src="logo.svg" alt="" width="30" height="30">DdDesignReport</a>
     <nav aria-label="Utama">
       <a href="#template">Template</a>
       <a href="#coba">Coba</a>
@@ -489,12 +489,14 @@ Kepada: {{customer.name}}
     <tr><td>Rata-rata, terkecil, terbesar</td><td><code>{{avg(price):2}}</code> · <code>{{min(price)}}</code> · <code>{{max(price)}}</code></td></tr>
     <tr><td>Teks sesuai kondisi</td><td><code>{{if(paid, 'LUNAS', 'BELUM LUNAS')}}</code> · <code>{{if(stock &lt; minimum, 'Pesan ulang')}}</code></td></tr>
     <tr><td>Huruf besar, pembulatan</td><td><code>{{upper(name)}}</code> · <code>{{round(price / 3, 2)}}</code></td></tr>
+    <tr><td>Angka dalam kata (terbilang)</td><td><code>{{terbilang(total)}}</code> → dua juta tujuh ratus lima puluh ribu · <code>{{upper(terbilang(total))}} RUPIAH</code></td></tr>
+    <tr><td>Nomor urut baris</td><td><code>{{index}}</code> di band detail: 1, 2, 3, …, mulai lagi dari 1 di setiap kelompok</td></tr>
     <tr><td>Tanggal</td><td><code>{{date:dd MMMM yyyy}}</code> → 19 Oktober 2026 · <code>{{now:dd/MM/yyyy HH:mm}}</code> (waktu cetak)</td></tr>
   </table></div>
   <ul>
     <li>Operator: <code>+</code> <code>-</code> <code>*</code> <code>/</code> dan kurung. Perkalian dan pembagian dihitung lebih dulu.</li>
     <li>Perbandingan <code>=</code> <code>!=</code> <code>&lt;</code> <code>&gt;</code> <code>&lt;=</code> <code>&gt;=</code>, digabung dengan <code>and</code>, <code>or</code>, <code>not</code>. Teks ditulis dalam kutip tunggal: <code>status = 'lunas'</code>.</li>
-    <li>Fungsi <code>if(kondisi, jika ya, jika tidak)</code>, <code>upper</code>, <code>lower</code>, <code>round(x, desimal)</code>.</li>
+    <li>Fungsi <code>if(kondisi, jika ya, jika tidak)</code>, <code>upper</code>, <code>lower</code>, <code>round(x, desimal)</code>, dan <code>terbilang(x)</code> (bahasa Indonesia, desimal dibulatkan; dipakai template <b>Kuitansi</b>).</li>
     <li>Pola tanggal: <code>yyyy</code> <code>yy</code> <code>MMMM</code> <code>MMM</code> <code>MM</code> <code>M</code> <code>dd</code> <code>d</code> <code>EEEE</code> <code>EEE</code> <code>HH</code> <code>mm</code> <code>ss</code>; teks lain dalam <code>'kutip'</code>. Nama bulan dan hari berbahasa Indonesia dengan <b>Dates in: Indonesian</b> di tab Layout (<code>"locale": "id"</code>). Tanggal dibaca dari teks ISO (<code>2026-10-19</code>, <code>2026-10-19T08:30:00Z</code>) atau Unix time.</li>
     <li>Fungsi <code>sum</code>, <code>avg</code>, <code>min</code>, <code>max</code>, <code>count</code> menghitung atas banyak baris. Isinya boleh berupa perhitungan.</li>
     <li><code>count()</code> menghitung semua baris; <code>count(f)</code> hanya baris yang <code>f</code>-nya berupa angka.</li>
@@ -622,7 +624,7 @@ groupFooter   Total wilayah   {{sum(amt):0}}</code></pre>
     <tr><td><code>pie</code></td><td>Lingkaran dengan legenda</td><td>Porsi dari keseluruhan</td></tr>
     <tr><td><code>donut</code></td><td>Pie berlubang</td><td>Porsi dari keseluruhan</td></tr>
   </table></div>
-  <p>Chart memakai cakupan yang sama dengan rumus: di <code>summary</code> ia merangkum seluruh baris, di <code>groupFooter</code> hanya kelompok itu. Skala nilai <code>bar</code>, <code>hbar</code>, dan <code>line</code> selalu memuat nol, jadi nilai negatif tampil di bawah garis nol (<code>pie</code> dan <code>donut</code> menggambarnya sebagai nol). Jika kategorinya rapat, label ditampilkan selang-seling agar tidak bertumpuk. Chart muncul di PDF dan HTML, tidak di Excel dan CSV. Lihat template <b>Laporan penjualan</b> (donut dan batang) dan <b>Daftar stok</b> (batang mendatar).</p>
+  <p>Chart memakai cakupan yang sama dengan rumus: di <code>summary</code> ia merangkum seluruh baris, di <code>groupFooter</code> hanya kelompok itu. Skala nilai <code>bar</code>, <code>hbar</code>, dan <code>line</code> selalu memuat nol, jadi nilai negatif tampil di bawah garis nol (<code>pie</code> dan <code>donut</code> menggambarnya sebagai nol). Jika kategorinya rapat, label ditampilkan selang-seling agar tidak bertumpuk. Chart muncul di PDF dan HTML, tidak di Excel dan CSV. Di designer, chart digambar dari data contoh dengan skala, label, dan format angka yang sama seperti hasil cetak. Lihat template <b>Laporan penjualan</b> (donut dan batang) dan <b>Daftar stok</b> (batang mendatar).</p>
 </section>
 
 <section id="barcode">
@@ -635,7 +637,7 @@ https://tokosaya.example/faktur/{{number}}</code></pre>
     <tr><td><code>qr</code></td><td>Kamera ponsel: tautan, nomor verifikasi</td><td>Teks apa pun</td></tr>
     <tr><td><code>code128</code></td><td>Pemindai kasir dan gudang: SKU, nomor transaksi</td><td>Huruf, angka, dan tanda baca dasar (ASCII)</td></tr>
   </table></div>
-  <p>QR code diberi ruang kosong dua modul di sekelilingnya, di dalam kotaknya, agar mudah dipindai di samping elemen lain. Centang <b>show text</b> untuk mencetak teksnya di bawah kode. Di designer kodenya tampil langsung di halaman. Teks yang tidak bisa dijadikan kode (kosong, atau bukan ASCII untuk Code 128) tidak menggambar apa-apa. Lihat template <b>Label produk</b>, <b>Struk kasir</b>, dan <b>Sertifikat</b>.</p>
+  <p>QR code diberi ruang kosong dua modul di sekelilingnya, di dalam kotaknya, agar mudah dipindai di samping elemen lain. Centang <b>show text</b> untuk mencetak teksnya di bawah kode. Di designer, kode yang tampil di halaman sama persis dengan hasil cetak (modul demi modul), jadi bisa langsung dicoba dipindai dengan ponsel; <code>{{field}}</code> di dalamnya diisi dari data contoh. Teks yang tidak bisa dijadikan kode (kosong, atau bukan ASCII untuk Code 128) tidak menggambar apa-apa. Lihat template <b>Label produk</b>, <b>Struk kasir</b>, dan <b>Sertifikat</b>.</p>
 </section>
 
 <section id="halaman">
@@ -659,6 +661,7 @@ https://tokosaya.example/faktur/{{number}}</code></pre>
     <tr><td>Baris data, subtotal, total</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
     <tr><td>Angka tetap angka (bisa dijumlah)</td><td class="no">–</td><td class="no">–</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
     <tr><td>Bold, format angka, lebar kolom</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">–</td></tr>
+    <tr><td>Warna, rata, garis sel, sel yang digabung ke kanan</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">–</td></tr>
   </table></div>
   <h3>Bagaimana desain menjadi tabel Excel</h3>
   <p>Untuk XLSX, XLS, dan CSV, setiap teks dan sel tabel di band <code>detail</code> menjadi satu <b>kolom</b>, urut seperti dibaca: dari atas ke bawah, lalu kiri ke kanan. Setiap baris data menjadi satu baris.</p>
@@ -666,6 +669,7 @@ https://tokosaya.example/faktur/{{number}}</code></pre>
   <p>Laporan tanpa band <code>detail</code>, seperti surat atau sertifikat, tidak punya kolom: teksnya diekspor baris demi baris seperti dibaca, termasuk band <code>header</code>.</p>
   <ul>
     <li>Teks yang isinya tepat satu placeholder angka, seperti <code>{{qty * price:2}}</code>, ditulis sebagai angka.</li>
+    <li>Garis tabel ikut sesuai <b>lines</b> (<code>grid</code>): semua garis, hanya antar-baris, atau hanya bingkai luar. Sel yang digabung ke kanan (misalnya label "Total" selebar dua kolom) tetap tergabung, asal kolom yang ditutupnya jelas dan hanya ada satu nilai di dalamnya, sehingga tidak ada angka yang tersembunyi. Gabungan ke bawah tidak ikut.</li>
     <li><code>xls</code> ditulis sebagai XML Spreadsheet 2003. Excel menampilkan satu peringatan bahwa format dan ekstensi berbeda; pilih <b>Yes</b>.</li>
     <li>CSV diawali BOM UTF-8 agar Excel membaca huruf seperti <code>é</code> dengan benar. Untuk Excel berbahasa Indonesia atau Eropa, yang memakai <code>;</code> sebagai pemisah, pilih <b>CSV separator</b> <code>;</code> di tab Layout.</li>
     <li>Di CSV, teks yang berawalan seperti formula (<code>=</code>, <code>@</code>, <code>+</code>, <code>-</code>) diberi tanda kutip tunggal di depan, supaya isian pengguna tidak dijalankan sebagai formula. Angka seperti <code>-5</code> tidak diubah.</li>
@@ -717,12 +721,12 @@ pdf, err := ddreport.Render(template, data, "pdf")</code></pre>
 <pre><code>&lt;dependency&gt;
   &lt;groupId&gt;io.github.gvjavx&lt;/groupId&gt;
   &lt;artifactId&gt;ddreport&lt;/artifactId&gt;
-  &lt;version&gt;0.1.3&lt;/version&gt;
+  &lt;version&gt;0.2.0&lt;/version&gt;
 &lt;/dependency&gt;
 &lt;dependency&gt;
   &lt;groupId&gt;io.github.gvjavx&lt;/groupId&gt;
   &lt;artifactId&gt;ddreport&lt;/artifactId&gt;
-  &lt;version&gt;0.1.3&lt;/version&gt;
+  &lt;version&gt;0.2.0&lt;/version&gt;
   &lt;classifier&gt;linux-x64&lt;/classifier&gt;
 &lt;/dependency&gt;</code></pre>
 <pre><code>import io.ddreport.DdReport;
@@ -730,9 +734,14 @@ pdf, err := ddreport.Render(template, data, "pdf")</code></pre>
 byte[] pdf = DdReport.render(templateJson, dataJson, "pdf");
 Files.write(Path.of("report.pdf"), pdf);</code></pre>
       <p>Dua argumen pertama adalah string JSON; serialisasikan objek data dengan Jackson atau Gson. Kegagalan dilempar sebagai <code>IOException</code>.</p>
+      <p>Di server yang mencetak banyak laporan, pakai <code>DdReport.Renderer</code>: satu proses yang terus berjalan, sekitar lima kali lebih cepat per laporan kecil.</p>
+<pre><code>try (DdReport.Renderer renderer = new DdReport.Renderer()) { // atau new DdReport.Renderer(Duration.ofSeconds(30))
+    byte[] pdf = renderer.render(templateJson, dataJson, "pdf");
+}</code></pre>
+      <p>Beberapa thread memakai satu <code>Renderer</code> secara bergantian; untuk mencetak paralel, buat satu per thread. Laporan yang gagal atau terlalu lama hanya menggagalkan laporan itu sendiri.</p>
     </div>
     <div role="tabpanel" data-panel="kotlin">
-      <p>Kotlin memakai class Java yang sama dari Maven Central: <code>implementation("io.github.gvjavx:ddreport:0.1.3")</code> dan <code>runtimeOnly("io.github.gvjavx:ddreport:0.1.3:linux-x64")</code>, dengan classifier untuk sistem tempat aplikasi berjalan.</p>
+      <p>Kotlin memakai class Java yang sama dari Maven Central: <code>implementation("io.github.gvjavx:ddreport:0.2.0")</code> dan <code>runtimeOnly("io.github.gvjavx:ddreport:0.2.0:linux-x64")</code>, dengan classifier untuk sistem tempat aplikasi berjalan.</p>
 <pre><code>import io.ddreport.DdReport
 
 val xlsx = DdReport.render(templateJson, dataJson, "xlsx")
@@ -746,6 +755,13 @@ File("report.xlsx").writeBytes(xlsx)</code></pre>
 const pdf = await renderAsync(template, data, 'pdf') // Buffer
 res.type('application/pdf').send(pdf)</code></pre>
       <p><code>template</code> dan <code>data</code> adalah objek biasa. <code>renderAsync</code> mengembalikan Promise dan tidak memblokir event loop; <code>render</code> adalah versi sinkronnya. Keduanya melempar <code>Error</code> berisi pesan dari binary jika gagal.</p>
+      <p>Di server yang mencetak banyak laporan, biarkan prosesnya tetap berjalan (sekitar lima kali lebih cepat per laporan kecil):</p>
+<pre><code>const { createRenderer } = require('ddreport')
+
+const renderer = createRenderer({ processes: 2 }) // opsional: { timeout: 30000 }
+const pdf = await renderer.render(template, data, 'pdf')
+renderer.close() // saat server berhenti</code></pre>
+      <p>Laporan menunggu giliran jika semua proses sibuk. Proses yang berhenti atau terlalu lama hanya menggagalkan laporannya sendiri dan diganti yang baru; proses yang menganggur tidak menahan Node.js tetap berjalan.</p>
     </div>
     <div role="tabpanel" data-panel="http">
       <p>Dari bahasa apa pun, lewat mode <code>-serve</code>.</p>
@@ -924,6 +940,7 @@ $env:DDREPORT_BIN = "$PWD\ddreport.exe"</code></pre></div>
     <tr><th>Flag / variabel</th><th>Keterangan</th></tr>
     <tr><td><code>-format</code></td><td><code>pdf</code> (default), <code>html</code>, <code>xlsx</code>, <code>xls</code>, <code>csv</code></td></tr>
     <tr><td><code>-serve alamat</code></td><td>Menjalankan designer (dengan template siap pakai) dan endpoint <code>POST /render</code>. Permintaan dari halaman situs lain di browser ditolak, jadi panggil endpoint ini dari backend Anda</td></tr>
+    <tr><td><code>-stdio</code></td><td>Terus berjalan dan mencetak permintaan satu per satu dari stdin: baris <code>&lt;format&gt; &lt;panjang&gt;</code> lalu <code>{"template": ..., "data": ...}</code> sepanjang itu; jawabannya baris <code>ok &lt;panjang&gt;</code> dan dokumennya, atau <code>error &lt;panjang&gt;</code> dan pesannya. Dipakai <code>DdReport.Renderer</code> dan <code>createRenderer</code></td></tr>
     <tr><td><code>DDREPORT_BIN</code></td><td>Lokasi binary, dibaca oleh wrapper Java dan Node.js</td></tr>
     <tr><td><code>DDREPORT_FONT</code> · <code>_BOLD</code></td><td>Font pengganti untuk seluruh laporan. Lihat <a href="#font">Font</a></td></tr>
     <tr><td><code>DDREPORT_FONTS</code></td><td>Folder font tambahan (<code>Nama-Regular.ttf</code>, ...). Lihat <a href="#font">Font</a></td></tr>
@@ -941,28 +958,31 @@ node --test node/test.js              # wrapper Node.js
 javac -d out java/io/ddreport/DdReport.java java/DdReportTest.java
 java -cp out DdReportTest             # wrapper Java</code></pre>
   <p>Designer punya halaman test sendiri: sajikan folder <code>designer/</code> dengan web server (<code>npx serve designer</code>) lalu buka <code>/test.html</code>. Halaman itu menjalankan lebih dari 200 pemeriksaan pada designer dan menampilkan yang gagal; <code>node designer/run-tests.mjs</code> menjalankannya di Chromium, Firefox, dan WebKit sekaligus.</p>
+  <p>Untuk mencoba sendiri dengan tangan, <code>./run-local.sh</code> membangun binary dari kode saat ini dan membuka designer lengkap (Preview, ekspor, dan template siap pakai) di <code>http://127.0.0.1:8080</code>. Port lain: <code>./run-local.sh 9000</code>; tanpa membuka browser: <code>NO_BROWSER=1 ./run-local.sh</code>. <code>Ctrl+C</code> menghentikannya.</p>
 </section>
 
 <section id="batasan">
   <h2>Batasan</h2>
   <ul>
     <li>Pengelompokan sampai tiga tingkat.</li>
-    <li>Chart di kanvas designer digambar dari data contoh tanpa skala nilai, dan QR code di kanvas adalah gambaran bentuknya; kode yang bisa dipindai dan chart lengkap ada di hasil cetak dan Preview.</li>
-    <li>XLSX dan XLS membawa bold, format angka, lebar kolom, warna latar, warna teks, rata tengah/kanan, dan garis sel tabel (<code>grid</code> <code>all</code>); gabungan sel dan garis tabel <code>rows</code> / <code>outer</code> belum.</li>
-    <li>Wrapper Java, Kotlin, dan Node.js menjalankan satu proses per dokumen, dengan batas waktu 1 menit (bisa diubah). Di Node.js, pakai <code>renderAsync</code> agar server tidak terblokir selama proses itu berjalan.</li>
-    <li>Designer diuji otomatis di Chromium (Chrome, Edge), Firefox, dan WebKit (mesin Safari) di setiap push; perangkat layar sentuh sungguhan belum diuji.</li>
+    <li>XLSX dan XLS tidak membawa gabungan sel ke bawah (<code>rowSpan</code>), dan sel hanya digabung ke kanan bila kolom yang ditutupnya jelas. Chart, gambar, dan barcode hanya ada di PDF dan HTML.</li>
+    <li>Designer diuji otomatis di Chromium (Chrome, Edge), Firefox, dan WebKit (mesin Safari) di setiap push, termasuk sentuhan di layar HP yang diemulasikan browser (ketuk, geser, ubah ukuran, cubit); tetap coba juga di perangkat sungguhan sebelum rilis.</li>
   </ul>
 </section>
 
 <section id="versi">
   <h2>Riwayat versi</h2>
   <p>Daftar lengkapnya ada di <a href="https://github.com/gvjavx/DdDesignReport/blob/main/CHANGELOG.md">CHANGELOG.md</a>.</p>
-  <h3>Berikutnya (belum dirilis)</h3>
+  <h3>0.2.0 · 22 Okt 2026</h3>
   <ul>
     <li><b>Designer lebih mudah:</b> mode mudah dengan nama di setiap tombol, tombol <b>Start here</b> di halaman kosong, dan properti bernama <i>dari kiri</i>, <i>dari atas</i>, <i>lebar</i>, <i>tinggi</i>. Lihat <a href="#designer">Memakai designer</a>.</li>
     <li><b>Designer bisa disesuaikan:</b> opsi <code>hide</code> dan <code>messages</code>, <code>destroy()</code> untuk React dan Vue, tipe TypeScript, dan template di paket npm. Lihat <a href="#pasang-designer">Memasang designer</a>.</li>
     <li><b>Lima template baru:</b> kuitansi, surat jalan, rapor siswa, daftar hadir, dan laporan laba rugi. Lihat <a href="#template">galeri template</a>.</li>
-    <li><b>Excel:</b> garis sel tabel dan rata tengah/kanan ikut ke XLSX dan XLS.</li>
+    <li><b>Excel:</b> garis sel tabel (semua, antar-baris, atau bingkai), sel yang digabung ke kanan, dan rata tengah/kanan ikut ke XLSX dan XLS.</li>
+    <li><b>Mesin cetak:</b> <code>terbilang()</code> untuk angka dalam kata, dan <code>{{index}}</code> sebagai nomor baris di band detail. Lihat <a href="#hitung">Perhitungan &amp; total</a>.</li>
+    <li><b>Kanvas designer:</b> QR dan Code 128 yang sama persis dengan hasil cetak, chart dengan skala nilai, dan cubit-zoom di layar sentuh yang tidak lagi mengubah pilihan.</li>
+    <li><b>Backend:</b> <code>DdReport.Renderer</code> (Java, Kotlin) dan <code>createRenderer</code> (Node.js) yang menjaga proses tetap berjalan. Lihat <a href="#backend">Memanggil dari backend</a>.</li>
+    <li><b>Pengembangan:</b> <code>./run-local.sh</code> untuk mencoba designer lengkap secara lokal. Lihat <a href="#test">Test</a>.</li>
     <li><b>Perbaikan dan keamanan:</b> legenda pie tanpa irisan nol, pesan jelas untuk gambar rusak, <code>-serve</code> menolak permintaan dari situs lain, dan template dari orang lain tidak bisa membuat designer memuat alamat luar.</li>
   </ul>
   <h3>0.1.3 · 20 Okt 2026</h3>
