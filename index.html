@@ -958,6 +958,7 @@ node --test node/test.js              # wrapper Node.js
 javac -d out java/io/ddreport/DdReport.java java/DdReportTest.java
 java -cp out DdReportTest             # wrapper Java</code></pre>
   <p>Designer punya halaman test sendiri: sajikan folder <code>designer/</code> dengan web server (<code>npx serve designer</code>) lalu buka <code>/test.html</code>. Halaman itu menjalankan lebih dari 200 pemeriksaan pada designer dan menampilkan yang gagal; <code>node designer/run-tests.mjs</code> menjalankannya di Chromium, Firefox, dan WebKit sekaligus.</p>
+  <p>CI juga memeriksa kode Go dengan <code>govulncheck</code> di setiap push dan gagal bila ada celah keamanan yang sudah diketahui; jalankan sendiri dengan <code>go run golang.org/x/vuln/cmd/govulncheck@v1.9.0 ./...</code>.</p>
 </section>
 
 <section id="batasan">
