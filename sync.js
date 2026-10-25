@@ -1,6 +1,7 @@
 // Brings the website in line with the library. Run it after every library change:
 //   node sync.js [path to DdDesignReport]
-// It copies the designer, the bundled fonts and the ready-made templates, and renders each template
+// It copies the designer, the bundled fonts, the ready-made templates, the template JSON Schema and
+// llms.txt (the guide for LLMs, at the site's root), and renders each template
 // to previews/<id>.html and previews/<id>.pdf with the real ddreport binary.
 // The binary comes from DDREPORT_BIN, or is built from the library with Go.
 const fs = require('node:fs')
@@ -19,6 +20,8 @@ if (!bin) {
 
 fs.copyFileSync(path.join(lib, 'designer', 'designer.js'), path.join(site, 'designer.js'))
 fs.copyFileSync(path.join(lib, 'logo.svg'), path.join(site, 'logo.svg'))
+fs.copyFileSync(path.join(lib, 'designer', 'template.schema.json'), path.join(site, 'template.schema.json'))
+fs.copyFileSync(path.join(lib, 'llms.txt'), path.join(site, 'llms.txt'))
 fs.rmSync(path.join(site, 'templates'), { recursive: true, force: true })
 fs.rmSync(path.join(site, 'previews'), { recursive: true, force: true })
 fs.rmSync(path.join(site, 'fonts'), { recursive: true, force: true })
@@ -38,4 +41,4 @@ for (const entry of index) {
   entry.height = template.page.height
 }
 fs.writeFileSync(path.join(site, 'previews', 'index.json'), JSON.stringify(index, null, 2) + '\n')
-console.log(`synced designer.js, fonts and ${index.length} templates from ${lib}`)
+console.log(`synced designer.js, the schema, llms.txt, fonts and ${index.length} templates from ${lib}`)

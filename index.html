@@ -572,6 +572,11 @@ groupFooter   Total wilayah   {{sum(amt):0}}</code></pre>
   <p>Di designer: klik ganda teksnya, blok kata yang dimaksud, tekan B / I / U. Di JSON hasilnya berupa tag <code>&lt;b&gt;</code>, <code>&lt;i&gt;</code>, <code>&lt;u&gt;</code>:</p>
 <pre><code>Total: &lt;b&gt;{{sum(price):2}}&lt;/b&gt; &lt;i&gt;(belum termasuk pajak)&lt;/i&gt;</code></pre>
   <p>Hanya tiga tag itu yang dikenali. Tanda <code>&lt;</code> lain, termasuk yang berasal dari data, dicetak apa adanya, jadi data pengguna tidak bisa menyisipkan HTML. Untuk mencetak tulisan <code>&lt;b&gt;</code> itu sendiri, tulis <code>&amp;lt;b&gt;</code>; designer melakukannya otomatis saat Anda mengetiknya.</p>
+  <h3>Warna sesuai data</h3>
+  <p>Warna teks, isi, warna tabel (<code>textColor</code>, <code>stripe</code>, <code>headerFill</code>, ...), dan warna di <code>cellStyle</code> boleh berupa rumus, dihitung per baris (di tabel data: per item), juga di Excel:</p>
+<pre><code>"color": "{{if(total &lt; 0, '#dc2626', '#000000')}}"      angka negatif merah
+"fill":  "{{if(stock &lt; minimum, '#fee2e2', '')}}"       stok menipis disorot</code></pre>
+  <p>Hasil yang bukan <code>#rrggbb</code> diabaikan. Di designer: kolom <b>colour from data</b> dan <b>fill from data</b> di panel kanan (untuk tabel: warna teks isinya), ditulis tanpa kurung kurawal seperti <b>show when</b>: <code>if(total &lt; 0, '#dc2626', '#000000')</code>. Mengosongkannya kembali ke warna dari ribbon.</p>
   <p>Huruf yang tidak ada di font PDF bawaan (aksara non-Latin, emoji) dicetak sebagai <code>?</code>. Pakai salah satu font bundel atau font sendiri; lihat <a href="#font">Font</a>.</p>
 </section>
 
@@ -764,13 +769,55 @@ renderer.close() // saat server berhenti</code></pre>
       <p>Laporan menunggu giliran jika semua proses sibuk. Proses yang berhenti atau terlalu lama hanya menggagalkan laporannya sendiri dan diganti yang baru; proses yang menganggur tidak menahan Node.js tetap berjalan.</p>
     </div>
     <div role="tabpanel" data-panel="http">
-      <p>Dari bahasa apa pun, lewat mode <code>-serve</code>.</p>
-<pre><code>ddreport -serve 127.0.0.1:8080
+      <p>Dari bahasa apa pun (PHP, Python, .NET, ...), lewat mode <code>-serve</code> atau image Docker-nya (di setiap rilis setelah 0.2.1).</p>
+<pre><code>DDREPORT_TOKEN=rahasia-panjang ddreport -serve 127.0.0.1:8080
+# atau: docker run -p 8080:8080 -e DDREPORT_TOKEN=rahasia-panjang ghcr.io/gvjavx/ddreport
 
 curl -X POST "http://127.0.0.1:8080/render?format=pdf" \
+  -H "Authorization: Bearer rahasia-panjang" \
   -d '{"template": {...}, "data": {...}}' -o report.pdf</code></pre>
-      <p>Respons berisi dokumen dengan <code>Content-Type</code> yang sesuai, atau status 400 dengan pesan error. Ukuran body dibatasi 32 MB, dan koneksi yang macet diputus otomatis.</p>
-      <div class="notice warn">Endpoint ini tidak punya autentikasi. Jalankan di <code>127.0.0.1</code> atau di belakang backend Anda sendiri, jangan dibuka langsung ke internet.</div>
+      <p>Respons berisi dokumen dengan <code>Content-Type</code> yang sesuai, status 400 dengan pesan error, atau 401 bila tokennya salah. Ukuran body dibatasi 32 MB, dan koneksi yang macet diputus otomatis.</p>
+      <p>PHP:</p>
+<pre><code>$ch = curl_init('http://localhost:8080/render?format=pdf');
+curl_setopt_array($ch, [
+    CURLOPT_POST =&gt; true,
+    CURLOPT_HTTPHEADER =&gt; ['Content-Type: application/json', 'Authorization: Bearer ' . getenv('DDREPORT_TOKEN')],
+    CURLOPT_POSTFIELDS =&gt; json_encode(['template' =&gt; $template, 'data' =&gt; $data]),
+    CURLOPT_RETURNTRANSFER =&gt; true,
+]);
+$pdf = curl_exec($ch);
+if (curl_getinfo($ch, CURLINFO_HTTP_CODE) !== 200) {
+    throw new RuntimeException('ddreport: ' . $pdf); // pesan kesalahan template ada di body
+}
+
+// Laravel
+$pdf = Http::withToken(env('DDREPORT_TOKEN'))
+    -&gt;post('http://localhost:8080/render?format=pdf', ['template' =&gt; $template, 'data' =&gt; $data])
+    -&gt;throw()-&gt;body();</code></pre>
+      <p>Template boleh dibaca dengan <code>json_decode($json, true)</code>: <code>[]</code> yang ditulis PHP untuk objek kosong dibaca sebagai objek kosong.</p>
+      <p>Python:</p>
+<pre><code>import os, requests
+
+res = requests.post(
+    "http://localhost:8080/render",
+    params={"format": "pdf"},
+    headers={"Authorization": "Bearer " + os.environ["DDREPORT_TOKEN"]},
+    json={"template": template, "data": data},
+    timeout=60,
+)
+res.raise_for_status()  # pesan kesalahan template ada di res.text
+pdf = res.content</code></pre>
+      <p>C# (.NET):</p>
+<pre><code>var http = new HttpClient { BaseAddress = new Uri("http://localhost:8080") };
+http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Environment.GetEnvironmentVariable("DDREPORT_TOKEN"));
+
+// template, data: objects, or JsonElement read with JsonDocument.Parse(...).RootElement
+var body = new StringContent(JsonSerializer.Serialize(new { template, data }), Encoding.UTF8, "application/json");
+var res = await http.PostAsync("/render?format=pdf", body);
+if (!res.IsSuccessStatusCode)
+    throw new Exception("ddreport: " + await res.Content.ReadAsStringAsync()); // pesan kesalahan template ada di body
+byte[] pdf = await res.Content.ReadAsByteArrayAsync();</code></pre>
+      <div class="notice warn">Tanpa <code>DDREPORT_TOKEN</code>, siapa pun yang bisa menjangkau port itu bisa mencetak, dan <code>ddreport -serve</code> memberi peringatan bila alamatnya terbuka ke jaringan. Dengan token, designer di <code>/</code> tetap terbuka; preview dan ekspornya memakai token dari alamat halaman: <code>http://server:8080/#token=rahasia-panjang</code>.</div>
     </div>
   </div>
 </section>
@@ -867,6 +914,7 @@ export DDREPORT_FONT_BOLD=/fonts/NotoSans-Bold.ttf</code></pre></div>
 <!-- ---------- REFERENSI ---------- -->
 <section id="referensi">
   <div class="chapter"><span class="kicker">Referensi</span><h2>Template JSON</h2><p>Template adalah JSON biasa, jadi bisa juga dibuat atau diubah lewat kode.</p></div>
+  <p><a href="template.schema.json">JSON Schema</a>-nya (juga di paket npm <code>ddreport-designer/template.schema.json</code> dan di <code>/template.schema.json</code> pada <code>ddreport -serve</code>) memeriksa template di editor seperti VS Code (<code>"$schema"</code> tidak perlu ditulis di template; pasang lewat pengaturan <code>json.schemas</code> editor) dan menangkap salah ketik: properti yang tidak dikenal adalah kesalahan. Untuk asisten AI, <a href="llms.txt">llms.txt</a> berisi ringkasan cara menulis template beserta contoh yang dicek oleh test library.</p>
 <pre><code>{
   "page": {
     "width": 595, "height": 842,
@@ -940,6 +988,7 @@ $env:DDREPORT_BIN = "$PWD\ddreport.exe"</code></pre></div>
     <tr><th>Flag / variabel</th><th>Keterangan</th></tr>
     <tr><td><code>-format</code></td><td><code>pdf</code> (default), <code>html</code>, <code>xlsx</code>, <code>xls</code>, <code>csv</code></td></tr>
     <tr><td><code>-serve alamat</code></td><td>Menjalankan designer (dengan template siap pakai) dan endpoint <code>POST /render</code>. Permintaan dari halaman situs lain di browser ditolak, jadi panggil endpoint ini dari backend Anda</td></tr>
+    <tr><td><code>DDREPORT_TOKEN</code></td><td>Untuk <code>-serve</code>: setiap render harus mengirim <code>Authorization: Bearer &lt;token&gt;</code>. Lihat tab HTTP di <a href="#backend">Memanggil dari backend</a></td></tr>
     <tr><td><code>-stdio</code></td><td>Terus berjalan dan mencetak permintaan satu per satu dari stdin: baris <code>&lt;format&gt; &lt;panjang&gt;</code> lalu <code>{"template": ..., "data": ...}</code> sepanjang itu; jawabannya baris <code>ok &lt;panjang&gt;</code> dan dokumennya, atau <code>error &lt;panjang&gt;</code> dan pesannya. Dipakai <code>DdReport.Renderer</code> dan <code>createRenderer</code></td></tr>
     <tr><td><code>DDREPORT_BIN</code></td><td>Lokasi binary, dibaca oleh wrapper Java dan Node.js</td></tr>
     <tr><td><code>DDREPORT_FONT</code> · <code>_BOLD</code></td><td>Font pengganti untuk seluruh laporan. Lihat <a href="#font">Font</a></td></tr>
