@@ -726,12 +726,12 @@ pdf, err := ddreport.Render(template, data, "pdf")</code></pre>
 <pre><code>&lt;dependency&gt;
   &lt;groupId&gt;io.github.gvjavx&lt;/groupId&gt;
   &lt;artifactId&gt;ddreport&lt;/artifactId&gt;
-  &lt;version&gt;0.2.1&lt;/version&gt;
+  &lt;version&gt;0.3.0&lt;/version&gt;
 &lt;/dependency&gt;
 &lt;dependency&gt;
   &lt;groupId&gt;io.github.gvjavx&lt;/groupId&gt;
   &lt;artifactId&gt;ddreport&lt;/artifactId&gt;
-  &lt;version&gt;0.2.1&lt;/version&gt;
+  &lt;version&gt;0.3.0&lt;/version&gt;
   &lt;classifier&gt;linux-x64&lt;/classifier&gt;
 &lt;/dependency&gt;</code></pre>
 <pre><code>import io.ddreport.DdReport;
@@ -746,7 +746,7 @@ Files.write(Path.of("report.pdf"), pdf);</code></pre>
       <p>Beberapa thread memakai satu <code>Renderer</code> secara bergantian; untuk mencetak paralel, buat satu per thread. Laporan yang gagal atau terlalu lama hanya menggagalkan laporan itu sendiri.</p>
     </div>
     <div role="tabpanel" data-panel="kotlin">
-      <p>Kotlin memakai class Java yang sama dari Maven Central: <code>implementation("io.github.gvjavx:ddreport:0.2.1")</code> dan <code>runtimeOnly("io.github.gvjavx:ddreport:0.2.1:linux-x64")</code>, dengan classifier untuk sistem tempat aplikasi berjalan.</p>
+      <p>Kotlin memakai class Java yang sama dari Maven Central: <code>implementation("io.github.gvjavx:ddreport:0.3.0")</code> dan <code>runtimeOnly("io.github.gvjavx:ddreport:0.3.0:linux-x64")</code>, dengan classifier untuk sistem tempat aplikasi berjalan.</p>
 <pre><code>import io.ddreport.DdReport
 
 val xlsx = DdReport.render(templateJson, dataJson, "xlsx")
@@ -769,7 +769,7 @@ renderer.close() // saat server berhenti</code></pre>
       <p>Laporan menunggu giliran jika semua proses sibuk. Proses yang berhenti atau terlalu lama hanya menggagalkan laporannya sendiri dan diganti yang baru; proses yang menganggur tidak menahan Node.js tetap berjalan.</p>
     </div>
     <div role="tabpanel" data-panel="http">
-      <p>Dari bahasa apa pun (PHP, Python, .NET, ...), lewat mode <code>-serve</code> atau image Docker-nya (di setiap rilis setelah 0.2.1).</p>
+      <p>Dari bahasa apa pun (PHP, Python, .NET, ...), lewat mode <code>-serve</code> atau image Docker-nya (di setiap rilis mulai 0.3.0).</p>
 <pre><code>DDREPORT_TOKEN=rahasia-panjang ddreport -serve 127.0.0.1:8080
 # atau: docker run -p 8080:8080 -e DDREPORT_TOKEN=rahasia-panjang ghcr.io/gvjavx/ddreport
 
@@ -1022,6 +1022,12 @@ java -cp out DdReportTest             # wrapper Java</code></pre>
 <section id="versi">
   <h2>Riwayat versi</h2>
   <p>Daftar lengkapnya ada di <a href="https://github.com/gvjavx/DdDesignReport/blob/main/CHANGELOG.md">CHANGELOG.md</a>.</p>
+  <h3>0.3.0 · 26 Okt 2026</h3>
+  <ul>
+    <li><b>Server dan Docker:</b> image <code>ghcr.io/gvjavx/ddreport</code> (amd64 dan arm64, sekitar 17 MB) untuk mencetak dari PHP, Python, .NET, atau bahasa apa pun lewat HTTP, dengan contoh PHP, Laravel, Python, dan C#. <code>DDREPORT_TOKEN</code> mewajibkan <code>Authorization: Bearer &lt;token&gt;</code>, dan <code>-serve</code> memberi peringatan bila alamatnya terbuka ke jaringan tanpa token.</li>
+    <li><b>Warna dari data:</b> <code>color</code>, <code>fill</code>, warna tabel, dan <code>cellStyle</code> boleh berupa rumus, misalnya <code>{{if(total &lt; 0, '#dc2626', '#000000')}}</code>, juga di XLSX dan XLS. Di designer: <i>colour from data</i> dan <i>fill from data</i>.</li>
+    <li><b>Template:</b> JSON Schema (<code>template.schema.json</code>) dan <code>llms.txt</code> untuk asisten AI. Template dari PHP yang menulis objek kosong sebagai <code>[]</code> tidak lagi ditolak.</li>
+  </ul>
   <h3>0.2.1 · 22 Okt 2026</h3>
   <ul>
     <li><b>Keamanan:</b> binary <code>ddreport</code> dibangun dengan Go 1.26.10. Binary 0.2.0 dibangun dengan Go 1.25.0 dan membawa celah pustaka standar Go yang sudah diketahui, terutama berisiko untuk mode <code>-serve</code>. Perbarui ke 0.2.1; tidak ada perubahan perilaku.</li>
@@ -1069,7 +1075,7 @@ java -cp out DdReportTest             # wrapper Java</code></pre>
 </div>
 </main>
 
-<footer><div class="wrap">DdDesignReport · lisensi MIT · <a href="https://github.com/gvjavx/DdDesignReport">GitHub</a></div></footer>
+<footer><div class="wrap">DdDesignReport · lisensi MIT · <a href="https://github.com/gvjavx/DdDesignReport">GitHub</a> · dibuat oleh Naufal Hilmi Abdurrahman, lihat proyek lainnya di <a href="https://aufal-tech.vercel.app/">aufal-tech.vercel.app</a></div></footer>
 
 <script>
 // theme: follows the system until the visitor picks one
