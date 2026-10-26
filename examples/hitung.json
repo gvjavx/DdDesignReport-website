@@ -1,0 +1,35 @@
+{
+  "template": {
+    "page": { "width": 420, "height": 240, "margin": 20 },
+    "thousands": ".", "decimal": ",", "locale": "id",
+    "bands": {
+      "header": { "height": 24, "elements": [
+        { "type": "text", "x": 0, "y": 0, "w": 380, "h": 14, "text": "{{date:dd MMMM yyyy}} · {{count()}} barang", "color": "#475569" }
+      ] },
+      "detail": { "height": 18, "elements": [
+        { "type": "text", "x": 0, "y": 0, "w": 280, "h": 14, "text": "{{index}}. {{name}} ({{qty}} × {{price:0}})" },
+        { "type": "text", "x": 280, "y": 0, "w": 100, "h": 14, "text": "{{qty * price:0}}", "align": "right" }
+      ] },
+      "summary": { "height": 120, "elements": [
+        { "type": "line", "x": 200, "y": 4, "w": 180, "h": 0, "border": 0.5, "color": "#94a3b8" },
+        { "type": "text", "x": 200, "y": 10, "w": 80, "h": 14, "text": "Subtotal" },
+        { "type": "text", "x": 280, "y": 10, "w": 100, "h": 14, "text": "{{sum(qty * price):0}}", "align": "right" },
+        { "type": "text", "x": 200, "y": 28, "w": 80, "h": 14, "text": "PPN 11%" },
+        { "type": "text", "x": 280, "y": 28, "w": 100, "h": 14, "text": "{{sum(qty * price) * 0.11:0}}", "align": "right" },
+        { "type": "text", "x": 200, "y": 46, "w": 80, "h": 14, "text": "Total", "bold": true },
+        { "type": "text", "x": 280, "y": 46, "w": 100, "h": 14, "text": "{{sum(qty * price) * 1.11:0}}", "align": "right", "bold": true },
+        { "type": "text", "x": 0, "y": 72, "w": 380, "h": 14, "text": "Terbilang: <i>{{terbilang(sum(qty * price) * 1.11)}} rupiah</i>" },
+        { "type": "text", "x": 0, "y": 92, "w": 380, "h": 14, "text": "Status: <b>{{if(paid, 'LUNAS', 'BELUM LUNAS')}}</b>" }
+      ] }
+    }
+  },
+  "data": {
+    "date": "2026-10-26",
+    "paid": true,
+    "rows": [
+      { "name": "Kopi", "qty": 2, "price": 18000 },
+      { "name": "Gula", "qty": 3, "price": 6000 },
+      { "name": "Teh", "qty": 1, "price": 12000 }
+    ]
+  }
+}

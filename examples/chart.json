@@ -1,0 +1,21 @@
+{
+  "template": {
+    "page": { "width": 420, "height": 220, "margin": 20 },
+    "bands": {
+      "summary": { "height": 180, "elements": [
+        { "type": "chart", "x": 0, "y": 0, "w": 220, "h": 180, "chart": "bar", "label": "month", "value": "sales" },
+        { "type": "chart", "x": 230, "y": 0, "w": 150, "h": 180, "chart": "donut", "label": "category", "value": "sales" }
+      ] }
+    }
+  },
+  "data": {
+    "rows": [
+      { "month": "Agu", "category": "Minuman", "sales": 42 },
+      { "month": "Agu", "category": "Makanan", "sales": 30 },
+      { "month": "Sep", "category": "Minuman", "sales": 51 },
+      { "month": "Sep", "category": "Camilan", "sales": 18 },
+      { "month": "Okt", "category": "Makanan", "sales": 64 },
+      { "month": "Okt", "category": "Camilan", "sales": 25 }
+    ]
+  }
+}

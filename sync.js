@@ -41,4 +41,12 @@ for (const entry of index) {
   entry.height = template.page.height
 }
 fs.writeFileSync(path.join(site, 'previews', 'index.json'), JSON.stringify(index, null, 2) + '\n')
-console.log(`synced designer.js, the schema, llms.txt, fonts and ${index.length} templates from ${lib}`)
+
+// the small examples in the docs (examples/, written for this site): each is shown above its own JSON
+fs.mkdirSync(path.join(site, 'previews', 'examples'))
+const examples = fs.readdirSync(path.join(site, 'examples')).filter(f => f.endsWith('.json'))
+for (const f of examples) {
+  const out = execFileSync(bin, ['-format', 'html'], { input: fs.readFileSync(path.join(site, 'examples', f)), maxBuffer: Infinity })
+  fs.writeFileSync(path.join(site, 'previews', 'examples', f.replace(/\.json$/, '.html')), out)
+}
+console.log(`synced designer.js, the schema, llms.txt, fonts, ${index.length} templates and ${examples.length} examples from ${lib}`)

@@ -1,0 +1,26 @@
+{
+  "template": {
+    "page": { "width": 420, "height": 160, "margin": 20 },
+    "thousands": ".", "decimal": ",",
+    "bands": {
+      "summary": { "height": 100, "elements": [
+        { "type": "table", "x": 0, "y": 0, "w": 380, "h": 60, "data": "items", "header": true, "footer": true,
+          "border": 0.5, "grow": true, "headerFill": "#1e3a8a", "headerColor": "#ffffff", "stripe": "#f1f5f9",
+          "cols": [1, 6, 2, 3], "aligns": ["center", "left", "right", "right"],
+          "cells": [
+            ["No", "Barang", "Qty", "Jumlah"],
+            ["{{index}}", "{{name}}", "{{qty}}", "{{qty * price:0}}"],
+            ["", "Total", "{{sum(qty)}}", "{{sum(qty * price):0}}"]
+          ] }
+      ] }
+    }
+  },
+  "data": {
+    "items": [
+      { "name": "Kopi", "qty": 2, "price": 18000 },
+      { "name": "Gula", "qty": 3, "price": 6000 },
+      { "name": "Teh", "qty": 1, "price": 12000 },
+      { "name": "Roti", "qty": 4, "price": 9000 }
+    ]
+  }
+}

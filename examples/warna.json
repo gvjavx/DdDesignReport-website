@@ -1,0 +1,26 @@
+{
+  "template": {
+    "page": { "width": 420, "height": 166, "margin": 20 },
+    "thousands": ".", "decimal": ",",
+    "bands": {
+      "header": { "height": 26, "elements": [
+        { "type": "text", "x": 0, "y": 0, "w": 380, "h": 16, "text": "Laba bersih: <b>{{sum(profit):0}}</b> <i>(belum termasuk pajak)</i>" }
+      ] },
+      "detail": { "height": 20, "elements": [
+        { "type": "rect", "x": 0, "y": 1, "w": 380, "h": 18, "border": 0, "fill": "{{if(profit < 0, '#fee2e2', '#ffffff')}}" },
+        { "type": "text", "x": 6, "y": 3, "w": 200, "h": 14, "text": "{{month}}" },
+        { "type": "text", "x": 200, "y": 3, "w": 174, "h": 14, "text": "{{profit:0}}", "align": "right",
+          "color": "{{if(profit < 0, '#dc2626', '#15803d')}}" }
+      ] }
+    }
+  },
+  "data": {
+    "rows": [
+      { "month": "Juli", "profit": 4200000 },
+      { "month": "Agustus", "profit": -850000 },
+      { "month": "September", "profit": 3100000 },
+      { "month": "Oktober", "profit": -120000 },
+      { "month": "November", "profit": 5600000 }
+    ]
+  }
+}

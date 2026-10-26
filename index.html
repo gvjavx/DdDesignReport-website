@@ -174,6 +174,17 @@
   details.recipe > div { padding: 4px 16px 14px }
   footer { border-top: 1px solid var(--line); padding: 28px 0; color: var(--muted); font-size: 14px }
 
+  /* examples: what the library printed, above the JSON that printed it */
+  .example { margin: 18px 0 26px }
+  .example .show { border: 1px solid var(--line); border-radius: 12px 12px 0 0; background: var(--soft); padding: 20px; display: grid; place-items: center }
+  .example .show .paper { width: 100% }
+  .example .bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; border: 1px solid var(--line); border-top: 0; background: var(--card); padding: 7px 12px; font-size: 13.5px; color: var(--muted) }
+  .example .bar span { display: flex; gap: 6px }
+  .example .bar a, .example .bar button { font: inherit; font-weight: 600; padding: 3px 10px; border-radius: 7px; border: 1px solid var(--line); background: var(--soft); color: var(--text); text-decoration: none; cursor: pointer }
+  .example .bar button { background: var(--accent); border-color: var(--accent); color: var(--accent-text) }
+  .example pre { margin: 0; border-radius: 0 0 12px 12px; max-height: 340px }
+  .example pre code { font-size: 12.5px }
+
   @media (max-width: 900px) {
     .hero .wrap { grid-template-columns: 1fr; padding-top: 40px; padding-bottom: 40px }
     .steps, .flow3, .diagram { grid-template-columns: minmax(0, 1fr) }
@@ -185,6 +196,7 @@
     .top nav a { white-space: nowrap; padding: 6px 9px }
     .brand { font-size: 0 }
     .strip { padding: 48px 0 }
+    .example .show { padding: 10px }
     .wrap { padding: 0 16px }
   }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto } .btn:hover { transform: none } }
@@ -223,7 +235,7 @@
       </div>
       <ul class="formats" aria-label="Format hasil dan bahasa backend">
         <li class="label">Hasil:</li><li>PDF</li><li>HTML</li><li>XLSX</li><li>XLS</li><li>CSV</li>
-        <li class="label">&nbsp;Backend:</li><li>Go</li><li>Java</li><li>Kotlin</li><li>Node.js</li>
+        <li class="label">&nbsp;Backend:</li><li>Go</li><li>Java</li><li>Kotlin</li><li>Node.js</li><li>PHP, Python, .NET lewat HTTP</li>
       </ul>
     </div>
     <div class="paper" data-preview="invoice" data-w="595" data-h="842" role="img" aria-label="Contoh hasil: faktur"></div>
@@ -462,6 +474,8 @@ Kepada: {{customer.name}}
 = {{qty * price:0}}</code></pre></div>
     <div><h4>3 · Hasil</h4><div class="result">Faktur INV-001<br>Kepada: Budi<br><br>Kopi<br>2 × 18,000<br>= 36,000</div></div>
   </div>
+  <div class="notice"><b>Tentang contoh di panduan ini.</b> Setiap kotak contoh adalah hasil cetak asli library, dan di bawahnya JSON lengkap yang mencetaknya: template dan data dalam satu file. <b>Buka di designer</b> memuatnya ke <a href="#coba">designer di atas</a> untuk diubah-ubah. Untuk mencetaknya sendiri, simpan JSON-nya sebagai <code>contoh.json</code>, lalu jalankan <code>ddreport -format pdf &lt; contoh.json &gt; hasil.pdf</code>, atau kirim isinya apa adanya ke <code>POST /render?format=pdf</code> (lihat <a href="#backend">Backend</a>).</div>
+  <div class="example" data-example="placeholder"></div>
   <div class="scroll"><table>
     <tr><th>Tulis</th><th>Hasil</th></tr>
     <tr><td><code>{{name}}</code></td><td>Nilai field <code>name</code>. Di band <code>detail</code> dicari di baris saat ini dulu, lalu di data utama.</td></tr>
@@ -493,6 +507,8 @@ Kepada: {{customer.name}}
     <tr><td>Nomor urut baris</td><td><code>{{index}}</code> di band detail: 1, 2, 3, …, mulai lagi dari 1 di setiap kelompok</td></tr>
     <tr><td>Tanggal</td><td><code>{{date:dd MMMM yyyy}}</code> → 19 Oktober 2026 · <code>{{now:dd/MM/yyyy HH:mm}}</code> (waktu cetak)</td></tr>
   </table></div>
+  <p>Nomor urut, subtotal, pajak, total, terbilang, status, dan tanggal berbahasa Indonesia, semuanya dihitung template dari data mentah:</p>
+  <div class="example" data-example="hitung"></div>
   <ul>
     <li>Operator: <code>+</code> <code>-</code> <code>*</code> <code>/</code> dan kurung. Perkalian dan pembagian dihitung lebih dulu.</li>
     <li>Perbandingan <code>=</code> <code>!=</code> <code>&lt;</code> <code>&gt;</code> <code>&lt;=</code> <code>&gt;=</code>, digabung dengan <code>and</code>, <code>or</code>, <code>not</code>. Teks ditulis dalam kutip tunggal: <code>status = 'lunas'</code>.</li>
@@ -514,6 +530,8 @@ groupHeader  {{category}} ({{count()}} produk)
 detail       {{name}}            {{qty * price:0}}
 groupFooter  Subtotal            {{sum(qty * price):0}}
 summary      Total               {{sum(qty * price):0}}</code></pre>
+  <p>Data di contoh ini tidak urut kategori; library mengelompokkannya sendiri:</p>
+  <div class="example" data-example="grouping"></div>
   <p>Rumus yang sama memberi hasil berbeda tergantung band-nya:</p>
   <ul>
     <li>di <code>groupHeader</code>, <code>detail</code>, <code>groupFooter</code>: dihitung atas <b>kelompok itu</b>,</li>
@@ -559,6 +577,8 @@ groupFooter   Total wilayah   {{sum(amt):0}}</code></pre>
   <p>Teks yang lebih panjang dari satu halaman, misalnya isi surat, berlanjut ke halaman berikutnya baris demi baris, tanpa ada yang terpotong. Footer yang memanjang tetap berada di dalam margin bawah.</p>
   <h3>Tampil jika</h3>
   <p>Setiap elemen punya kolom <b>show when</b> (<code>showIf</code>) di panel kanan, misalnya <code>paid = 'yes'</code> atau <code>stock &lt; minimum</code>. Jika kondisinya salah, elemen tidak dicetak; di Excel dan CSV selnya kosong. Elemen dengan kondisi diberi garis putus-putus jingga di designer. Kondisi yang salah tulis tetap menampilkan elemennya agar kesalahannya terlihat.</p>
+  <p>Cap <b>LUNAS</b> (kotak dan teks) dan <b>JATUH TEMPO</b> ada di setiap baris, tapi hanya satu yang tercetak sesuai <code>paid</code>:</p>
+  <div class="example" data-example="showif"></div>
   <p>Beberapa teks Wrap dalam satu band saling memperhitungkan: teks yang bertumpuk mendorong bergantian (dorongannya dijumlahkan), sedangkan teks yang bersebelahan mengikuti yang paling tinggi.</p>
   <h3>Gambar</h3>
   <p>Gambar disimpan di dalam template sebagai data URI (<code>data:image/png;base64,…</code>); designer melakukannya otomatis saat Anda memilih file. Alamat gambar di internet tidak diterima, begitu pula SVG dan WebP: pencetakan gagal dengan pesan <code>image: src must be a PNG, JPEG or GIF data URI</code>.</p>
@@ -576,6 +596,8 @@ groupFooter   Total wilayah   {{sum(amt):0}}</code></pre>
   <p>Warna teks, isi, warna tabel (<code>textColor</code>, <code>stripe</code>, <code>headerFill</code>, ...), dan warna di <code>cellStyle</code> boleh berupa rumus, dihitung per baris (di tabel data: per item), juga di Excel:</p>
 <pre><code>"color": "{{if(total &lt; 0, '#dc2626', '#000000')}}"      angka negatif merah
 "fill":  "{{if(stock &lt; minimum, '#fee2e2', '')}}"       stok menipis disorot</code></pre>
+  <p>Bulan yang rugi dicetak merah dengan latar merah muda; judulnya memakai tebal dan miring di dalam satu teks:</p>
+  <div class="example" data-example="warna"></div>
   <p>Hasil yang bukan <code>#rrggbb</code> diabaikan. Di designer: kolom <b>colour from data</b> dan <b>fill from data</b> di panel kanan (untuk tabel: warna teks isinya), ditulis tanpa kurung kurawal seperti <b>show when</b>: <code>if(total &lt; 0, '#dc2626', '#000000')</code>. Mengosongkannya kembali ke warna dari ribbon.</p>
   <p>Huruf yang tidak ada di font PDF bawaan (aksara non-Latin, emoji) dicetak sebagai <code>?</code>. Pakai salah satu font bundel atau font sendiri; lihat <a href="#font">Font</a>.</p>
 </section>
@@ -595,6 +617,8 @@ groupFooter   Total wilayah   {{sum(amt):0}}</code></pre>
     <tr><td>header line · total line · frame</td><td><code>headerLine</code>, <code>footerLine</code>, <code>frame</code></td><td>Garis lebih tebal (pt) di bawah baris judul, di atas baris total, dan di sekeliling tabel.</td></tr>
   </table></div>
   <p>Warna yang belum dipilih tampak pudar; tombol <b>×</b> di sebelahnya mengosongkannya lagi. Isi tabel juga bisa memakai fill, font, dan ukuran dari ribbon.</p>
+  <p>Tabel dengan baris judul, baris selang-seling, dan baris total, yang barisnya diulang untuk setiap item di <code>items</code> (lihat <a href="#tabel-data">Tabel data</a> di bawah):</p>
+  <div class="example" data-example="tabel"></div>
   <h3>Sel: warna sendiri dan sel gabungan</h3>
   <p>Klik sebuah sel. Bagian <b>Sel</b> di panel kanan mengatur warna latar, warna teks, rata, tebal, dan miring sel itu saja, di atas gaya baris dan kolomnya. Tombol <b>Merge right</b> dan <b>Merge down</b> menggabung sel dengan tetangganya (teksnya ikut dipindahkan, tidak ada yang hilang), <b>Unmerge</b> memisahkannya lagi. Gaya dan gabungan ikut bergeser saat baris atau kolom disisipkan atau dihapus.</p>
   <ul>
@@ -603,7 +627,9 @@ groupFooter   Total wilayah   {{sum(amt):0}}</code></pre>
     <li>Saat mengetik di sel: <code>Enter</code> menyimpan, <code>Shift+Enter</code> baris baru, <code>Tab</code> / <code>Shift+Tab</code> ke sel berikutnya / sebelumnya. Sebagian teks sel bisa dibuat tebal, miring, atau bergaris bawah seperti di text box.</li>
     <li>Sel yang disalin dari Excel bisa langsung ditempel (<code>Ctrl+V</code>) ke tabel, mulai dari sel yang diklik; baris dan kolom ditambah bila perlu.</li>
   </ul>
-  <h3>Tabel data: daftar di dalam data</h3>
+  <p>Di JSON, gaya sel ada di <code>cellStyle</code>, dengan kunci <code>"baris,kolom"</code> mulai dari 0. Judul selebar empat kolom, baris judul kolom berwarna, satu sel disorot, dan label yang digabung tiga kolom:</p>
+  <div class="example" data-example="sel"></div>
+  <h3 id="tabel-data">Tabel data: daftar di dalam data</h3>
   <p>Isi <b>rows from data</b> dengan nama daftar di data, misalnya <code>items</code>. Baris judul dan baris total dicetak sekali; baris di antaranya diulang untuk setiap item. Di baris yang diulang, <code>{{name}}</code> adalah field item dan <code>{{index}}</code> nomor urutnya; di judul dan baris total, <code>{{sum(qty * price):0}}</code> dan <code>{{count()}}</code> menghitung semua item. Di designer tabel ini bertanda <b>↻ items</b>.</p>
 <pre><code>{ "number": "SO-1", "items": [ { "name": "Kopi", "qty": 2, "price": 18000 }, ... ] }</code></pre>
   <p>Taruh tabel data di band <code>detail</code> untuk mencetak daftar di setiap baris (setiap pesanan dengan itemnya sendiri), atau di <code>summary</code> untuk daftar di data utama. Tabel yang lebih panjang dari satu halaman berlanjut ke halaman berikutnya tanpa memotong baris, dan baris judulnya diulang di atas setiap halaman. Di XLSX dan CSV setiap item menjadi satu baris; warna latar dan warna teks sel ikut ke XLSX dan XLS.</p>
@@ -629,6 +655,8 @@ groupFooter   Total wilayah   {{sum(amt):0}}</code></pre>
     <tr><td><code>pie</code></td><td>Lingkaran dengan legenda</td><td>Porsi dari keseluruhan</td></tr>
     <tr><td><code>donut</code></td><td>Pie berlubang</td><td>Porsi dari keseluruhan</td></tr>
   </table></div>
+  <p>Dua chart dari baris yang sama: batang menjumlah penjualan per bulan, donut per kategori.</p>
+  <div class="example" data-example="chart"></div>
   <p>Chart memakai cakupan yang sama dengan rumus: di <code>summary</code> ia merangkum seluruh baris, di <code>groupFooter</code> hanya kelompok itu. Skala nilai <code>bar</code>, <code>hbar</code>, dan <code>line</code> selalu memuat nol, jadi nilai negatif tampil di bawah garis nol (<code>pie</code> dan <code>donut</code> menggambarnya sebagai nol). Jika kategorinya rapat, label ditampilkan selang-seling agar tidak bertumpuk. Chart muncul di PDF dan HTML, tidak di Excel dan CSV. Di designer, chart digambar dari data contoh dengan skala, label, dan format angka yang sama seperti hasil cetak. Lihat template <b>Laporan penjualan</b> (donut dan batang) dan <b>Daftar stok</b> (batang mendatar).</p>
 </section>
 
@@ -642,6 +670,8 @@ https://tokosaya.example/faktur/{{number}}</code></pre>
     <tr><td><code>qr</code></td><td>Kamera ponsel: tautan, nomor verifikasi</td><td>Teks apa pun</td></tr>
     <tr><td><code>code128</code></td><td>Pemindai kasir dan gudang: SKU, nomor transaksi</td><td>Huruf, angka, dan tanda baca dasar (ASCII)</td></tr>
   </table></div>
+  <p>Coba pindai dari layar dengan ponsel:</p>
+  <div class="example" data-example="barcode"></div>
   <p>QR code diberi ruang kosong dua modul di sekelilingnya, di dalam kotaknya, agar mudah dipindai di samping elemen lain. Centang <b>show text</b> untuk mencetak teksnya di bawah kode. Di designer, kode yang tampil di halaman sama persis dengan hasil cetak (modul demi modul), jadi bisa langsung dicoba dipindai dengan ponsel; <code>{{field}}</code> di dalamnya diisi dari data contoh. Teks yang tidak bisa dijadikan kode (kosong, atau bukan ASCII untuk Code 128) tidak menggambar apa-apa. Lihat template <b>Label produk</b>, <b>Struk kasir</b>, dan <b>Sertifikat</b>.</p>
 </section>
 
@@ -704,7 +734,7 @@ https://tokosaya.example/faktur/{{number}}</code></pre>
   <div class="chapter"><span class="kicker">Backend</span><h2>Memanggil dari backend</h2><p>Satu fungsi di setiap bahasa: template + data + format → dokumen.</p></div>
   <div class="tabs" data-tabs="lang">
     <div role="tablist" aria-label="Bahasa">
-      <button role="tab" data-tab="go">Go</button><button role="tab" data-tab="java">Java</button><button role="tab" data-tab="kotlin">Kotlin</button><button role="tab" data-tab="node">Node.js</button><button role="tab" data-tab="http">HTTP</button>
+      <button role="tab" data-tab="go">Go</button><button role="tab" data-tab="java">Java</button><button role="tab" data-tab="kotlin">Kotlin</button><button role="tab" data-tab="node">Node.js</button><button role="tab" data-tab="php">PHP</button><button role="tab" data-tab="python">Python</button><button role="tab" data-tab="csharp">C#</button><button role="tab" data-tab="http">HTTP</button>
     </div>
     <div role="tabpanel" data-panel="go">
       <p>Go memakai library-nya langsung, tanpa binary.</p>
@@ -776,8 +806,11 @@ renderer.close() // saat server berhenti</code></pre>
 curl -X POST "http://127.0.0.1:8080/render?format=pdf" \
   -H "Authorization: Bearer rahasia-panjang" \
   -d '{"template": {...}, "data": {...}}' -o report.pdf</code></pre>
-      <p>Respons berisi dokumen dengan <code>Content-Type</code> yang sesuai, status 400 dengan pesan error, atau 401 bila tokennya salah. Ukuran body dibatasi 32 MB, dan koneksi yang macet diputus otomatis.</p>
-      <p>PHP:</p>
+      <p>Respons berisi dokumen dengan <code>Content-Type</code> yang sesuai, status 400 dengan pesan error, atau 401 bila tokennya salah. Ukuran body dibatasi 32 MB, dan koneksi yang macet diputus otomatis. Body-nya sama persis dengan file JSON di setiap <a href="#data">contoh panduan</a>. Contoh siap pakai untuk PHP, Python, dan C# ada di tab masing-masing.</p>
+      <div class="notice warn">Tanpa <code>DDREPORT_TOKEN</code>, siapa pun yang bisa menjangkau port itu bisa mencetak, dan <code>ddreport -serve</code> memberi peringatan bila alamatnya terbuka ke jaringan. Dengan token, designer di <code>/</code> tetap terbuka; preview dan ekspornya memakai token dari alamat halaman: <code>http://server:8080/#token=rahasia-panjang</code>.</div>
+    </div>
+    <div role="tabpanel" data-panel="php">
+      <p>PHP mencetak lewat server cetak <code>ddreport</code>: jalankan dulu seperti di tab <b>HTTP</b>, misalnya dengan Docker di sebelah aplikasi Anda.</p>
 <pre><code>$ch = curl_init('http://localhost:8080/render?format=pdf');
 curl_setopt_array($ch, [
     CURLOPT_POST =&gt; true,
@@ -795,7 +828,9 @@ $pdf = Http::withToken(env('DDREPORT_TOKEN'))
     -&gt;post('http://localhost:8080/render?format=pdf', ['template' =&gt; $template, 'data' =&gt; $data])
     -&gt;throw()-&gt;body();</code></pre>
       <p>Template boleh dibaca dengan <code>json_decode($json, true)</code>: <code>[]</code> yang ditulis PHP untuk objek kosong dibaca sebagai objek kosong.</p>
-      <p>Python:</p>
+    </div>
+    <div role="tabpanel" data-panel="python">
+      <p>Python mencetak lewat server cetak <code>ddreport</code>: jalankan dulu seperti di tab <b>HTTP</b>.</p>
 <pre><code>import os, requests
 
 res = requests.post(
@@ -807,7 +842,9 @@ res = requests.post(
 )
 res.raise_for_status()  # pesan kesalahan template ada di res.text
 pdf = res.content</code></pre>
-      <p>C# (.NET):</p>
+    </div>
+    <div role="tabpanel" data-panel="csharp">
+      <p>C# dan .NET mencetak lewat server cetak <code>ddreport</code>: jalankan dulu seperti di tab <b>HTTP</b>.</p>
 <pre><code>var http = new HttpClient { BaseAddress = new Uri("http://localhost:8080") };
 http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Environment.GetEnvironmentVariable("DDREPORT_TOKEN"));
 
@@ -817,7 +854,6 @@ var res = await http.PostAsync("/render?format=pdf", body);
 if (!res.IsSuccessStatusCode)
     throw new Exception("ddreport: " + await res.Content.ReadAsStringAsync()); // pesan kesalahan template ada di body
 byte[] pdf = await res.Content.ReadAsByteArrayAsync();</code></pre>
-      <div class="notice warn">Tanpa <code>DDREPORT_TOKEN</code>, siapa pun yang bisa menjangkau port itu bisa mencetak, dan <code>ddreport -serve</code> memberi peringatan bila alamatnya terbuka ke jaringan. Dengan token, designer di <code>/</code> tetap terbuka; preview dan ekspornya memakai token dari alamat halaman: <code>http://server:8080/#token=rahasia-panjang</code>.</div>
     </div>
   </div>
 </section>
@@ -1087,8 +1123,9 @@ document.getElementById('theme').onclick = () => {
   try { localStorage.setItem('theme', root.dataset.theme) } catch {}
 }
 
-// copy buttons on code blocks
-for (const pre of document.querySelectorAll('pre')) {
+// copy buttons on code blocks (the examples add theirs when they load)
+for (const pre of document.querySelectorAll('pre')) addCopy(pre)
+function addCopy(pre) {
   const b = document.createElement('button')
   b.className = 'copy'
   b.type = 'button'
@@ -1155,17 +1192,40 @@ function make() {
 make()
 simple.onchange = make
 
+function show(file) {
+  data = file.data // the charts on the page are drawn from the template's own sample data
+  designer.setTemplate(file.template)
+  designer.setData(data)
+}
 async function load(id) {
   data = undefined
   if (!id) return designer.setTemplate(), designer.setData()
   try {
-    const file = await (await fetch(`templates/${id}.json`)).json()
-    data = file.data // the charts on the page are drawn from the template's own sample data
-    designer.setTemplate(file.template)
-    designer.setData(data)
+    show(await (await fetch(`templates/${id}.json`)).json())
   } catch (err) { msg.textContent = 'Template tidak bisa dimuat: ' + err.message }
 }
 select.onchange = () => load(select.value)
+
+// the examples in the guide: the page the library printed, then the whole JSON that printed it
+for (const box of document.querySelectorAll('[data-example]')) {
+  const id = box.dataset.example
+  fetch(`examples/${id}.json`).then(r => r.text()).then(text => {
+    const file = JSON.parse(text), { width, height } = file.template.page
+    box.innerHTML = `<div class="show"><div class="paper"></div></div>
+      <div class="bar">Hasil cetak asli<span><button type="button">Buka di designer</button><a href="examples/${id}.json" download>JSON</a></span></div>
+      <pre><code></code></pre>`
+    box.querySelector('code').textContent = text
+    addCopy(box.querySelector('pre'))
+    const p = box.querySelector('.paper')
+    p.style.maxWidth = width * 96 / 72 + 'px' // never larger than the paper itself
+    paper(p, 'examples/' + id, width, height)
+    box.querySelector('button').onclick = () => {
+      select.value = ''
+      show(file)
+      document.getElementById('coba').scrollIntoView()
+    }
+  }).catch(() => { box.innerHTML = '<p class="notice warn">Contoh butuh halaman ini dibuka lewat web server (bukan <code>file://</code>).</p>' })
+}
 
 const list = await (await fetch('previews/index.json')).json()
 select.append(...list.map(t => new Option(t.name, t.id)))

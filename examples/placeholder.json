@@ -1,0 +1,32 @@
+{
+  "template": {
+    "page": { "width": 420, "height": 166, "margin": 20 },
+    "thousands": ".", "decimal": ",",
+    "bands": {
+      "header": { "height": 46, "elements": [
+        { "type": "text", "x": 0, "y": 0, "w": 380, "h": 20, "text": "Faktur {{number}}", "fontSize": 16, "bold": true },
+        { "type": "text", "x": 0, "y": 24, "w": 380, "h": 14, "text": "Kepada: {{customer.name}}" }
+      ] },
+      "columnHeader": { "height": 20, "elements": [
+        { "type": "text", "x": 0, "y": 0, "w": 200, "h": 14, "text": "Barang", "bold": true },
+        { "type": "text", "x": 200, "y": 0, "w": 100, "h": 14, "text": "Qty × Harga", "bold": true, "align": "right" },
+        { "type": "text", "x": 300, "y": 0, "w": 80, "h": 14, "text": "Jumlah", "bold": true, "align": "right" },
+        { "type": "line", "x": 0, "y": 16, "w": 380, "h": 0, "border": 0.5, "color": "#94a3b8" }
+      ] },
+      "detail": { "height": 20, "elements": [
+        { "type": "text", "x": 0, "y": 2, "w": 200, "h": 14, "text": "{{name}}" },
+        { "type": "text", "x": 200, "y": 2, "w": 100, "h": 14, "text": "{{qty}} × {{price:0}}", "align": "right" },
+        { "type": "text", "x": 300, "y": 2, "w": 80, "h": 14, "text": "{{qty * price:0}}", "align": "right" }
+      ] }
+    }
+  },
+  "data": {
+    "number": "INV-001",
+    "customer": { "name": "Budi" },
+    "rows": [
+      { "name": "Kopi", "qty": 2, "price": 18000 },
+      { "name": "Gula", "qty": 3, "price": 6000 },
+      { "name": "Teh", "qty": 1, "price": 12000 }
+    ]
+  }
+}

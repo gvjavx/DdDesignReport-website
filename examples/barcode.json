@@ -1,0 +1,13 @@
+{
+  "template": {
+    "page": { "width": 420, "height": 150, "margin": 20 },
+    "bands": {
+      "summary": { "height": 110, "elements": [
+        { "type": "barcode", "x": 0, "y": 0, "w": 90, "h": 90, "format": "qr", "text": "https://tokosaya.example/faktur/{{number}}" },
+        { "type": "text", "x": 0, "y": 94, "w": 90, "h": 12, "text": "Pindai untuk cek", "fontSize": 8, "align": "center" },
+        { "type": "barcode", "x": 140, "y": 10, "w": 240, "h": 70, "format": "code128", "text": "{{sku}}", "showText": true }
+      ] }
+    }
+  },
+  "data": { "number": "INV-001", "sku": "TKS-0042-KOPI" }
+}

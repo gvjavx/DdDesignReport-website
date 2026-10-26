@@ -1,0 +1,33 @@
+{
+  "template": {
+    "page": { "width": 420, "height": 232, "margin": 20 },
+    "thousands": ".", "decimal": ",",
+    "groupBy": "category",
+    "bands": {
+      "groupHeader": { "height": 22, "elements": [
+        { "type": "text", "x": 0, "y": 2, "w": 380, "h": 16, "text": "{{category}} ({{count()}} produk)", "bold": true, "fill": "#e0e7ff" }
+      ] },
+      "detail": { "height": 18, "elements": [
+        { "type": "text", "x": 12, "y": 2, "w": 268, "h": 14, "text": "{{name}}" },
+        { "type": "text", "x": 280, "y": 2, "w": 100, "h": 14, "text": "{{qty * price:0}}", "align": "right" }
+      ] },
+      "groupFooter": { "height": 24, "elements": [
+        { "type": "text", "x": 180, "y": 4, "w": 100, "h": 14, "text": "Subtotal", "italic": true },
+        { "type": "text", "x": 280, "y": 4, "w": 100, "h": 14, "text": "{{sum(qty * price):0}}", "align": "right", "italic": true }
+      ] },
+      "summary": { "height": 26, "elements": [
+        { "type": "line", "x": 180, "y": 2, "w": 200, "h": 0, "border": 1 },
+        { "type": "text", "x": 180, "y": 8, "w": 100, "h": 14, "text": "Total", "bold": true },
+        { "type": "text", "x": 280, "y": 8, "w": 100, "h": 14, "text": "{{sum(qty * price):0}}", "align": "right", "bold": true }
+      ] }
+    }
+  },
+  "data": {
+    "rows": [
+      { "category": "Minuman", "name": "Kopi", "qty": 2, "price": 18000 },
+      { "category": "Makanan", "name": "Roti", "qty": 4, "price": 9000 },
+      { "category": "Minuman", "name": "Teh", "qty": 1, "price": 12000 },
+      { "category": "Makanan", "name": "Kue", "qty": 6, "price": 4000 }
+    ]
+  }
+}
