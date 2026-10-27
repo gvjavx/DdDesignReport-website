@@ -778,12 +778,12 @@ pdf, err := ddreport.Render(template, data, "pdf")</code></pre>
 <pre><code>&lt;dependency&gt;
   &lt;groupId&gt;io.github.gvjavx&lt;/groupId&gt;
   &lt;artifactId&gt;ddreport&lt;/artifactId&gt;
-  &lt;version&gt;0.3.0&lt;/version&gt;
+  &lt;version&gt;0.4.0&lt;/version&gt;
 &lt;/dependency&gt;
 &lt;dependency&gt;
   &lt;groupId&gt;io.github.gvjavx&lt;/groupId&gt;
   &lt;artifactId&gt;ddreport&lt;/artifactId&gt;
-  &lt;version&gt;0.3.0&lt;/version&gt;
+  &lt;version&gt;0.4.0&lt;/version&gt;
   &lt;classifier&gt;linux-x64&lt;/classifier&gt;
 &lt;/dependency&gt;</code></pre>
 <pre><code>import io.ddreport.DdReport;
@@ -798,7 +798,7 @@ Files.write(Path.of("report.pdf"), pdf);</code></pre>
       <p>Beberapa thread memakai satu <code>Renderer</code> secara bergantian; untuk mencetak paralel, buat satu per thread. Laporan yang gagal atau terlalu lama hanya menggagalkan laporan itu sendiri.</p>
     </div>
     <div role="tabpanel" data-panel="kotlin">
-      <p>Kotlin memakai class Java yang sama dari Maven Central: <code>implementation("io.github.gvjavx:ddreport:0.3.0")</code> dan <code>runtimeOnly("io.github.gvjavx:ddreport:0.3.0:linux-x64")</code>, dengan classifier untuk sistem tempat aplikasi berjalan.</p>
+      <p>Kotlin memakai class Java yang sama dari Maven Central: <code>implementation("io.github.gvjavx:ddreport:0.4.0")</code> dan <code>runtimeOnly("io.github.gvjavx:ddreport:0.4.0:linux-x64")</code>, dengan classifier untuk sistem tempat aplikasi berjalan.</p>
 <pre><code>import io.ddreport.DdReport
 
 val xlsx = DdReport.render(templateJson, dataJson, "xlsx")
@@ -1128,7 +1128,7 @@ java -cp out DdReportTest             # wrapper Java</code></pre>
 <section id="versi">
   <h2>Riwayat versi</h2>
   <p>Daftar lengkapnya ada di <a href="https://github.com/gvjavx/DdDesignReport/blob/main/CHANGELOG.md">CHANGELOG.md</a>.</p>
-  <h3>Belum dirilis</h3>
+  <h3>0.4.0 · 28 Okt 2026</h3>
   <ul>
     <li><b>Designer:</b> <b>My templates</b> di server dengan riwayat 20 versi, tema yang mengikuti Bootstrap (<code>theme: 'inherit'</code>), toolbar sendiri (<code>designer.run</code>, <code>onState</code>), dan contoh halaman Bootstrap. Lihat <a href="#pasang-designer">Memasang designer</a>.</li>
     <li><b>Laporan:</b> elemen crosstab, grouping sampai enam tingkat, serta Arab, Ibrani, dan Thai di PDF. Lihat <a href="#crosstab">Crosstab</a>.</li>
