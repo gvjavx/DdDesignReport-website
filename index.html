@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>DdDesignReport — Desain laporan dengan drag and drop</title>
 <link rel="icon" type="image/svg+xml" href="logo.svg">
-<meta name="description" content="Library reporting dengan designer drag and drop ala pengolah kata. Render ke PDF, HTML, XLSX, XLS, dan CSV dari Go, Java, Kotlin, dan Node.js.">
+<meta name="description" content="Library reporting dengan designer drag and drop ala pengolah kata. Render ke PDF, HTML, XLSX, XLS, dan CSV dari Go, Java, Kotlin, Node.js, atau bahasa apa pun lewat HTTP, serta ke dan dari JasperReports.">
 <style>
   :root {
     --bg: #ffffff; --soft: #f5f7fb; --card: #ffffff; --text: #162033; --muted: #5b667a; --line: #e3e8f0;
@@ -84,6 +84,8 @@
   .tcard .links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px }
   .tcard .links a, .tcard .links button { font: inherit; font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 7px; border: 1px solid var(--line); background: var(--soft); color: var(--text); text-decoration: none; cursor: pointer }
   .tcard .links button { background: var(--accent); border-color: var(--accent); color: var(--accent-text) }
+  .tcard .by { font-size: 12px; color: var(--muted) }
+  .tcard-add { border-style: dashed; justify-content: center }
   .notice { background: var(--accent-soft); border-left: 4px solid var(--accent); border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 16px 0; max-width: 76ch }
   .notice.warn { background: color-mix(in srgb, var(--warm) 14%, var(--bg)); border-color: var(--warm) }
 
@@ -297,6 +299,7 @@
   <a href="#teks">Format teks</a>
   <a href="#tabel">Tabel</a>
   <a href="#subreport">Sub-laporan</a>
+  <a href="#crosstab">Crosstab</a>
   <a href="#chart">Chart</a>
   <a href="#barcode">Barcode &amp; QR</a>
   <a href="#halaman">Halaman &amp; latar</a>
@@ -306,6 +309,8 @@
   <h4>Backend</h4>
   <a href="#backend">Memanggil dari backend</a>
   <a href="#pasang-designer">Memasang designer</a>
+  <a href="#pdfa">PDF/A &amp; tanda tangan</a>
+  <a href="#jasper">JasperReports</a>
   <a href="#font">Font</a>
   <h4>Referensi</h4>
   <a href="#referensi">Template JSON</a>
@@ -344,7 +349,7 @@ go build -o ddreport ./cmd/ddreport</code></pre>
     </li>
     <li>
       <h3>Simpan template</h3>
-      <p>Klik <b>Save template</b>. Anda mendapat <code>report.json</code>; simpan di project atau database Anda.</p>
+      <p>Klik <b>Save template</b>. Anda mendapat <code>report.json</code>; simpan di project atau database Anda. Atau simpan dengan nama lewat <b>My templates</b> untuk dibuka, diperbarui, diganti nama, atau dihapus lagi nanti. <code>ddreport -serve</code> menyimpannya di folder <code>ddreport-templates</code> (ubah dengan <code>-templates</code>), beserta 20 versi sebelumnya dari setiap template: tombol <b>History</b> membuka versi lama, lalu <b>Update</b> menjadikannya versi sekarang lagi.</p>
     </li>
     <li>
       <h3>Cetak dari backend</h3>
@@ -539,8 +544,8 @@ summary      Total               {{sum(qty * price):0}}</code></pre>
   </ul>
   <p>Centang <b>New page per group</b> agar setiap kelompok mulai di halaman baru. Judul kelompok tidak pernah tertinggal sendirian di dasar halaman: jika baris pertamanya tidak muat, keduanya pindah bersama. Kelompok yang berlanjut ke halaman berikutnya mendapat judulnya lagi di atas halaman itu.</p>
   <p><b>Sort by</b> mengurutkan baris lebih dulu, misalnya <code>category, -total</code> (tanda <code>-</code> untuk menurun). Band <code>groupHeader</code> dan <code>groupFooter</code> yang berisi elemen tetap dicetak tanpa Group by, sekali di sekitar semua baris.</p>
-  <h3>Sampai tiga tingkat</h3>
-  <p>Isi Group by dengan beberapa field, misalnya <code>region, city</code>. Band <b>kepala grup 2</b> / <b>kaki grup 2</b> (dan 3 untuk field ketiga) muncul di designer di dalam band grup pertama. Setiap tingkat punya subtotalnya sendiri, dan judul semua grup yang sedang berjalan diulang di atas halaman baru.</p>
+  <h3>Sampai enam tingkat</h3>
+  <p>Isi Group by dengan beberapa field, misalnya <code>region, city</code>. Band <b>kepala grup 2</b> / <b>kaki grup 2</b> (dan seterusnya sampai 6 untuk field keenam) muncul di designer di dalam band grup pertama. Setiap tingkat punya subtotalnya sendiri, dan judul semua grup yang sedang berjalan diulang di atas halaman baru.</p>
 <pre><code>groupBy       region, city
 groupHeader   Wilayah {{region}}
 groupHeader2  Kota {{city}}
@@ -552,12 +557,27 @@ groupFooter   Total wilayah   {{sum(amt):0}}</code></pre>
 
 <section id="subreport">
   <h2>Sub-laporan</h2>
-  <p>Untuk daftar di dalam data yang butuh tata letak sendiri, bukan sekadar tabel: tab <b>Insert → Sub-report</b>, isi <b>rows from data</b> dengan nama daftarnya (misalnya <code>lines</code>), lalu <b>Edit sub-report…</b>. Terbuka designer kedua selebar kotak elemen, dengan band <b>header</b>, <b>column header</b>, grup (sampai tiga tingkat), <b>detail</b>, dan <b>summary</b>; Sort by dan Group by-nya bisa diisi sendiri. Band footer-nya tidak dipakai.</p>
+  <p>Untuk daftar di dalam data yang butuh tata letak sendiri, bukan sekadar tabel: tab <b>Insert → Sub-report</b>, isi <b>rows from data</b> dengan nama daftarnya (misalnya <code>lines</code>), lalu <b>Edit sub-report…</b>. Terbuka designer kedua selebar kotak elemen, dengan band <b>header</b>, <b>column header</b>, grup (sampai enam tingkat), <b>detail</b>, dan <b>summary</b>; Sort by dan Group by-nya bisa diisi sendiri. Band footer-nya tidak dipakai.</p>
   <ul>
     <li>Di band <code>detail</code> laporan induk, setiap baris mendapat sub-laporannya: setiap pesanan dengan rincian per jenisnya, setiap pegawai dengan riwayatnya.</li>
     <li>Field induk tetap bisa dipakai di dalamnya (<code>{{number}}</code>); <code>{{index}}</code> adalah nomor item; agregat di header dan summary-nya menghitung semua item.</li>
     <li>Band induk ikut memanjang. Sub-laporan yang lebih panjang dari satu halaman berlanjut tanpa memotong band-nya, dengan header dan column header diulang.</li>
     <li>Di Excel dan CSV, setiap baris sub-laporan menjadi baris spreadsheet.</li>
+  </ul>
+</section>
+
+<section id="crosstab">
+  <h2>Crosstab (tabel silang)</h2>
+  <p>Ringkasan dua arah, misalnya penjualan per wilayah (baris) dan per bulan (kolom): tab <b>Insert → Crosstab</b>, lalu isi <b>rows by</b>, <b>columns by</b>, dan <b>value</b>.</p>
+<pre><code>{ "type": "crosstab", "text": "Wilayah",
+  "rowField": "region", "columnField": "month",
+  "measure": "sum(total):0", "totalLabel": "Jumlah",
+  "headerFill": "#1e3a8a", "headerColor": "#ffffff", "footerFill": "#e0e7ff" }</code></pre>
+  <ul>
+    <li><code>measure</code> dihitung dari baris yang punya nilai baris dan kolom sel itu: <code>sum(qty * price):0</code>, <code>avg(price):2</code>, <code>min(date)</code>, atau <code>count()</code> (default).</li>
+    <li>Kolom dan baris total serta total keseluruhan ditambahkan otomatis. Urutan baris dan kolom mengikuti data, jadi <b>Sort by</b> mengaturnya.</li>
+    <li>Di band grup, crosstab menghitung baris grup itu; di tempat lain semua baris, atau daftar di <code>data</code>.</li>
+    <li>Hasilnya tabel biasa: garis, warna header dan total, baris berselang-seling, ganti halaman, dan ekspor XLSX/XLS/CSV sama seperti tabel.</li>
   </ul>
 </section>
 
@@ -571,6 +591,8 @@ groupFooter   Total wilayah   {{sum(amt):0}}</code></pre>
     <div><span class="ico">─</span><b>Line</b><span>Garis mendatar, tegak, atau miring (panel kanan: direction).</span></div>
     <div><span class="ico">◔</span><b>Chart</b><span>Batang, batang mendatar, garis, pie, donut.</span></div>
     <div><span class="ico">▩</span><b>Barcode</b><span>QR code atau Code 128 dari teks atau field, dengan teks di bawahnya bila dicentang.</span></div>
+    <div><span class="ico">▤</span><b>Sub-report</b><span>Laporan kecil untuk setiap item dari daftar di data. Lihat <a href="#subreport">Sub-laporan</a>.</span></div>
+    <div><span class="ico">⊞</span><b>Crosstab</b><span>Tabel silang: baris × kolom dari data, dengan total. Lihat <a href="#crosstab">Crosstab</a>.</span></div>
   </div>
   <h3>Teks panjang: centang Wrap</h3>
   <p>Tanpa <b>Wrap</b> (<code>grow</code>), teks yang melebihi kotaknya terpotong. Dengan Wrap, teks turun ke baris berikutnya dan band ikut bertambah tinggi: elemen di bawahnya turun, dan kotak serta garis tegak di sekelilingnya ikut memanjang. Kata yang lebih lebar dari kotaknya (URL, nomor panjang) dipecah di tengah.</p>
@@ -726,7 +748,7 @@ https://tokosaya.example/faktur/{{number}}</code></pre>
   <details class="recipe"><summary>…menambahkan QR untuk verifikasi dokumen?</summary><div><p>Tab Insert → Barcode, format <code>qr</code>, isi <code>https://situsanda.example/verify/{{id}}</code>.</p></div></details>
   <details class="recipe"><summary>…membuat laporan mendatar (landscape)?</summary><div><p>Tab Layout → Orientation → <b>Landscape</b>.</p></div></details>
   <details class="recipe"><summary>…membuat dokumen tanpa tabel, seperti surat?</summary><div><p>Kosongkan band <code>detail</code>. Taruh kop di <code>header</code> dan isi surat di <code>summary</code>; centang Wrap pada paragrafnya agar bagian tanda tangan turun mengikuti panjang isi.</p></div></details>
-  <details class="recipe"><summary>…menampilkan huruf Arab, Jepang, atau aksara lain di PDF?</summary><div><p>Berikan font TrueType yang memuat aksara itu. Lihat <a href="#font">Font</a>.</p></div></details>
+  <details class="recipe"><summary>…menampilkan huruf Arab, Jepang, atau aksara lain di PDF?</summary><div><p>Berikan font TrueType yang memuat aksara itu. Lihat <a href="#font">Font</a>. Untuk Arab dan Ibrani, PDF menyambung huruf Arab dan menyusun teks dari kanan ke kiri sendiri: pakai Amiri atau Noto Naskh Arabic dari paket 100 font dan ratakan teksnya ke kanan. Thai: Sarabun. Devanagari dan aksara Jawa belum didukung di PDF.</p></div></details>
 </section>
 
 <!-- ---------- BACKEND ---------- -->
@@ -910,8 +932,40 @@ onMounted(() =&gt; { d = createDesigner(el.value, { template, onChange }) })
 onBeforeUnmount(() =&gt; d.destroy())</code></pre>
   <p>Paket npm membawa tipe TypeScript (autocomplete untuk semua opsi di atas) dan ketiga belas template siap pakai: <code>import invoice from 'ddreport-designer/templates/invoice.json'</code>, lalu <code>designer.setTemplate(invoice.template)</code> dan <code>designer.setData(invoice.data)</code>.</p>
   <p>Dokumentasi ini memakai nama tombol versi Inggris (Home, Insert, Layout, View, Wrap); dengan <code>lang: 'id'</code> namanya menjadi Beranda, Sisipkan, Tata Letak, Tampilan, Bungkus.</p>
-  <p>Designer mengisi elemen tempatnya dipasang dan menyesuaikan diri dengan <em>lebar elemen itu</em>, bukan lebar jendela, jadi tetap rapi di dalam panel samping atau dialog. Beri elemen itu tinggi (misalnya <code>height: 80vh</code>) agar halaman bisa digulir di dalamnya. Warna bisa diganti lewat CSS, misalnya <code>#designer.ddr { --a: #0f766e }</code>; variabel lainnya <code>--a-soft</code>, <code>--bg</code>, <code>--surface</code>, <code>--text</code>, <code>--muted</code>, <code>--line</code>, <code>--stage</code>, <code>--hover</code>.</p>
+  <p>Designer mengisi elemen tempatnya dipasang dan menyesuaikan diri dengan <em>lebar elemen itu</em>, bukan lebar jendela, jadi tetap rapi di dalam panel samping atau dialog. Beri elemen itu tinggi (misalnya <code>height: 80vh</code>) agar halaman bisa digulir di dalamnya. Warna bisa diganti lewat CSS, misalnya <code>#designer.ddr { --a: #0f766e }</code>; variabel lainnya <code>--a-soft</code>, <code>--bg</code>, <code>--surface</code>, <code>--text</code>, <code>--muted</code>, <code>--line</code>, <code>--stage</code>, <code>--hover</code>, sudut <code>--r</code>, dan font <code>--font</code>. Setiap bagian punya class (<code>.ddr-tabs</code>, <code>.ddr-b</code>, <code>.ddr-page</code>, <code>.ddr-side</code>, <code>.ddr-status</code>, ...) yang bisa ditimpa dengan <code>.ddr .ddr-b { ... }</code>.</p>
+  <h3>Bootstrap dan toolbar sendiri</h3>
+  <p><code>theme: 'inherit'</code> membuat designer memakai warna, font, dan sudut dari variabel Bootstrap (<code>--bs-primary</code>, <code>--bs-body-bg</code>, <code>--bs-border-radius</code>, ...), termasuk dark mode Bootstrap. Framework lain (Tailwind, DaisyUI, Bulma) cukup mendefinisikan variabel <code>--bs-*</code> itu. Untuk toolbar dari komponen Anda sendiri, sembunyikan ribbon dan jalankan perintah designer dari tombol Anda:</p>
+<pre><code>const designer = createDesigner(el, {
+  theme: 'inherit',
+  hide: ['ribbon'],
+  onState: s =&gt; boldButton.classList.toggle('active', s.bold),  // tombol mana yang aktif
+})
+boldButton.onclick = () =&gt; designer.run('bold')   // 'align:center', 'add:table', 'undo', 'zoom:fit', ...
+designer.commands()                                // semua perintah</code></pre>
+  <p>Contoh halaman lengkap dengan navbar, dropdown, dan tombol Bootstrap ada di <code>designer/bootstrap.html</code>; <code>ddreport -serve</code> menampilkannya di <code>/bootstrap.html</code>.</p>
   <p>Bisa dipakai di framework apa pun: panggil <code>createDesigner</code> pada elemen DOM setelah komponen ter-mount. Template siap pakai ada di <code>designer/templates/</code>; tiap file berisi <code>template</code> dan <code>data</code> contohnya.</p>
+</section>
+
+<section id="pdfa">
+  <h2>PDF/A dan tanda tangan digital</h2>
+  <p><b>PDF/A</b> untuk arsip jangka panjang: <code>"pdfA": true</code> di template, atau centang <b>PDF/A</b> di tab Layout. Hasilnya PDF/A-2b: semua font ada di dalam file (Helvetica, Times, dan Courier dicetak dengan Roboto dan Lora), warna sRGB, metadata XMP, dan ID dokumen. Periksa dengan validator seperti <a href="https://verapdf.org">veraPDF</a> sebelum dipakai untuk arsip resmi.</p>
+  <p><b>Tanda tangan digital</b>: setiap PDF ditandatangani bila <code>DDREPORT_SIGN_CERT</code> dan <code>DDREPORT_SIGN_KEY</code> menunjuk sertifikat dan kunci privat (PEM; RSA atau ECDSA), dari CLI, <code>-serve</code>, Docker, Java, maupun Node.js. Dari Go: <code>ddreport.SignPDF(pdf, cert, key, reason)</code>.</p>
+<pre><code>openssl pkcs12 -in identitas.p12 -nodes -out identitas.pem
+DDREPORT_SIGN_CERT=identitas.pem DDREPORT_SIGN_KEY=identitas.pem \
+DDREPORT_SIGN_REASON="Faktur asli" ./ddreport -serve 127.0.0.1:8080</code></pre>
+  <p>Tanda tangannya tidak terlihat di halaman (<code>adbe.pkcs7.detached</code>, SHA-256) dan ditambahkan sebagai pembaruan inkremental, jadi PDF/A tetap PDF/A. Agar pembaca mempercayainya, sertifikatnya harus dari penerbit yang dipercaya pembaca, misalnya PSrE untuk Indonesia.</p>
+</section>
+
+<section id="jasper">
+  <h2>JasperReports</h2>
+  <p>Template bisa dibawa ke dan dari JasperReports (<code>.jrxml</code> versi 6, yang dibuka Jaspersoft Studio 6 dan 7). Di aplikasi standalone: <b>Export → JRXML</b>, dan <b>Open…</b> menerima file <code>.jrxml</code>.</p>
+<pre><code>ddreport -format jrxml &lt; template.json &gt; report.jrxml   # ke JasperReports
+ddreport -from-jrxml &lt; report.jrxml &gt; template.json     # dari JasperReports</code></pre>
+  <ul>
+    <li><b>Ke JasperReports:</b> ekspresi ditulis dalam Groovy. Field baris diisi <code>JsonDataSource</code> atas <code>rows</code>, nilai data lain menjadi parameter. Teks, tabel, gambar, kotak, garis, barcode/QR, grup, agregat, nomor halaman, dan format angka/tanggal ikut. Chart, sub-laporan, dan <code>terbilang</code> dicatat di awal file.</li>
+    <li><b>Dari JasperReports:</b> band, grup, urutan, teks, text field (field, nomor halaman, variabel Sum/Average/Count, aritmetika, pattern), kotak, garis, frame, barcode, dan gambar Base64 ikut. Java lain disimpan di dalam [kurung] dan dicatat, begitu juga chart, sub-laporan, dan crosstab.</li>
+    <li>Dari kode: <code>ToJRXML</code> / <code>FromJRXML</code> di Go, format <code>"jrxml"</code> di <code>render</code>, dan <code>POST /import/jrxml</code>.</li>
+  </ul>
 </section>
 
 <section id="font">
@@ -931,7 +985,12 @@ onBeforeUnmount(() =&gt; d.destroy())</code></pre>
 ddreport.AddFonts(os.DirFS("fonts-saya"))
 // binary (Java, Kotlin, Node.js, HTTP)
 export DDREPORT_FONTS=/path/ke/fonts-saya</code></pre>
-  <p>Lalu tambahkan namanya ke designer: <code>createDesigner(el, { fonts: ['Inter'] })</code>.</p>
+  <p>Lalu tambahkan namanya ke designer: <code>createDesigner(el, { fonts: ['Inter'] })</code>. Designer standalone (<code>ddreport -serve</code>) melakukannya sendiri: semua font di <code>DDREPORT_FONTS</code> muncul di menu font dan tergambar di kanvas.</p>
+  <h3>Paket 100 font tambahan</h3>
+  <p>Sans, serif, display, tulisan tangan, monospace, serta Arab (Amiri, Noto Naskh Arabic) dan Thai (Sarabun) dari Google Fonts (lisensi SIL OFL atau Apache), misalnya Inter, Poppins, Merriweather, Oswald, Dancing Script, dan Roboto Mono. Paket ini tidak ikut di binary (sekitar 39 MB). Unduh sekali dari repo library, lalu arahkan <code>DDREPORT_FONTS</code> ke foldernya:</p>
+<pre><code>node fontpack/download.mjs ddreport-fonts
+DDREPORT_FONTS=ddreport-fonts ./ddreport -serve 127.0.0.1:8080</code></pre>
+  <p>Font hanya dibaca saat sebuah laporan memakainya, jadi folder berisi 100 font tidak memperlambat laporan yang tidak memakainya.</p>
   <h3>Mengganti font bawaan</h3>
   <p>Untuk aksara yang tidak ada di font bundel (Arab, Jepang, dan sebagainya), Anda juga bisa mengganti font bawaan PDF untuk seluruh laporan:</p>
   <div class="tabs" data-tabs="font">
@@ -1024,11 +1083,13 @@ $env:DDREPORT_BIN = "$PWD\ddreport.exe"</code></pre></div>
     <tr><th>Flag / variabel</th><th>Keterangan</th></tr>
     <tr><td><code>-format</code></td><td><code>pdf</code> (default), <code>html</code>, <code>xlsx</code>, <code>xls</code>, <code>csv</code></td></tr>
     <tr><td><code>-serve alamat</code></td><td>Menjalankan designer (dengan template siap pakai) dan endpoint <code>POST /render</code>. Permintaan dari halaman situs lain di browser ditolak, jadi panggil endpoint ini dari backend Anda</td></tr>
-    <tr><td><code>DDREPORT_TOKEN</code></td><td>Untuk <code>-serve</code>: setiap render harus mengirim <code>Authorization: Bearer &lt;token&gt;</code>. Lihat tab HTTP di <a href="#backend">Memanggil dari backend</a></td></tr>
+    <tr><td><code>-templates folder</code></td><td>Bersama <code>-serve</code>: folder tempat <b>My templates</b> disimpan, satu file JSON per template (default <code>ddreport-templates</code>; di Docker <code>/data</code>)</td></tr>
+    <tr><td><code>DDREPORT_TOKEN</code></td><td>Untuk <code>-serve</code>: setiap render harus mengirim <code>Authorization: Bearer &lt;token&gt;</code>. Tanpa token, server hanya melayani <code>localhost</code> dan alamat IP; untuk nama domain, isi token. Lihat tab HTTP di <a href="#backend">Memanggil dari backend</a></td></tr>
     <tr><td><code>-stdio</code></td><td>Terus berjalan dan mencetak permintaan satu per satu dari stdin: baris <code>&lt;format&gt; &lt;panjang&gt;</code> lalu <code>{"template": ..., "data": ...}</code> sepanjang itu; jawabannya baris <code>ok &lt;panjang&gt;</code> dan dokumennya, atau <code>error &lt;panjang&gt;</code> dan pesannya. Dipakai <code>DdReport.Renderer</code> dan <code>createRenderer</code></td></tr>
     <tr><td><code>DDREPORT_BIN</code></td><td>Lokasi binary, dibaca oleh wrapper Java dan Node.js</td></tr>
     <tr><td><code>DDREPORT_FONT</code> · <code>_BOLD</code></td><td>Font pengganti untuk seluruh laporan. Lihat <a href="#font">Font</a></td></tr>
     <tr><td><code>DDREPORT_FONTS</code></td><td>Folder font tambahan (<code>Nama-Regular.ttf</code>, ...). Lihat <a href="#font">Font</a></td></tr>
+    <tr><td><code>DDREPORT_SIGN_CERT</code> · <code>_KEY</code> · <code>_REASON</code></td><td>Sertifikat dan kunci privat (PEM) untuk menandatangani setiap PDF, dan alasannya. Lihat <a href="#pdfa">PDF/A &amp; tanda tangan</a></td></tr>
   </table></div>
   <p>Jika gagal, binary keluar dengan kode 1 dan pesan di stderr; wrapper meneruskannya sebagai exception.</p>
 </section>
@@ -1048,9 +1109,18 @@ java -cp out DdReportTest             # wrapper Java</code></pre>
 
 <section id="batasan">
   <h2>Batasan</h2>
+  <p>Laporan penjualan siap pakai dengan data buatan, di laptop Intel Core i7-7500U (2017). Waktunya naik lurus dengan jumlah baris.</p>
+  <div class="scroll"><table>
+    <tr><th>Baris</th><th>PDF</th><th>HTML</th><th>XLSX</th><th>XLS</th><th>CSV</th></tr>
+    <tr><td>10 000 (±250 halaman)</td><td>±1 dtk</td><td>±0,8 dtk</td><td>0,2 dtk</td><td>0,2 dtk</td><td>0,2 dtk</td></tr>
+    <tr><td>100 000 (±2 500 halaman)</td><td>±12 dtk, memori puncak ±1 GB</td><td>±7 dtk</td><td>2,2 dtk, ±220 MB</td><td>1,8 dtk</td><td>1,6 dtk</td></tr>
+  </table></div>
   <ul>
-    <li>Pengelompokan sampai tiga tingkat.</li>
-    <li>XLSX dan XLS tidak membawa gabungan sel ke bawah (<code>rowSpan</code>), dan sel hanya digabung ke kanan bila kolom yang ditutupnya jelas. Chart, gambar, dan barcode hanya ada di PDF dan HTML.</li>
+    <li>PDF dan HTML menyusun seluruh halaman di memori sebelum ditulis: laporan ratusan ribu baris butuh memori sebanding. Pecah per periode atau kelompok, atau pakai XLSX/CSV untuk data mentah.</li>
+    <li>Pengelompokan sampai enam tingkat.</li>
+    <li>Di PDF, Arab, Ibrani, dan Thai didukung (dengan font yang memuatnya, misalnya Amiri dan Sarabun). Devanagari, aksara Jawa, dan aksara lain yang butuh penyusunan rumit belum.</li>
+    <li>Ke JasperReports, chart, sub-laporan, <code>terbilang</code>, dan baris tabel dari data tidak ikut; dari JasperReports, chart, sub-laporan, crosstab, list, dan ekspresi Java selain field, variabel, dan aritmetika tidak ikut. Semuanya dicatat saat konversi.</li>
+    <li>XLSX dan XLS membawa sel yang digabung ke kanan dan ke bawah (<code>colSpan</code>, <code>rowSpan</code>), selama kolom dan baris yang ditutupnya jelas. Gambar dan barcode/QR ikut di XLSX; chart hanya ada di PDF dan HTML, dan XLS (format 2003) tidak bisa membawa gambar.</li>
     <li>Designer diuji otomatis di Chromium (Chrome, Edge), Firefox, dan WebKit (mesin Safari) di setiap push, termasuk sentuhan di layar HP yang diemulasikan browser (ketuk, geser, ubah ukuran, cubit); tetap coba juga di perangkat sungguhan sebelum rilis.</li>
   </ul>
 </section>
@@ -1058,6 +1128,18 @@ java -cp out DdReportTest             # wrapper Java</code></pre>
 <section id="versi">
   <h2>Riwayat versi</h2>
   <p>Daftar lengkapnya ada di <a href="https://github.com/gvjavx/DdDesignReport/blob/main/CHANGELOG.md">CHANGELOG.md</a>.</p>
+  <h3>Belum dirilis</h3>
+  <ul>
+    <li><b>Designer:</b> <b>My templates</b> di server dengan riwayat 20 versi, tema yang mengikuti Bootstrap (<code>theme: 'inherit'</code>), toolbar sendiri (<code>designer.run</code>, <code>onState</code>), dan contoh halaman Bootstrap. Lihat <a href="#pasang-designer">Memasang designer</a>.</li>
+    <li><b>Laporan:</b> elemen crosstab, grouping sampai enam tingkat, serta Arab, Ibrani, dan Thai di PDF. Lihat <a href="#crosstab">Crosstab</a>.</li>
+    <li><b>Excel:</b> sel yang digabung ke bawah, serta gambar dan barcode di XLSX.</li>
+    <li><b>PDF:</b> PDF/A-2b dan tanda tangan digital. Lihat <a href="#pdfa">PDF/A &amp; tanda tangan</a>.</li>
+    <li><b>JasperReports:</b> ekspor dan impor <code>.jrxml</code>. Lihat <a href="#jasper">JasperReports</a>.</li>
+    <li><b>Font:</b> paket 100 font tambahan yang baru dibaca saat dipakai. Lihat <a href="#font">Font</a>.</li>
+    <li><b>Laporan besar:</b> benchmark 10 000 dan 100 000 baris, memori PDF sekitar 30% lebih kecil. Lihat <a href="#batasan">Batasan</a>.</li>
+    <li><b>Keamanan:</b> tanpa <code>DDREPORT_TOKEN</code>, <code>-serve</code> hanya melayani <code>localhost</code> dan alamat IP.</li>
+    <li><b>Galeri template komunitas:</b> kirim template lewat pull request. Lihat <a href="#template">galeri template</a>.</li>
+  </ul>
   <h3>0.3.0 · 26 Okt 2026</h3>
   <ul>
     <li><b>Server dan Docker:</b> image <code>ghcr.io/gvjavx/ddreport</code> (amd64 dan arm64, sekitar 17 MB) untuk mencetak dari PHP, Python, .NET, atau bahasa apa pun lewat HTTP, dengan contoh PHP, Laravel, Python, dan C#. <code>DDREPORT_TOKEN</code> mewajibkan <code>Authorization: Bearer &lt;token&gt;</code>, dan <code>-serve</code> memberi peringatan bila alamatnya terbuka ke jaringan tanpa token.</li>
@@ -1098,7 +1180,7 @@ java -cp out DdReportTest             # wrapper Java</code></pre>
   <ul>
     <li><b>Designer:</b> tampilan baru dengan tema terang dan gelap, zoom kanvas, hapus elemen dengan tombol atau tempat sampah, ubah ukuran dengan pegangan (juga dengan sentuhan), dan Preview yang menampilkan halaman sebagai lembar. Lihat <a href="#designer">Memakai designer</a>.</li>
     <li><b>Tabel:</b> tabel data yang barisnya mengikuti daftar di data, gabung sel, warna dan gaya per sel, garis tebal, tabel panjang yang berlanjut ke halaman berikutnya, dan tempel sel dari spreadsheet. Lihat <a href="#tabel">Tabel</a>.</li>
-    <li><b>Kelompok dan sub-laporan:</b> pengelompokan sampai tiga tingkat dengan subtotal, sub-laporan untuk setiap item dari daftar, dan satu worksheet per kelompok. Lihat <a href="#grouping">Kelompok &amp; subtotal</a> dan <a href="#subreport">Sub-laporan</a>.</li>
+    <li><b>Kelompok dan sub-laporan:</b> pengelompokan sampai enam tingkat dengan subtotal, sub-laporan untuk setiap item dari daftar, dan satu worksheet per kelompok. Lihat <a href="#grouping">Kelompok &amp; subtotal</a> dan <a href="#subreport">Sub-laporan</a>.</li>
     <li><b>Mesin cetak:</b> ekspresi dan format tanggal baru, <code>showIf</code>, gambar dari data, <code>sortBy</code>, teks panjang yang berlanjut ke halaman berikutnya, dan hasil hitungan yang tepat (0.1 + 0.2 = 0.3). Lihat <a href="#data">Data &amp; placeholder</a> dan <a href="#hitung">Perhitungan &amp; total</a>.</li>
     <li><b>Font:</b> font TrueType bawaan dan font sendiri. Lihat <a href="#font">Font</a>.</li>
     <li><b>Chart:</b> skala nilai dengan angka negatif dan label yang tidak bertumpuk; di designer, chart dan barcode digambar dari data contoh. Lihat <a href="#chart">Chart</a>.</li>
@@ -1238,6 +1320,13 @@ document.getElementById('gallery').replaceChildren(...list.map(t => {
     </div>`
   card.querySelector('h3').textContent = t.name
   card.querySelector('p').textContent = t.description
+  if (t.author) { // from the community: who made it
+    const by = document.createElement(t.url ? 'a' : 'span')
+    by.className = 'by'
+    by.textContent = 'oleh ' + t.author
+    if (t.url) Object.assign(by, { href: t.url, target: '_blank', rel: 'noopener' })
+    card.querySelector('p').after(by)
+  }
   // fit the paper inside the 218px tall window, whatever its shape
   const box = card.querySelector('.paper')
   box.style.width = Math.min(218 * t.width / t.height, 218) + 'px'
@@ -1248,6 +1337,10 @@ document.getElementById('gallery').replaceChildren(...list.map(t => {
     document.getElementById('coba').scrollIntoView()
   }
   return card
+}), Object.assign(document.createElement('div'), {
+  className: 'tcard tcard-add',
+  innerHTML: '<div class="body"><h3>Template Anda di sini</h3><p>Rancang di designer, simpan JSON-nya, lalu kirim pull request. Test otomatis mencetaknya ke setiap format sebelum digabung.</p>' +
+    '<div class="links"><a href="https://github.com/gvjavx/DdDesignReport#menyumbang-template" target="_blank" rel="noopener">Cara mengirim template</a></div></div>',
 }))
 </script>
 </body>
