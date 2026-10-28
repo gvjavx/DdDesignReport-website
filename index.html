@@ -948,7 +948,7 @@ designer.commands()                                // semua perintah</code></pre
 
 <section id="pdfa">
   <h2>PDF/A dan tanda tangan digital</h2>
-  <p><b>PDF/A</b> untuk arsip jangka panjang: <code>"pdfA": true</code> di template, atau centang <b>PDF/A</b> di tab Layout. Hasilnya PDF/A-2b: semua font ada di dalam file (Helvetica, Times, dan Courier dicetak dengan Roboto dan Lora), warna sRGB, metadata XMP, dan ID dokumen. Periksa dengan validator seperti <a href="https://verapdf.org">veraPDF</a> sebelum dipakai untuk arsip resmi.</p>
+  <p><b>PDF/A</b> untuk arsip jangka panjang: <code>"pdfA": true</code> di template, atau centang <b>PDF/A</b> di tab Layout. Hasilnya PDF/A-2b: semua font ada di dalam file (Helvetica, Times, dan Courier dicetak dengan Roboto dan Lora), warna sRGB, metadata XMP, dan ID dokumen. Hasilnya, juga yang ditandatangani dan yang berisi teks Arab, lulus validasi <a href="https://verapdf.org">veraPDF</a> untuk PDF/A-2b.</p>
   <p><b>Tanda tangan digital</b>: setiap PDF ditandatangani bila <code>DDREPORT_SIGN_CERT</code> dan <code>DDREPORT_SIGN_KEY</code> menunjuk sertifikat dan kunci privat (PEM; RSA atau ECDSA), dari CLI, <code>-serve</code>, Docker, Java, maupun Node.js. Dari Go: <code>ddreport.SignPDF(pdf, cert, key, reason)</code>.</p>
 <pre><code>openssl pkcs12 -in identitas.p12 -nodes -out identitas.pem
 DDREPORT_SIGN_CERT=identitas.pem DDREPORT_SIGN_KEY=identitas.pem \
@@ -962,7 +962,7 @@ DDREPORT_SIGN_REASON="Faktur asli" ./ddreport -serve 127.0.0.1:8080</code></pre>
 <pre><code>ddreport -format jrxml &lt; template.json &gt; report.jrxml   # ke JasperReports
 ddreport -from-jrxml &lt; report.jrxml &gt; template.json     # dari JasperReports</code></pre>
   <ul>
-    <li><b>Ke JasperReports:</b> ekspresi ditulis dalam Groovy. Field baris diisi <code>JsonDataSource</code> atas <code>rows</code>, nilai data lain menjadi parameter. Teks, tabel, gambar, kotak, garis, barcode/QR, grup, agregat, nomor halaman, dan format angka/tanggal ikut. Chart, sub-laporan, dan <code>terbilang</code> dicatat di awal file.</li>
+    <li><b>Ke JasperReports:</b> ekspresi ditulis dalam Groovy. Ketiga belas template siap pakai diuji di JasperReports 6.21: semuanya dikompilasi, diisi, dan diekspor ke PDF. Field baris diisi <code>JsonDataSource</code> atas <code>rows</code>, nilai data lain menjadi parameter. Teks, tabel, gambar, kotak, garis, barcode/QR, grup, agregat, nomor halaman, dan format angka/tanggal ikut. Chart, sub-laporan, dan <code>terbilang</code> dicatat di awal file.</li>
     <li><b>Dari JasperReports:</b> band, grup, urutan, teks, text field (field, nomor halaman, variabel Sum/Average/Count, aritmetika, pattern), kotak, garis, frame, barcode, dan gambar Base64 ikut. Java lain disimpan di dalam [kurung] dan dicatat, begitu juga chart, sub-laporan, dan crosstab.</li>
     <li>Dari kode: <code>ToJRXML</code> / <code>FromJRXML</code> di Go, format <code>"jrxml"</code> di <code>render</code>, dan <code>POST /import/jrxml</code>.</li>
   </ul>
