@@ -53,6 +53,7 @@ exports.page = (t, all) => {
     <a class="btn" href="../previews/${id}.pdf" download>Unduh PDF</a>
     <a class="btn" href="../previews/${id}.xlsx" download>Unduh Excel</a>
     <a class="btn" href="../templates/${id}.json" download>Template JSON</a>
+    ${t.width <= 260 ? `<a class="btn" href="../previews/${id}.escpos" download>Printer struk (ESC/POS)</a><a class="btn" href="../previews/${id}.txt">Teks</a>` : ''}
   </div>
   <div class="sheet"><iframe id="sheet" src="../previews/${id}.html" title="Hasil cetak ${name}"></iframe></div>
   <script>

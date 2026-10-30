@@ -32,7 +32,8 @@ fs.mkdirSync(path.join(site, 'previews'))
 const index = JSON.parse(fs.readFileSync(path.join(site, 'templates', 'index.json'), 'utf8'))
 for (const entry of index) {
   const { template, data } = JSON.parse(fs.readFileSync(path.join(site, 'templates', entry.id + '.json'), 'utf8'))
-  for (const format of ['html', 'pdf', 'xlsx']) {
+  // a receipt also for receipt printers, and as the text they print
+  for (const format of ['html', 'pdf', 'xlsx', ...template.page.width <= 260 ? ['escpos', 'txt'] : []]) {
     const out = execFileSync(bin, ['-format', format], { input: JSON.stringify({ template, data }), maxBuffer: Infinity })
     fs.writeFileSync(path.join(site, 'previews', `${entry.id}.${format}`), out)
   }

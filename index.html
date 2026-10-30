@@ -238,7 +238,7 @@
         <a class="btn" href="#template">Lihat 13 template siap pakai</a>
       </div>
       <ul class="formats" aria-label="Format hasil dan bahasa backend">
-        <li class="label">Hasil:</li><li>PDF</li><li>HTML</li><li>XLSX</li><li>XLS</li><li>CSV</li>
+        <li class="label">Hasil:</li><li>PDF</li><li>HTML</li><li>XLSX</li><li>XLS</li><li>CSV</li><li>Printer struk</li>
         <li class="label">&nbsp;Backend:</li><li>Go</li><li>Java</li><li>Kotlin</li><li>Node.js</li><li>PHP, Python, .NET lewat HTTP</li>
       </ul>
     </div>
@@ -324,6 +324,7 @@
   <a href="#barcode">Barcode &amp; QR</a>
   <a href="#halaman">Halaman &amp; latar</a>
   <a href="#output">Format hasil</a>
+  <a href="#struk">Printer struk</a>
   <h4>Resep</h4>
   <a href="#resep">Bagaimana cara…?</a>
   <h4>Backend</h4>
@@ -699,7 +700,7 @@ groupFooter   Total wilayah   {{sum(amt):0}}</code></pre>
   </table></div>
   <p>Dua chart dari baris yang sama: batang menjumlah penjualan per bulan, donut per kategori.</p>
   <div class="example" data-example="chart"></div>
-  <p>Chart memakai cakupan yang sama dengan rumus: di <code>summary</code> ia merangkum seluruh baris, di <code>groupFooter</code> hanya kelompok itu. Skala nilai <code>bar</code>, <code>hbar</code>, dan <code>line</code> selalu memuat nol, jadi nilai negatif tampil di bawah garis nol (<code>pie</code> dan <code>donut</code> menggambarnya sebagai nol). Jika kategorinya rapat, label ditampilkan selang-seling agar tidak bertumpuk. Chart muncul di PDF dan HTML, tidak di Excel dan CSV. Di designer, chart digambar dari data contoh dengan skala, label, dan format angka yang sama seperti hasil cetak. Lihat template <b>Laporan penjualan</b> (donut dan batang) dan <b>Daftar stok</b> (batang mendatar).</p>
+  <p>Chart memakai cakupan yang sama dengan rumus: di <code>summary</code> ia merangkum seluruh baris, di <code>groupFooter</code> hanya kelompok itu. Skala nilai <code>bar</code>, <code>hbar</code>, dan <code>line</code> selalu memuat nol, jadi nilai negatif tampil di bawah garis nol (<code>pie</code> dan <code>donut</code> menggambarnya sebagai nol). Jika kategorinya rapat, label ditampilkan selang-seling agar tidak bertumpuk. Chart muncul di PDF dan HTML, dan di XLSX sebagai chart Excel yang bisa diubah (tidak di XLS, CSV, dan printer struk). Di designer, chart digambar dari data contoh dengan skala, label, dan format angka yang sama seperti hasil cetak. Lihat template <b>Laporan penjualan</b> (donut dan batang) dan <b>Daftar stok</b> (batang mendatar).</p>
 </section>
 
 <section id="barcode">
@@ -732,14 +733,30 @@ https://tokosaya.example/faktur/{{number}}</code></pre>
 <section id="output">
   <h2>Format hasil</h2>
   <div class="scroll"><table>
-    <tr><th>Yang terbawa</th><th>PDF</th><th>HTML</th><th>XLSX</th><th>XLS</th><th>CSV</th></tr>
-    <tr><td>Tata letak persis seperti desain</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">–</td><td class="no">–</td><td class="no">–</td></tr>
-    <tr><td>Gambar, chart, barcode, latar</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">–</td><td class="no">–</td><td class="no">–</td></tr>
-    <tr><td>Baris data, subtotal, total</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-    <tr><td>Angka tetap angka (bisa dijumlah)</td><td class="no">–</td><td class="no">–</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-    <tr><td>Bold, format angka, lebar kolom</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">–</td></tr>
-    <tr><td>Warna, rata, garis sel, sel yang digabung ke kanan</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">–</td></tr>
+    <tr><th>Yang terbawa</th><th>PDF</th><th>HTML</th><th>XLSX</th><th>XLS</th><th>CSV</th><th>ESC/POS</th><th>TXT</th></tr>
+    <tr><td>Tata letak persis seperti desain</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">–</td><td class="no">–</td><td class="no">–</td><td class="no">–</td><td class="no">–</td></tr>
+    <tr><td>Rata kiri, tengah, kanan</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">–</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+    <tr><td>Baris data, subtotal, total</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+    <tr><td>Gambar, barcode, QR</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">–</td><td class="no">–</td><td class="yes">✓</td><td class="no">–</td></tr>
+    <tr><td>Chart</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">–</td><td class="no">–</td><td class="no">–</td><td class="no">–</td></tr>
+    <tr><td>Latar halaman</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">–</td><td class="no">–</td><td class="no">–</td><td class="no">–</td><td class="no">–</td></tr>
+    <tr><td>Teks tebal</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">–</td><td class="yes">✓</td><td class="no">–</td></tr>
+    <tr><td>Angka tetap angka (bisa dijumlah)</td><td class="no">–</td><td class="no">–</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">–</td><td class="no">–</td></tr>
+    <tr><td>Warna, garis sel, sel yang digabung</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">–</td><td class="no">–</td><td class="no">–</td></tr>
   </table></div>
+  <h3 id="struk">Printer struk (ESC/POS) dan teks biasa</h3>
+  <p>Format <code>escpos</code> mencetak langsung ke printer struk thermal 58 mm dan 80 mm (USB, jaringan, atau Bluetooth) tanpa PDF: hasilnya byte perintah ESC/POS yang dikirim apa adanya ke printer. Format <code>txt</code> adalah tata letak yang sama sebagai teks biasa, untuk pratinjau, log, atau printer dot matrix.</p>
+  <ul>
+    <li>Setiap teks ditaruh di kolom karakter yang ditutupi kotaknya, dengan perataan seperti di desain, dan dibungkus di dalam kolom itu. Teks tebal tetap tebal, teks 11 pt ke atas dicetak dua kali lebih tinggi, dan garis mendatar menjadi deretan <code>-</code>.</li>
+    <li>Jumlah karakter per baris mengikuti lebar kertas: 32 untuk kertas sampai 60 mm (printer 58 mm), 48 sampai 92 mm (printer 80 mm), dan 80 untuk yang lebih lebar (dot matrix). Ubah dengan <code>"textColumns"</code> atau <b>Karakter per baris</b> di tab Layout, yang juga punya ukuran kertas <b>Struk 58 mm</b> dan <b>Struk 80 mm</b>.</li>
+    <li>QR code dan Code 128 digambar oleh printer sendiri, logo dicetak sebagai titik hitam-putih, lalu kertas didorong dan dipotong. Di <code>txt</code>, barcode ditulis sebagai isinya dan gambar dilewati.</li>
+    <li>Kertasnya satu gulungan: header sekali di atas, footer sekali di bawah, tanpa ganti halaman. Huruf dikirim dalam code page Windows-1252 (<code>é</code>, <code>€</code>); huruf di luarnya menjadi <code>?</code>.</li>
+  </ul>
+<pre><code>ddreport -format escpos &lt; struk.json &gt; struk.bin
+cat struk.bin &gt; /dev/usb/lp0                 # Linux, printer USB
+nc 192.168.1.50 9100 &lt; struk.bin             # printer jaringan (port 9100)
+copy /b struk.bin \\localhost\PrinterStruk   # Windows, printer yang di-share</code></pre>
+  <p>Dari kode: <code>render(template, data, 'escpos')</code> di Node.js, <code>DdReport.render(..., "escpos")</code> di Java, atau <code>POST /render?format=escpos</code>, lalu kirim byte-nya ke printer: lewat socket ke port 9100, atau lewat library printer Bluetooth di aplikasi Android (fungsi yang menulis byte mentah). Template <a href="contoh/receipt.html">Struk kasir</a> siap pakai sudah selebar kertas 80 mm.</p>
   <h3>Bagaimana desain menjadi tabel Excel</h3>
   <p>Untuk XLSX, XLS, dan CSV, setiap teks dan sel tabel di band <code>detail</code> menjadi satu <b>kolom</b>, urut seperti dibaca: dari atas ke bawah, lalu kiri ke kanan. Setiap baris data menjadi satu baris.</p>
   <p>Band lain (judul kolom, judul dan subtotal kelompok, ringkasan) menambah satu baris untuk setiap baris teksnya. Tiap teks masuk ke kolom yang sejajar dengannya, sehingga subtotal jatuh tepat di bawah kolom angkanya. Band <code>header</code> dan <code>footer</code> tidak ikut.</p>
@@ -798,12 +815,12 @@ pdf, err := ddreport.Render(template, data, "pdf")</code></pre>
 <pre><code>&lt;dependency&gt;
   &lt;groupId&gt;io.github.gvjavx&lt;/groupId&gt;
   &lt;artifactId&gt;ddreport&lt;/artifactId&gt;
-  &lt;version&gt;0.4.1&lt;/version&gt;
+  &lt;version&gt;0.4.2&lt;/version&gt;
 &lt;/dependency&gt;
 &lt;dependency&gt;
   &lt;groupId&gt;io.github.gvjavx&lt;/groupId&gt;
   &lt;artifactId&gt;ddreport&lt;/artifactId&gt;
-  &lt;version&gt;0.4.1&lt;/version&gt;
+  &lt;version&gt;0.4.2&lt;/version&gt;
   &lt;classifier&gt;linux-x64&lt;/classifier&gt;
 &lt;/dependency&gt;</code></pre>
 <pre><code>import io.ddreport.DdReport;
@@ -818,7 +835,7 @@ Files.write(Path.of("report.pdf"), pdf);</code></pre>
       <p>Beberapa thread memakai satu <code>Renderer</code> secara bergantian; untuk mencetak paralel, buat satu per thread. Laporan yang gagal atau terlalu lama hanya menggagalkan laporan itu sendiri.</p>
     </div>
     <div role="tabpanel" data-panel="kotlin">
-      <p>Kotlin memakai class Java yang sama dari Maven Central: <code>implementation("io.github.gvjavx:ddreport:0.4.1")</code> dan <code>runtimeOnly("io.github.gvjavx:ddreport:0.4.1:linux-x64")</code>, dengan classifier untuk sistem tempat aplikasi berjalan.</p>
+      <p>Kotlin memakai class Java yang sama dari Maven Central: <code>implementation("io.github.gvjavx:ddreport:0.4.2")</code> dan <code>runtimeOnly("io.github.gvjavx:ddreport:0.4.2:linux-x64")</code>, dengan classifier untuk sistem tempat aplikasi berjalan.</p>
 <pre><code>import io.ddreport.DdReport
 
 val xlsx = DdReport.render(templateJson, dataJson, "xlsx")
@@ -982,8 +999,9 @@ DDREPORT_SIGN_REASON="Faktur asli" ./ddreport -serve 127.0.0.1:8080</code></pre>
 <pre><code>ddreport -format jrxml &lt; template.json &gt; report.jrxml   # ke JasperReports
 ddreport -from-jrxml &lt; report.jrxml &gt; template.json     # dari JasperReports</code></pre>
   <ul>
-    <li><b>Ke JasperReports:</b> ekspresi ditulis dalam Groovy. Ketiga belas template siap pakai diuji di JasperReports 6.21: semuanya dikompilasi, diisi, dan diekspor ke PDF. Field baris diisi <code>JsonDataSource</code> atas <code>rows</code>, nilai data lain menjadi parameter. Teks, tabel, gambar, kotak, garis, barcode/QR, grup, agregat, nomor halaman, dan format angka/tanggal ikut. Chart, sub-laporan, dan <code>terbilang</code> dicatat di awal file.</li>
-    <li><b>Dari JasperReports:</b> band, grup, urutan, teks, text field (field, nomor halaman, variabel Sum/Average/Count, aritmetika, pattern), kotak, garis, frame, barcode, dan gambar Base64 ikut. Java lain disimpan di dalam [kurung] dan dicatat, begitu juga chart, sub-laporan, dan crosstab.</li>
+    <li><b>Ke JasperReports:</b> ekspresi ditulis dalam Groovy. Ketiga belas template siap pakai diuji di JasperReports 6.21: semuanya dikompilasi, diisi, dan diekspor ke PDF. Field baris diisi <code>JsonDataSource</code> atas <code>rows</code>, nilai data lain menjadi parameter. Teks, tabel, gambar, kotak, garis, barcode/QR, grup, agregat, nomor halaman ("Halaman X dari Y"), dan format angka/tanggal ikut. <code>terbilang</code> menjadi closure Groovy. Tabel dengan baris dari data dan sub-laporan menjadi <code>jr:list</code> atas daftarnya (parameter berisi <code>java.util.List</code> of <code>Map</code>, atau field baris berisi daftar JSON), dengan total di bawahnya yang ikut turun. Chart menjadi chart Jasper yang menjumlahkan nilai per label (butuh JFreeChart; donut dicetak sebagai pie).</li>
+    <li><b>Bolak-balik:</b> properti <code>ddreport.*</code> di dalam file menyimpan apa yang tidak punya tempat di JasperReports, jadi <code>.jrxml</code> buatan ddreport kembali menjadi template yang sama persis. Ketiga belas template siap pakai dicetak identik setelah bolak-balik.</li>
+    <li><b>Dari JasperReports:</b> band, grup, urutan, teks, text field (field, nomor halaman, variabel Sum/Average/Count, aritmetika, perbandingan, <code>kondisi ? a : b</code>, pattern), kotak, garis, frame, barcode, gambar Base64, chart batang/garis/pie, list (menjadi sub-laporan), dan crosstab ikut. Java lain disimpan di dalam [kurung] dan dicatat, begitu juga file <code>.jrxml</code> milik sub-laporan.</li>
     <li>Dari kode: <code>ToJRXML</code> / <code>FromJRXML</code> di Go, format <code>"jrxml"</code> di <code>render</code>, dan <code>POST /import/jrxml</code>.</li>
   </ul>
 </section>
@@ -1106,7 +1124,7 @@ $env:DDREPORT_BIN = "$PWD\ddreport.exe"</code></pre></div>
 <pre><code>ddreport -format pdf &lt; request.json &gt; report.pdf</code></pre>
   <div class="scroll"><table>
     <tr><th>Flag / variabel</th><th>Keterangan</th></tr>
-    <tr><td><code>-format</code></td><td><code>pdf</code> (default), <code>html</code>, <code>xlsx</code>, <code>xls</code>, <code>csv</code></td></tr>
+    <tr><td><code>-format</code></td><td><code>pdf</code> (default), <code>html</code>, <code>xlsx</code>, <code>xls</code>, <code>csv</code>, <code>jrxml</code>, <code>escpos</code> (<a href="#struk">printer struk</a>), <code>txt</code></td></tr>
     <tr><td><code>-serve alamat</code></td><td>Menjalankan designer (dengan template siap pakai) dan endpoint <code>POST /render</code>. Permintaan dari halaman situs lain di browser ditolak, jadi panggil endpoint ini dari backend Anda</td></tr>
     <tr><td><code>-templates folder</code></td><td>Bersama <code>-serve</code>: folder tempat <b>My templates</b> disimpan, satu file JSON per template (default <code>ddreport-templates</code>; di Docker <code>/data</code>)</td></tr>
     <tr><td><code>DDREPORT_TOKEN</code></td><td>Untuk <code>-serve</code>: setiap render harus mengirim <code>Authorization: Bearer &lt;token&gt;</code>. Tanpa token, server hanya melayani <code>localhost</code> dan alamat IP; untuk nama domain, isi token. Lihat tab HTTP di <a href="#backend">Memanggil dari backend</a></td></tr>
@@ -1141,14 +1159,15 @@ java -cp out DdReportTest             # wrapper Java</code></pre>
   <div class="scroll"><table>
     <tr><th>Baris</th><th>PDF</th><th>HTML</th><th>XLSX</th><th>XLS</th><th>CSV</th></tr>
     <tr><td>10 000 (±250 halaman)</td><td>±1 dtk</td><td>±0,8 dtk</td><td>0,2 dtk</td><td>0,2 dtk</td><td>0,2 dtk</td></tr>
-    <tr><td>100 000 (±2 500 halaman)</td><td>±12 dtk, memori puncak ±1 GB</td><td>±7 dtk</td><td>2,2 dtk, ±220 MB</td><td>1,8 dtk</td><td>1,6 dtk</td></tr>
+    <tr><td>100 000 (±2 500 halaman)</td><td>±12 dtk, memori puncak ±500 MB</td><td>±9 dtk, ±400 MB</td><td>2,2 dtk, ±220 MB</td><td>1,8 dtk</td><td>1,6 dtk</td></tr>
   </table></div>
   <ul>
-    <li>PDF dan HTML menyusun seluruh halaman di memori sebelum ditulis: laporan ratusan ribu baris butuh memori sebanding. Pecah per periode atau kelompok, atau pakai XLSX/CSV untuk data mentah.</li>
+    <li>PDF dan HTML digambar halaman demi halaman, jadi yang tersisa di memori hanya data dan dokumen jadinya. Untuk ekspor data mentah, XLSX dan CSV tetap paling hemat; <code>DDREPORT_MAX_ROWS</code> membatasi jumlah baris di server.</li>
     <li>Pengelompokan sampai enam tingkat.</li>
     <li>Di PDF, Arab, Ibrani, dan Thai didukung (dengan font yang memuatnya, misalnya Amiri dan Sarabun). Devanagari, aksara Jawa, dan aksara lain yang butuh penyusunan rumit belum.</li>
-    <li>Ke JasperReports, chart, sub-laporan, <code>terbilang</code>, dan baris tabel dari data tidak ikut; dari JasperReports, chart, sub-laporan, crosstab, list, dan ekspresi Java selain field, variabel, dan aritmetika tidak ikut. Semuanya dicatat saat konversi.</li>
-    <li>XLSX dan XLS membawa sel yang digabung ke kanan dan ke bawah (<code>colSpan</code>, <code>rowSpan</code>), selama kolom dan baris yang ditutupnya jelas. Gambar dan barcode/QR ikut di XLSX; chart hanya ada di PDF dan HTML, dan XLS (format 2003) tidak bisa membawa gambar.</li>
+    <li>JasperReports: crosstab ditulis ke <code>.jrxml</code> sebagai tabel yang dicetaknya, donut sebagai pie. Dari <code>.jrxml</code>, ekspresi Java selain field, variabel, aritmetika, perbandingan, dan <code>? :</code>, serta file sub-laporan tersendiri, tidak ikut. Semuanya dicatat saat konversi.</li>
+    <li>XLSX dan XLS membawa sel yang digabung ke kanan dan ke bawah (<code>colSpan</code>, <code>rowSpan</code>), selama kolom dan baris yang ditutupnya jelas. Gambar, barcode/QR, dan chart (sebagai chart Excel) ikut di XLSX. Format XLS (XML Spreadsheet 2003) tidak punya tempat untuk gambar maupun chart.</li>
+    <li>Printer struk (<code>escpos</code>) dan <code>txt</code>: huruf dalam code page Windows-1252, tanpa chart; <code>txt</code> tanpa gambar.</li>
     <li>Designer diuji otomatis di Chromium (Chrome, Edge), Firefox, dan WebKit (mesin Safari) di setiap push, termasuk sentuhan di layar HP yang diemulasikan browser (ketuk, geser, ubah ukuran, cubit); tetap coba juga di perangkat sungguhan sebelum rilis.</li>
   </ul>
 </section>
@@ -1156,6 +1175,14 @@ java -cp out DdReportTest             # wrapper Java</code></pre>
 <section id="versi">
   <h2>Riwayat versi</h2>
   <p>Daftar lengkapnya ada di <a href="https://github.com/gvjavx/DdDesignReport/blob/main/CHANGELOG.md">CHANGELOG.md</a>.</p>
+  <h3>0.4.2 · 30 Okt 2026</h3>
+  <ul>
+    <li><b>Printer struk:</b> format <code>escpos</code> mencetak langsung ke printer thermal 58 dan 80 mm (teks tebal dan besar, QR, Code 128, logo, potong kertas), dan <code>txt</code> untuk pratinjau dan dot matrix. Designer: kertas Struk 58/80 mm dan Karakter per baris. Lihat <a href="#struk">Printer struk</a>.</li>
+    <li><b>Excel:</b> chart ikut ke XLSX sebagai chart Excel asli yang bisa diubah.</li>
+    <li><b>JasperReports:</b> <code>terbilang</code>, tabel dari data, sub-laporan, chart, dan "Halaman X dari Y" ikut ke <code>.jrxml</code>; dari <code>.jrxml</code>, chart, list, crosstab, dan <code>? :</code> ikut. File buatan ddreport kembali menjadi template yang sama persis.</li>
+    <li><b>Laporan besar:</b> memori puncak untuk 100 000 baris turun menjadi ±500 MB (PDF) dan ±400 MB (HTML).</li>
+    <li><b>Perbaikan:</b> tabel di bawah tabel data yang memanjang ikut turun di XLSX, XLS, dan CSV.</li>
+  </ul>
   <h3>0.4.1 · 30 Okt 2026</h3>
   <ul>
     <li><b>Template:</b> <code>"version"</code> (versi format template). Template yang butuh ddreport lebih baru ditolak dengan pesan yang jelas, bukan dicetak tidak lengkap. Lihat <a href="#referensi">Template JSON</a>.</li>
