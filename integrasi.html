@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Integrasi dalam 10 menit · DdDesignReport</title>
+<meta name="description" content="Pasang designer laporan di aplikasi Anda: template per pelanggan, bentuk data, render PDF dan Excel dari Node.js atau Laravel, cetak struk ESC/POS, dan masalah yang sering muncul.">
+<link rel="canonical" href="https://gvjavx.github.io/DdDesignReport-website/integrasi.html">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<style>
+  :root { --bg: #fff; --soft: #f5f7fb; --text: #162033; --muted: #5b667a; --line: #e3e8f0; --accent: #2457d6; --accent-text: #fff; --code-bg: #0f172a; --code-text: #e2e8f0; color-scheme: light }
+  @media (prefers-color-scheme: dark) { :root { --bg: #0c111b; --soft: #121a28; --text: #e6ebf4; --muted: #9aa6ba; --line: #263247; --accent: #7aa2ff; --accent-text: #0c111b; --code-bg: #070b13; --code-text: #dbe4f3; color-scheme: dark } }
+  * { box-sizing: border-box }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 16px }
+  header { border-bottom: 1px solid var(--line); padding: 12px 0 }
+  header a { color: var(--text); font-weight: 700; text-decoration: none; display: inline-flex; gap: 8px; align-items: center }
+  h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.2; margin: 32px 0 8px }
+  .lead { color: var(--muted); font-size: 18px; margin: 0 0 18px; max-width: 70ch }
+  .by { color: var(--muted); font-size: 14px; margin: -10px 0 16px }
+  .cta { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 24px }
+  .btn { display: inline-flex; padding: 10px 18px; border-radius: 10px; font-weight: 700; text-decoration: none; border: 1px solid var(--line); background: var(--soft); color: var(--text) }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text) }
+  .sheet { background: var(--soft); border: 1px solid var(--line); border-radius: 14px; padding: 12px }
+  iframe { width: 100%; height: min(80vh, 900px); max-height: min(80vh, 900px); border: 0; border-radius: 8px; background: #fff }
+  h2 { margin: 40px 0 8px; font-size: 24px }
+  pre { background: var(--code-bg); color: var(--code-text); padding: 14px 16px; border-radius: 10px; overflow-x: auto; font-size: 14px }
+  ol li { margin-bottom: 6px }
+  .others { columns: 2 180px; padding-left: 18px }
+  a { color: var(--accent) }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding: 20px 0; color: var(--muted); font-size: 14px }
+  h3 { margin: 28px 0 6px; font-size: 19px }
+  :not(pre) > code { background: var(--soft); border: 1px solid var(--line); border-radius: 5px; padding: 0 4px; font-size: .9em; overflow-wrap: anywhere }
+  .table { overflow-x: auto }
+  table { border-collapse: collapse; width: 100%; font-size: 15px }
+  th, td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--line) }
+  th { background: var(--soft) }
+</style>
+</head>
+<body>
+<header><div class="wrap"><a href="./"><img src="logo.svg" alt="" width="26" height="26">DdDesignReport</a></div></header>
+<main class="wrap">
+<h1>Integrasi dalam 10 menit</h1>
+<p>Panduan memasang DdDesignReport sebagai fitur di aplikasi Anda: pelanggan mengubah sendiri tata letak faktur, struk, atau slip gajinya, dan aplikasi mencetaknya dengan data dari database Anda.</p>
+<p>Contoh lengkapnya, yang bisa langsung dijalankan, ada di <a href="https://github.com/gvjavx/DdDesignReport/blob/main/examples/app"><code>examples/app</code></a>: satu server Node.js (±120 baris, tanpa framework) dan satu halaman.</p>
+<pre><code>cd examples/app
+npm install
+node server.js          # buka http://localhost:3000</code></pre>
+<h2 id="gambaran">Gambaran</h2>
+<p>Ada empat bagian, dan hanya dua yang perlu Anda tulis sendiri:</p>
+<pre><code> browser                               server Anda                          ddreport
+┌─────────────────────┐  simpan     ┌──────────────────────────┐
+│ designer            │ ──────────► │ tabel template:          │
+│ (ddreport-designer) │  JSON       │ (pelanggan, laporan) →   │
+│                     │             │ JSON template            │
+│ tombol Preview      │ ──────────► │                          │  template + data   ┌──────────┐
+│ tombol Cetak / PDF  │ ──────────► │ query data laporan  ─────┼──────────────────► │ render   │
+└─────────────────────┘ ◄────────── │                          │ ◄──────────────────│ PDF, ... │
+                         dokumen    └──────────────────────────┘     dokumen        └──────────┘</code></pre>
+<ol><li><b>Designer</b> di halaman: satu <code>createDesigner(...)</code>.</li><li><b>Penyimpanan template</b>: satu baris per pelanggan dan laporan. Ini milik Anda.</li><li><b>Data laporan</b>: query yang sudah Anda punya, dibentuk seperti yang dibaca template. Ini juga milik Anda.</li><li><b>Render</b>: satu panggilan, dari Node.js, Java, Kotlin, Go, atau HTTP untuk PHP, Python, dan .NET.</li></ol>
+<p>Template disimpan di server Anda dan dikirim ke ddreport bersama datanya setiap kali dicetak; render sendiri tidak menyimpan apa pun.</p>
+<h2 id="1-designer-di-halaman">1. Designer di halaman</h2>
+<pre><code>npm install ddreport-designer</code></pre>
+<pre><code>import { createDesigner } from &#39;ddreport-designer&#39;
+
+const designer = createDesigner(document.getElementById(&#39;designer&#39;), {
+  lang: &#39;id&#39;,
+  simple: true,                       // untuk admin dan staf: alat yang perlu saja, setiap tombol bernama
+  preview: async template =&gt;          // tombol Preview: server Anda mencetaknya sebagai HTML
+    (await fetch(&#39;/api/preview/invoice&#39;, { method: &#39;POST&#39;, body: JSON.stringify(template) })).text(),
+})
+
+const { template, data } = await (await fetch(&#39;/api/templates/invoice&#39;)).json()
+designer.setTemplate(template)
+designer.setData(data)               // contoh data: chart di kanvas, menu Field, dan peringatan field yang salah ketik</code></pre>
+<p>Tanpa bundler, sajikan <code>node_modules/ddreport-designer/designer.js</code> sebagai file statis lalu <code>import { createDesigner } from &#39;/designer.js&#39;</code>, seperti di contoh. Untuk React dan Vue: <a href="https://github.com/gvjavx/DdDesignReport/blob/main/release/designer-README.md">README paket designer</a>.</p>
+<p>Di Laravel atau framework lain tanpa npm: unduh <code>https://cdn.jsdelivr.net/npm/ddreport-designer@0.4.3/designer.js</code> ke folder <code>public/</code>, lalu <code>import { createDesigner } from &#39;/designer.js&#39;</code>. Satu file, tanpa dependency.</p>
+<h2 id="2-menyimpan-template-per-pelanggan">2. Menyimpan template per pelanggan</h2>
+<p>Satu tabel cukup:</p>
+<pre><code>CREATE TABLE report_templates (
+  customer_id BIGINT       NOT NULL,
+  report      VARCHAR(50)  NOT NULL,   -- &#39;invoice&#39;, &#39;receipt&#39;, ...
+  template    JSON         NOT NULL,
+  updated_at  TIMESTAMP    NOT NULL,
+  PRIMARY KEY (customer_id, report)
+);</code></pre>
+<p>Selama pelanggan belum menyimpan tata letaknya sendiri, pakai template siap pakai (<code>ddreport-designer/templates/invoice.json</code>, atau buatan Anda). Saat menyimpan, coba render dulu dengan datanya, agar template yang tidak bisa dicetak ditolak dengan pesan yang jelas:</p>
+<pre><code>await renderer.render(template, data, &#39;html&#39;) // melempar error dengan penjelasan bila template rusak
+db.save(customerId, &#39;invoice&#39;, template)</code></pre>
+<p><code>customerId</code> selalu diambil dari sesi login di server, bukan dari permintaan browser, agar pelanggan tidak bisa membuka template pelanggan lain.</p>
+<h2 id="3-bentuk-data">3. Bentuk data</h2>
+<p>Template membaca satu objek: field biasa untuk kop dan total, ditambah daftar <code>rows</code> yang diulang di band <b>detail</b>.</p>
+<pre><code>{
+  &quot;number&quot;: &quot;INV-0042&quot;,
+  &quot;customer&quot;: { &quot;name&quot;: &quot;Toko Maju&quot;, &quot;city&quot;: &quot;Sleman&quot; },
+  &quot;items&quot;: [ { &quot;name&quot;: &quot;Kopi&quot;, &quot;qty&quot;: 2, &quot;price&quot;: 18000 } ],
+  &quot;rows&quot;:  [ { &quot;name&quot;: &quot;Kopi&quot;, &quot;qty&quot;: 2, &quot;price&quot;: 18000 } ]
+}</code></pre>
+<div class="table"><table><thead><tr><th>Di template</th><th>Dibaca dari</th></tr></thead><tbody><tr><td><code>{{number}}</code>, <code>{{customer.city}}</code></td><td>field dan field bersarang</td></tr><tr><td>band detail</td><td>setiap item <code>rows</code> (nama lain: <code>&quot;dataKey&quot;</code>)</td></tr><tr><td>tabel atau sub-laporan dengan <b>Data</b> <code>items</code></td><td>setiap item daftar <code>items</code></td></tr><tr><td><code>{{sum(qty * price)}}</code>, <code>{{count()}}</code></td><td>dihitung dari baris yang sedang dicetak</td></tr></tbody></table></div>
+<p>Faktur biasanya dua query: kepala faktur menjadi field, baris barangnya menjadi <code>rows</code>. Angka yang dikirim database sebagai teks (<code>&quot;18000.00&quot;</code>) tetap dihitung sebagai angka.</p>
+<h3 id="field-yang-salah-ketik">Field yang salah ketik</h3>
+<p>Placeholder yang field-nya tidak ada di data tercetak kosong, tanpa error. Ada tiga cara menangkapnya:</p>
+<ul><li><b>Preview di designer</b> menyebutnya: &quot;Tidak ada di data contoh, tercetak kosong: nmae&quot;, selama designer diberi contoh data (<code>data</code>) atau daftar field (<code>fields</code>).</li><li><b><code>DDREPORT_STRICT=1</code></b> di lingkungan binary atau server membuat render gagal dengan nama field-nya, alih-alih mencetak kosong. Cocok untuk test dan staging.</li><li>Dari Go: <code>ddreport.Missing(template, data)</code> mengembalikan daftarnya.</li></ul>
+<h2 id="4-render">4. Render</h2>
+<p>Node.js (<code>npm install ddreport</code>, binary untuk sistemnya ikut terpasang):</p>
+<pre><code>const { createRenderer } = require(&#39;ddreport&#39;)
+const renderer = createRenderer()   // satu proses yang terus berjalan
+
+app.get(&#39;/reports/invoice/:id.pdf&#39;, async (req, res) =&gt; {
+  const template = await db.template(req.user.customerId, &#39;invoice&#39;)
+  const data = await invoiceData(req.params.id)          // query Anda
+  res.type(&#39;pdf&#39;).send(await renderer.render(template, data, &#39;pdf&#39;))
+})</code></pre>
+<p>Format lain: <code>&#39;xlsx&#39;</code>, <code>&#39;xls&#39;</code>, <code>&#39;csv&#39;</code>, <code>&#39;html&#39;</code>, <code>&#39;escpos&#39;</code> (printer struk), <code>&#39;txt&#39;</code>.</p>
+<p>Laravel, lewat server ddreport (Docker) di mesin yang sama atau lain:</p>
+<pre><code>docker run -d -p 8080:8080 -e DDREPORT_TOKEN=rahasia-panjang ghcr.io/gvjavx/ddreport</code></pre>
+<pre><code>// routes/web.php
+Route::get(&#39;/reports/invoice/{invoice}.pdf&#39;, function (Invoice $invoice) {
+    $template = ReportTemplate::for(auth()-&gt;user()-&gt;customer_id, &#39;invoice&#39;);   // JSON tersimpan
+    $data = [
+        &#39;number&#39;   =&gt; $invoice-&gt;number,
+        &#39;customer&#39; =&gt; [&#39;name&#39; =&gt; $invoice-&gt;customer-&gt;name],
+        &#39;rows&#39;     =&gt; $invoice-&gt;items-&gt;map-&gt;only([&#39;name&#39;, &#39;qty&#39;, &#39;price&#39;]),
+    ];
+    $pdf = Http::withToken(env(&#39;DDREPORT_TOKEN&#39;))
+        -&gt;post(&#39;http://localhost:8080/render?format=pdf&#39;, [&#39;template&#39; =&gt; json_decode($template), &#39;data&#39; =&gt; $data])
+        -&gt;throw()-&gt;body();
+    return response($pdf)-&gt;header(&#39;Content-Type&#39;, &#39;application/pdf&#39;);
+});
+
+// Preview dari designer: template yang sedang diubah, dengan data sungguhan
+Route::post(&#39;/api/preview/invoice&#39;, fn (Request $r) =&gt; Http::withToken(env(&#39;DDREPORT_TOKEN&#39;))
+    -&gt;post(&#39;http://localhost:8080/render?format=html&#39;, [&#39;template&#39; =&gt; $r-&gt;json()-&gt;all(), &#39;data&#39; =&gt; /* data contoh */ []])
+    -&gt;throw()-&gt;body());</code></pre>
+<p>Java dan Kotlin: <code>DdReport.render(templateJson, dataJson, &quot;pdf&quot;)</code>, atau <code>new DdReport.Renderer()</code> di server. Go: <code>ddreport.Render(template, data, &quot;pdf&quot;)</code>. Selengkapnya di <a href="https://github.com/gvjavx/DdDesignReport/blob/main/README.md#backend">README</a>.</p>
+<h2 id="5-cetak-ke-printer-struk">5. Cetak ke printer struk</h2>
+<p><code>escpos</code> menghasilkan perintah printer, bukan gambar. Browser tidak bisa mengirimnya ke printer begitu saja; pilih jalur yang cocok dengan printernya:</p>
+<div class="table"><table><thead><tr><th>Printer</th><th>Jalur</th></tr></thead><tbody><tr><td>Printer jaringan (LAN/Wi-Fi), hampir semua printer kasir punya port 9100</td><td>Server mengirim byte-nya ke <code>ip-printer:9100</code>. Contoh: route <code>/api/print</code> di <code>examples/app/server.js</code> (<code>net.connect</code>). Di PHP: <code>fsockopen($ip, 9100)</code> lalu <code>fwrite</code>.</td></tr><tr><td>Bluetooth, atau USB yang muncul sebagai port serial</td><td>Browser memakai Web Serial (Chrome dan Edge di komputer). Contoh: tombol <b>Cetak struk (USB/Bluetooth)</b> di <code>examples/app/index.html</code>.</td></tr><tr><td>USB yang terpasang sebagai printer Windows</td><td>Bagikan printernya (Sharing), lalu dari komputer kasir: <code>copy /b struk.escpos \\localhost\NamaPrinter</code>, atau pakai agen cetak lokal. Browser tidak bisa menjangkaunya langsung.</td></tr><tr><td>Android (Flutter, Kotlin)</td><td>Kirim byte <code>escpos</code> dari server ke aplikasi, lalu tulis ke printer lewat Bluetooth seperti perintah ESC/POS lainnya.</td></tr></tbody></table></div>
+<p>Lebar baris mengikuti lebar kertas di template (Struk 58 mm = 32 karakter, 80 mm = 48); ubah dengan <b>Karakter per baris</b> bila printer Anda berbeda.</p>
+<h2 id="masalah-yang-sering-muncul">Masalah yang sering muncul</h2>
+<div class="table"><table><thead><tr><th>Gejala</th><th>Sebab dan jalan keluar</th></tr></thead><tbody><tr><td>Field tercetak kosong</td><td>Nama field salah ketik atau tidak ada di hasil query. Lihat peringatan di Preview, atau jalankan dengan <code>DDREPORT_STRICT=1</code>.</td></tr><tr><td>Node.js: <code>no ddreport binary for linux-x64</code></td><td>Paket binary untuk sistem itu tidak ikut terpasang: <code>npm install</code> dijalankan dengan <code>--omit=optional</code>, atau <code>node_modules</code> disalin dari sistem lain (Windows ke server Linux, atau ke image Docker). Jalankan <code>npm install</code> di sistem tujuan, atau set <code>DDREPORT_BIN</code>.</td></tr><tr><td>Java: <code>Add the dependency io.github.gvjavx:ddreport with the classifier of this system</code></td><td>Tambahkan dependency kedua dengan classifier sistem <b>server</b> (<code>linux-x64</code>), bukan laptop Anda. Untuk beberapa sistem, tambahkan beberapa classifier. Nama package Java-nya <code>io.ddreport</code> walau groupId-nya <code>io.github.gvjavx</code>.</td></tr><tr><td>HTTP <code>401 a valid token is needed</code></td><td>Server dijalankan dengan <code>DDREPORT_TOKEN</code>: kirim <code>Authorization: Bearer &lt;token&gt;</code>.</td></tr><tr><td>HTTP <code>403 requests from other sites are refused</code></td><td>Render dipanggil langsung dari JavaScript browser. Panggil dari backend Anda; token tidak boleh sampai ke browser.</td></tr><tr><td>HTTP <code>403 set DDREPORT_TOKEN to use this server by a name other than localhost</code></td><td>Server tanpa token hanya melayani <code>localhost</code> dan alamat IP. Untuk nama domain, isi <code>DDREPORT_TOKEN</code>.</td></tr><tr><td>HTTP <code>503</code> dengan <code>Retry-After</code></td><td>Antrean render penuh (empat kali jumlah prosesor). Ulangi sebentar lagi, atau tambah server.</td></tr><tr><td>Font di kanvas berbeda dari PDF</td><td>Font tambahan harus terdaftar di dua tempat: folder <code>DDREPORT_FONTS</code> di server, dan <code>fonts</code> + <code>fontBase</code> di designer. Lihat <a href="https://github.com/gvjavx/DdDesignReport/blob/main/README.md#font">Font</a>.</td></tr><tr><td>Serverless (Vercel, Netlify, Lambda)</td><td>Menjalankan binary sering dibatasi atau lambat saat mulai. Jalankan server ddreport (Docker) di tempat lain dan panggil lewat HTTP, atau pakai Go langsung.</td></tr><tr><td>Laporan besar memakan memori</td><td>PDF 100 000 baris butuh ±500 MB. Batasi dengan <code>DDREPORT_MAX_ROWS</code>, bagi per periode, atau pakai XLSX/CSV untuk data mentah.</td></tr></tbody></table></div>
+<p>Butuh dibantu memasangnya? Lihat <a href="https://gvjavx.github.io/DdDesignReport-website/#jasa">jasa</a>.</p>
+</main>
+<footer><div class="wrap">DdDesignReport, library reporting berlisensi MIT. <a href="https://github.com/gvjavx/DdDesignReport">GitHub</a></div></footer>
+</body>
+</html>

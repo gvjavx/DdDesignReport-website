@@ -48,8 +48,23 @@
   <script>
     // the printed pages are as wide as the paper: shrink them to fit a phone
     const sheet = document.getElementById('sheet')
-    const fit = () => { const d = sheet.contentDocument?.documentElement; if (d) { d.style.zoom = 1; const z = Math.min(1, sheet.clientWidth / d.scrollWidth); d.style.zoom = z; sheet.style.height = d.scrollHeight * z + 'px' } }
-    sheet.onload = fit; addEventListener('resize', fit)
+    const fit = () => {
+      try {
+        const d = sheet.contentDocument?.documentElement
+        if (!d) return
+        const z = Math.min(1, sheet.clientWidth / d.scrollWidth)
+        if ('zoom' in d.style) {
+          d.style.zoom = z
+        } else {
+          d.style.transform = 'scale(' + z + ')'
+          d.style.transformOrigin = 'top left'
+          d.style.width = (100 / z) + '%'
+        }
+        sheet.style.height = (d.scrollHeight * z) + 'px'
+      } catch (_) {}
+    }
+    sheet.onload = fit
+    addEventListener('resize', fit)
   </script>
   <p class="by" style="margin-top:8px">Pratinjau di atas adalah hasil cetak asli DdDesignReport dengan data contoh, bukan gambar.</p>
 

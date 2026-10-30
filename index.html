@@ -41,7 +41,8 @@
   .top nav { display: flex; gap: 4px; margin-left: auto }
   .top nav a { padding: 6px 12px; border-radius: 8px; color: var(--muted); text-decoration: none; font-size: 15px; font-weight: 500 }
   .top nav a:hover, .top nav a:focus-visible { background: var(--soft); color: var(--text) }
-  .theme { border: 1px solid var(--line); background: var(--card); color: var(--text); border-radius: 8px; width: 36px; height: 36px; cursor: pointer; font-size: 16px }
+  .theme { display: inline-grid; place-items: center; border: 1px solid var(--line); background: var(--card); color: var(--muted); border-radius: 8px; width: 36px; height: 36px; cursor: pointer; padding: 0; transition: color .15s ease, background-color .15s ease, border-color .15s ease }
+  .theme:hover { color: var(--text); background: var(--soft) }
 
   /* hero */
   .hero { background: radial-gradient(1000px 420px at 85% -10%, var(--accent-soft), transparent 70%), var(--bg); border-bottom: 1px solid var(--line) }
@@ -51,15 +52,16 @@
   h1 em { font-style: normal; color: var(--accent) }
   .lead { font-size: 19px; color: var(--muted); max-width: 56ch; margin: 0 0 26px }
   .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 26px }
-  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 20px; border-radius: 10px; font-weight: 700; text-decoration: none; border: 1px solid var(--line); background: var(--card); color: var(--text); cursor: pointer; font-size: 15px }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 20px; border-radius: 10px; font-weight: 700; text-decoration: none; border: 1px solid var(--line); background: var(--card); color: var(--text); cursor: pointer; font-size: 15px; transition: opacity .15s ease, background-color .15s ease, border-color .15s ease, box-shadow .15s ease }
   .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text) }
-  .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow) }
+  .btn:hover { opacity: .92; box-shadow: var(--shadow) }
+  .btn:active { transform: translateY(1px) }
   .formats { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 0; margin: 0; list-style: none; font-size: 14px }
   .formats li { border: 1px solid var(--line); background: var(--card); border-radius: 6px; padding: 2px 10px; font-weight: 700; font-size: 13px }
   .formats li.label { border: 0; background: none; padding: 0; font-weight: 400; color: var(--muted) }
   .paper { position: relative; background: #fff; border-radius: 6px; box-shadow: var(--shadow), 0 0 0 1px var(--line); overflow: hidden }
   .paper iframe { position: absolute; left: 0; top: 0; border: 0; transform-origin: 0 0; pointer-events: none; background: #fff }
-  .hero .paper { transform: rotate(1.5deg); max-width: 440px; margin: 0 auto; width: 100% }
+  .hero .paper { max-width: 440px; margin: 0 auto; width: 100% }
 
   /* page sections */
   .strip { padding: 72px 0; border-bottom: 1px solid var(--line) }
@@ -111,9 +113,10 @@
   article h3 { font-size: 19px; margin: 30px 0 8px }
   article p, article ul, article ol { max-width: 74ch }
   article li { margin: 4px 0 }
-  .chapter { margin: 0 0 26px; padding: 18px 22px; border-radius: 14px; background: var(--soft); border: 1px solid var(--line) }
-  .chapter .kicker { display: block }
-  .chapter p { margin: 4px 0 0; color: var(--muted) }
+  .chapter { margin: 0 0 28px; padding: 0 0 18px; border-bottom: 1px solid var(--line) }
+  .chapter .kicker { display: block; margin-bottom: 6px }
+  .chapter h2 { margin: 0 0 6px }
+  .chapter p { margin: 0; color: var(--muted); font-size: 16px }
   code { font: 13.5px/1.5 ui-monospace, "Cascadia Code", Consolas, monospace; background: var(--inline-code); padding: 2px 6px; border-radius: 5px }
   pre { position: relative; background: var(--code-bg); color: var(--code-text); border-radius: 12px; padding: 16px 18px; overflow-x: auto; margin: 14px 0 }
   pre code { background: none; padding: 0; color: inherit; font-size: 13.5px }
@@ -169,7 +172,8 @@
   .cards > div { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px }
   .cards b { display: block; margin-bottom: 2px }
   .cards span { color: var(--muted); font-size: 14.5px }
-  .cards .ico { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 9px; background: var(--accent-soft); color: var(--accent); font-size: 17px; font-weight: 800; margin-bottom: 10px }
+  .cards .ico { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 9px; background: var(--accent-soft); color: var(--accent); margin-bottom: 10px }
+  .cards .ico svg { display: block }
 
   details.recipe { border: 1px solid var(--line); border-radius: 12px; background: var(--card); margin: 10px 0; max-width: 820px }
   details.recipe summary { cursor: pointer; padding: 13px 16px; font-weight: 700 }
@@ -217,10 +221,11 @@
       <a href="#panduan">Panduan</a>
       <a href="#resep">Resep</a>
       <a href="#backend">Backend</a>
+      <a href="integrasi.html">Integrasi</a>
       <a href="#referensi">Referensi</a>
       <a href="#jasa">Jasa</a>
     </nav>
-    <button class="theme" type="button" id="theme" aria-label="Ganti tema terang/gelap" title="Ganti tema">◐</button>
+    <button class="theme" type="button" id="theme" aria-label="Ganti tema terang/gelap" title="Ganti tema"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg></button>
   </div>
 </header>
 
@@ -239,7 +244,7 @@
       </div>
       <ul class="formats" aria-label="Format hasil dan bahasa backend">
         <li class="label">Hasil:</li><li>PDF</li><li>HTML</li><li>XLSX</li><li>XLS</li><li>CSV</li><li>Printer struk</li>
-        <li class="label">&nbsp;Backend:</li><li>Go</li><li>Java</li><li>Kotlin</li><li>Node.js</li><li>PHP, Python, .NET lewat HTTP</li>
+        <li class="label">&nbsp;Backend:</li><li>Go</li><li>Java</li><li>Kotlin</li><li>Node.js</li><li>PHP</li><li>Python</li><li>.NET lewat HTTP</li>
       </ul>
     </div>
     <div class="paper" data-preview="invoice" data-w="595" data-h="842" role="img" aria-label="Contoh hasil: faktur"></div>
@@ -346,7 +351,7 @@
 
 <!-- ---------- MULAI ---------- -->
 <section id="mulai">
-  <div class="chapter"><span class="kicker">Mulai</span><h2>Mulai dalam 5 menit</h2><p>Dari nol sampai PDF pertama. Yang dibutuhkan hanya satu binary.</p></div>
+  <div class="chapter"><span class="kicker">Mulai</span><h2>Mulai dalam 5 menit</h2><p>Dari nol sampai PDF pertama. Yang dibutuhkan hanya satu binary. Memasangnya sebagai fitur di aplikasi Anda, dengan template per pelanggan dan cetak struk: <a href="integrasi.html">Integrasi dalam 10 menit</a>.</p></div>
   <ol class="tutorial">
     <li>
       <h3>Unduh binary <code>ddreport</code></h3>
@@ -605,15 +610,15 @@ groupFooter   Total wilayah   {{sum(amt):0}}</code></pre>
 <section id="elemen">
   <h2>Elemen</h2>
   <div class="cards">
-    <div><span class="ico">T</span><b>Text</b><span>Teks dengan placeholder. Bisa membungkus dan memanjangkan band.</span></div>
-    <div><span class="ico">▦</span><b>Table</b><span>Kisi sel bergaris. Satu baris di band detail = tabel data.</span></div>
-    <div><span class="ico">◩</span><b>Picture</b><span>Logo, tanda tangan, stempel. PNG, JPEG, atau GIF.</span></div>
-    <div><span class="ico">▭</span><b>Rectangle</b><span>Kotak dengan garis dan warna isi. Untuk bingkai dan latar.</span></div>
-    <div><span class="ico">─</span><b>Line</b><span>Garis mendatar, tegak, atau miring (panel kanan: direction).</span></div>
-    <div><span class="ico">◔</span><b>Chart</b><span>Batang, batang mendatar, garis, pie, donut.</span></div>
-    <div><span class="ico">▩</span><b>Barcode</b><span>QR code atau Code 128 dari teks atau field, dengan teks di bawahnya bila dicentang.</span></div>
-    <div><span class="ico">▤</span><b>Sub-report</b><span>Laporan kecil untuk setiap item dari daftar di data. Lihat <a href="#subreport">Sub-laporan</a>.</span></div>
-    <div><span class="ico">⊞</span><b>Crosstab</b><span>Tabel silang: baris × kolom dari data, dengan total. Lihat <a href="#crosstab">Crosstab</a>.</span></div>
+    <div><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg></span><b>Text</b><span>Teks dengan placeholder. Bisa membungkus dan memanjangkan band.</span></div>
+    <div><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/></svg></span><b>Table</b><span>Kisi sel bergaris. Satu baris di band detail = tabel data.</span></div>
+    <div><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg></span><b>Picture</b><span>Logo, tanda tangan, stempel. PNG, JPEG, atau GIF.</span></div>
+    <div><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="14" x="3" y="5" rx="2"/></svg></span><b>Rectangle</b><span>Kotak dengan garis dan warna isi. Untuk bingkai dan latar.</span></div>
+    <div><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="20" y2="4"/></svg></span><b>Line</b><span>Garis mendatar, tegak, atau miring (panel kanan: direction).</span></div>
+    <div><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><rect width="4" height="7" x="7" y="10" rx="1"/><rect width="4" height="12" x="15" y="5" rx="1"/></svg></span><b>Chart</b><span>Batang, batang mendatar, garis, pie, donut.</span></div>
+    <div><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5v14"/><path d="M8 5v14"/><path d="M12 5v14"/><path d="M17 5v14"/><path d="M21 5v14"/></svg></span><b>Barcode</b><span>QR code atau Code 128 dari teks atau field, dengan teks di bawahnya bila dicentang.</span></div>
+    <div><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span><b>Sub-report</b><span>Laporan kecil untuk setiap item dari daftar di data. Lihat <a href="#subreport">Sub-laporan</a>.</span></div>
+    <div><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 3v18"/><path d="m3 3 6 6"/></svg></span><b>Crosstab</b><span>Tabel silang: baris × kolom dari data, dengan total. Lihat <a href="#crosstab">Crosstab</a>.</span></div>
   </div>
   <h3>Teks panjang: centang Wrap</h3>
   <p>Tanpa <b>Wrap</b> (<code>grow</code>), teks yang melebihi kotaknya terpotong. Dengan Wrap, teks turun ke baris berikutnya dan band ikut bertambah tinggi: elemen di bawahnya turun, dan kotak serta garis tegak di sekelilingnya ikut memanjang. Kata yang lebih lebar dari kotaknya (URL, nomor panjang) dipecah di tengah.</p>
@@ -756,7 +761,7 @@ https://tokosaya.example/faktur/{{number}}</code></pre>
 cat struk.bin &gt; /dev/usb/lp0                 # Linux, printer USB
 nc 192.168.1.50 9100 &lt; struk.bin             # printer jaringan (port 9100)
 copy /b struk.bin \\localhost\PrinterStruk   # Windows, printer yang di-share</code></pre>
-  <p>Dari kode: <code>render(template, data, 'escpos')</code> di Node.js, <code>DdReport.render(..., "escpos")</code> di Java, atau <code>POST /render?format=escpos</code>, lalu kirim byte-nya ke printer: lewat socket ke port 9100, atau lewat library printer Bluetooth di aplikasi Android (fungsi yang menulis byte mentah). Template <a href="contoh/receipt.html">Struk kasir</a> siap pakai sudah selebar kertas 80 mm.</p>
+  <p>Dari kode: <code>render(template, data, 'escpos')</code> di Node.js, <code>DdReport.render(..., "escpos")</code> di Java, atau <code>POST /render?format=escpos</code>, lalu kirim byte-nya ke printer: lewat socket ke port 9100, atau lewat library printer Bluetooth di aplikasi Android (fungsi yang menulis byte mentah). Dari aplikasi web: printer jaringan lewat server, atau printer Bluetooth/USB langsung dari browser dengan Web Serial; lihat <a href="integrasi.html#5-cetak-ke-printer-struk">Cetak ke printer struk</a>. Template <a href="contoh/receipt.html">Struk kasir</a> siap pakai sudah selebar kertas 80 mm.</p>
   <h3>Bagaimana desain menjadi tabel Excel</h3>
   <p>Untuk XLSX, XLS, dan CSV, setiap teks dan sel tabel di band <code>detail</code> menjadi satu <b>kolom</b>, urut seperti dibaca: dari atas ke bawah, lalu kiri ke kanan. Setiap baris data menjadi satu baris.</p>
   <p>Band lain (judul kolom, judul dan subtotal kelompok, ringkasan) menambah satu baris untuk setiap baris teksnya. Tiap teks masuk ke kolom yang sejajar dengannya, sehingga subtotal jatuh tepat di bawah kolom angkanya. Band <code>header</code> dan <code>footer</code> tidak ikut.</p>
@@ -815,12 +820,12 @@ pdf, err := ddreport.Render(template, data, "pdf")</code></pre>
 <pre><code>&lt;dependency&gt;
   &lt;groupId&gt;io.github.gvjavx&lt;/groupId&gt;
   &lt;artifactId&gt;ddreport&lt;/artifactId&gt;
-  &lt;version&gt;0.4.2&lt;/version&gt;
+  &lt;version&gt;0.4.3&lt;/version&gt;
 &lt;/dependency&gt;
 &lt;dependency&gt;
   &lt;groupId&gt;io.github.gvjavx&lt;/groupId&gt;
   &lt;artifactId&gt;ddreport&lt;/artifactId&gt;
-  &lt;version&gt;0.4.2&lt;/version&gt;
+  &lt;version&gt;0.4.3&lt;/version&gt;
   &lt;classifier&gt;linux-x64&lt;/classifier&gt;
 &lt;/dependency&gt;</code></pre>
 <pre><code>import io.ddreport.DdReport;
@@ -835,7 +840,7 @@ Files.write(Path.of("report.pdf"), pdf);</code></pre>
       <p>Beberapa thread memakai satu <code>Renderer</code> secara bergantian; untuk mencetak paralel, buat satu per thread. Laporan yang gagal atau terlalu lama hanya menggagalkan laporan itu sendiri.</p>
     </div>
     <div role="tabpanel" data-panel="kotlin">
-      <p>Kotlin memakai class Java yang sama dari Maven Central: <code>implementation("io.github.gvjavx:ddreport:0.4.2")</code> dan <code>runtimeOnly("io.github.gvjavx:ddreport:0.4.2:linux-x64")</code>, dengan classifier untuk sistem tempat aplikasi berjalan.</p>
+      <p>Kotlin memakai class Java yang sama dari Maven Central: <code>implementation("io.github.gvjavx:ddreport:0.4.3")</code> dan <code>runtimeOnly("io.github.gvjavx:ddreport:0.4.3:linux-x64")</code>, dengan classifier untuk sistem tempat aplikasi berjalan.</p>
 <pre><code>import io.ddreport.DdReport
 
 val xlsx = DdReport.render(templateJson, dataJson, "xlsx")
@@ -945,7 +950,7 @@ designer.destroy()          // saat designer dilepas dari halaman</code></pre>
     <tr><td><code>lang</code></td><td><code>'en'</code> (default) atau <code>'id'</code> untuk antarmuka berbahasa Indonesia. Di aplikasi standalone: tambahkan <code>?lang=id</code> pada alamatnya, atau klik tautan bahasa di kanan atas.</td></tr>
     <tr><td><code>onChange(template)</code></td><td>Dipanggil setiap ada perubahan. Objeknya adalah objek kerja designer, jangan diubah; pakai <code>getTemplate()</code> jika butuh salinan.</td></tr>
     <tr><td><code>fontBase</code></td><td>Opsional. URL tempat font bundel disajikan, misalnya <code>'/fonts/'</code> (<code>ddreport -serve</code> menyajikannya di sana; di Go, sajikan <code>ddreport.BundledFonts</code>). Tanpa ini kanvas memakai font yang terpasang di perangkat; hasil cetak tidak terpengaruh.</td></tr>
-    <tr><td><code>data</code></td><td>Opsional. Data contoh (field dan baris); chart di kanvas digambar darinya. Ubah dengan <code>designer.setData(data)</code>.</td></tr>
+    <tr><td><code>data</code></td><td>Opsional. Data contoh (field dan baris): chart di kanvas digambar darinya, menu Field berisi field-nya bila <code>fields</code> tidak diisi, dan Preview menyebut field di template yang tidak ada di data ("Tidak ada di data contoh, tercetak kosong: ..."). Ubah dengan <code>designer.setData(data)</code>.</td></tr>
     <tr><td><code>fonts</code></td><td>Opsional. Nama font tambahan yang Anda daftarkan di backend, misalnya <code>['Inter']</code>, agar muncul di pilihan font.</td></tr>
     <tr><td><code>preview(template)</code></td><td>Opsional. Fungsi async yang mengembalikan HTML hasil cetak (format <code>"html"</code> dari backend Anda). Jika diisi, tombol Preview muncul di tab View dan di bilah status. Hasilnya tampil per halaman, dipaskan ke lebar dialog, dengan jumlah halaman; jika fungsi ini melempar error, pesannya ditampilkan di dialog.</td></tr>
     <tr><td><code>simple</code></td><td>Opsional. <code>true</code> untuk mode mudah: grup Arrange, Margins, Grouping, sub-laporan, dan properti lanjutan (posisi, garis tabel, <code>showIf</code>, ...) disembunyikan; setiap tombol ribbon diberi nama; band grup baru muncul setelah Group by diisi.</td></tr>
@@ -1129,7 +1134,8 @@ $env:DDREPORT_BIN = "$PWD\ddreport.exe"</code></pre></div>
     <tr><td><code>-templates folder</code></td><td>Bersama <code>-serve</code>: folder tempat <b>My templates</b> disimpan, satu file JSON per template (default <code>ddreport-templates</code>; di Docker <code>/data</code>)</td></tr>
     <tr><td><code>DDREPORT_TOKEN</code></td><td>Untuk <code>-serve</code>: setiap render harus mengirim <code>Authorization: Bearer &lt;token&gt;</code>. Tanpa token, server hanya melayani <code>localhost</code> dan alamat IP; untuk nama domain, isi token. Lihat tab HTTP di <a href="#backend">Memanggil dari backend</a></td></tr>
     <tr><td><code>-stdio</code></td><td>Terus berjalan dan mencetak permintaan satu per satu dari stdin: baris <code>&lt;format&gt; &lt;panjang&gt;</code> lalu <code>{"template": ..., "data": ...}</code> sepanjang itu; jawabannya baris <code>ok &lt;panjang&gt;</code> dan dokumennya, atau <code>error &lt;panjang&gt;</code> dan pesannya. Dipakai <code>DdReport.Renderer</code> dan <code>createRenderer</code></td></tr>
-    <tr><td><code>DDREPORT_MAX_ROWS</code></td><td>Laporan dengan baris lebih dari ini ditolak dengan pesan error, alih-alih menghabiskan memori server (PDF 100 ribu baris butuh sekitar 1 GB). Dari Go: <code>ddreport.MaxRows</code></td></tr>
+    <tr><td><code>DDREPORT_STRICT=1</code></td><td>Laporan yang memakai field yang tidak ada di data (salah ketik, atau kolom yang tidak dikembalikan query) ditolak dengan nama field-nya, alih-alih dicetak kosong. Berlaku juga untuk Node.js dan Java. Dari Go: <code>ddreport.Missing(template, data)</code></td></tr>
+    <tr><td><code>DDREPORT_MAX_ROWS</code></td><td>Laporan dengan baris lebih dari ini ditolak dengan pesan error, alih-alih menghabiskan memori server (PDF 100 ribu baris butuh sekitar 500 MB). Dari Go: <code>ddreport.MaxRows</code></td></tr>
     <tr><td><code>-healthcheck alamat</code></td><td>Meminta <code>GET /healthz</code> dari server di alamat itu dan keluar dengan kode 1 bila tidak dijawab <code>ok</code>. Dipakai HEALTHCHECK image Docker, yang tidak punya curl</td></tr>
     <tr><td><code>-mcp</code></td><td>Server <a href="https://modelcontextprotocol.io">MCP</a> lewat stdin/stdout untuk asisten AI, dengan tool <code>template_guide</code>, <code>check_template</code>, dan <code>render_template</code>. Lihat <a href="#referensi">Template JSON</a></td></tr>
     <tr><td><code>DDREPORT_BIN</code></td><td>Lokasi binary, dibaca oleh wrapper Java dan Node.js</td></tr>
@@ -1175,6 +1181,12 @@ java -cp out DdReportTest             # wrapper Java</code></pre>
 <section id="versi">
   <h2>Riwayat versi</h2>
   <p>Daftar lengkapnya ada di <a href="https://github.com/gvjavx/DdDesignReport/blob/main/CHANGELOG.md">CHANGELOG.md</a>.</p>
+  <h3>0.4.3 · 30 Okt 2026</h3>
+  <ul>
+    <li><b>Integrasi:</b> panduan <a href="integrasi.html">Integrasi dalam 10 menit</a> dan contoh aplikasi lengkap di <code>examples/app</code>: designer, template per pelanggan, preview, PDF dan Excel, cetak struk lewat jaringan atau Web Serial.</li>
+    <li><b>Field yang salah ketik:</b> preview di designer menyebut field yang tidak ada di data contoh; <code>DDREPORT_STRICT=1</code> menolak laporan seperti itu; dari Go <code>ddreport.Missing</code>.</li>
+    <li><b>Designer:</b> tanpa opsi <code>fields</code>, menu Field berisi field dari data contoh.</li>
+  </ul>
   <h3>0.4.2 · 30 Okt 2026</h3>
   <ul>
     <li><b>Printer struk:</b> format <code>escpos</code> mencetak langsung ke printer thermal 58 dan 80 mm (teks tebal dan besar, QR, Code 128, logo, potong kertas), dan <code>txt</code> untuk pratinjau dan dot matrix. Designer: kertas Struk 58/80 mm dan Karakter per baris. Lihat <a href="#struk">Printer struk</a>.</li>
@@ -1261,12 +1273,36 @@ java -cp out DdReportTest             # wrapper Java</code></pre>
 <script>
 // theme: follows the system until the visitor picks one
 const root = document.documentElement
-try { const t = localStorage.getItem('theme'); if (t) root.dataset.theme = t } catch {}
-document.getElementById('theme').onclick = () => {
-  const dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches
-  root.dataset.theme = dark ? 'light' : 'dark'
-  try { localStorage.setItem('theme', root.dataset.theme) } catch {}
+const themeBtn = document.getElementById('theme')
+const sunIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`
+const moonIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`
+
+function updateThemeUI(theme) {
+  const isDark = theme === 'dark' || (!theme && matchMedia('(prefers-color-scheme: dark)').matches)
+  themeBtn.innerHTML = isDark ? sunIcon : moonIcon
+  themeBtn.title = isDark ? 'Beralih ke tema terang' : 'Beralih ke tema gelap'
+  themeBtn.setAttribute('aria-label', themeBtn.title)
 }
+
+try {
+  const saved = localStorage.getItem('theme')
+  if (saved) root.dataset.theme = saved
+  updateThemeUI(saved)
+} catch (_) {
+  updateThemeUI(null)
+}
+
+themeBtn.onclick = () => {
+  const isDark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches
+  const next = isDark ? 'light' : 'dark'
+  root.dataset.theme = next
+  try { localStorage.setItem('theme', next) } catch (_) {}
+  updateThemeUI(next)
+}
+
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+  if (!root.dataset.theme) updateThemeUI(null)
+})
 
 // copy buttons on code blocks (the examples add theirs when they load)
 for (const pre of document.querySelectorAll('pre')) addCopy(pre)
@@ -1275,9 +1311,17 @@ function addCopy(pre) {
   b.className = 'copy'
   b.type = 'button'
   b.textContent = 'Salin'
+  let timer
   b.onclick = async () => {
-    try { await navigator.clipboard.writeText(pre.querySelector('code').textContent); b.textContent = 'Tersalin ✓' } catch { b.textContent = 'Gagal menyalin' }
-    setTimeout(() => { b.textContent = 'Salin' }, 1500)
+    try {
+      const code = pre.querySelector('code')?.textContent || ''
+      await navigator.clipboard.writeText(code)
+      b.textContent = 'Tersalin ✓'
+    } catch {
+      b.textContent = 'Gagal'
+    }
+    clearTimeout(timer)
+    timer = setTimeout(() => { b.textContent = 'Salin' }, 1500)
   }
   pre.append(b)
 }
@@ -1286,38 +1330,82 @@ function addCopy(pre) {
 function pick(group, tab) {
   for (const tabs of document.querySelectorAll(`.tabs[data-tabs="${group}"]`)) {
     const buttons = [...tabs.querySelectorAll('[role=tab]')]
-    const chosen = buttons.find(b => b.dataset.tab === tab) || buttons[0]
+    const chosen = (tab ? buttons.find(b => b.dataset.tab === tab) : null) || buttons[0]
     for (const b of buttons) b.setAttribute('aria-selected', b === chosen)
     for (const p of tabs.querySelectorAll('[role=tabpanel]')) p.hidden = p.dataset.panel !== chosen.dataset.tab
   }
 }
-for (const tabs of document.querySelectorAll('.tabs')) {
-  tabs.addEventListener('click', ev => { const b = ev.target.closest('[role=tab]'); if (b) pick(tabs.dataset.tabs, b.dataset.tab) })
-  pick(tabs.dataset.tabs)
+const tabGroups = new Set()
+for (const tabs of document.querySelectorAll('.tabs[data-tabs]')) {
+  const group = tabs.dataset.tabs
+  tabs.addEventListener('click', ev => {
+    const b = ev.target.closest('[role=tab]')
+    if (b) pick(group, b.dataset.tab)
+  })
+  tabGroups.add(group)
 }
+for (const group of tabGroups) pick(group)
 
 // table of contents: highlight the section being read
 const links = new Map([...document.querySelectorAll('.toc a')].map(a => [a.getAttribute('href').slice(1), a]))
+const visible = new Set()
+function updateActiveTOC() {
+  let activeId = null
+  for (const id of links.keys()) {
+    if (visible.has(id)) {
+      activeId = id
+      break
+    }
+  }
+  for (const [id, a] of links) {
+    a.classList.toggle('on', id === activeId)
+  }
+}
 const spy = new IntersectionObserver(entries => {
-  for (const e of entries) if (e.isIntersecting) for (const [id, a] of links) a.classList.toggle('on', id === e.target.id)
+  for (const e of entries) {
+    if (e.isIntersecting) {
+      visible.add(e.target.id)
+    } else {
+      visible.delete(e.target.id)
+    }
+  }
+  updateActiveTOC()
 }, { rootMargin: '-80px 0px -70% 0px' })
-for (const id of links.keys()) spy.observe(document.getElementById(id))
+for (const id of links.keys()) {
+  const el = document.getElementById(id)
+  if (el) spy.observe(el)
+}
 
 // a rendered report, scaled to fit its frame
+const previewResizer = new ResizeObserver(entries => {
+  for (const entry of entries) {
+    const box = entry.target
+    const frame = box.querySelector('iframe')
+    const pxW = +box.dataset.pxw
+    if (frame && pxW) {
+      frame.style.transform = `scale(${box.clientWidth / pxW})`
+    }
+  }
+})
+
 function paper(box, id, w, h) {
   box.style.aspectRatio = `${w} / ${h}`
   const frame = document.createElement('iframe')
   frame.src = `previews/${id}.html`
   const pxW = w * 96 / 72 // the report is sized in points, the frame in CSS pixels
-  frame.width = pxW; frame.height = h * 96 / 72
+  box.dataset.pxw = pxW
+  frame.width = pxW
+  frame.height = h * 96 / 72
   frame.tabIndex = -1
   frame.setAttribute('sandbox', '')
   frame.setAttribute('scrolling', 'no')
   frame.title = 'Pratinjau ' + id
   box.append(frame)
-  new ResizeObserver(() => { frame.style.transform = `scale(${box.clientWidth / pxW})` }).observe(box)
+  previewResizer.observe(box)
 }
-for (const box of document.querySelectorAll('[data-preview]')) paper(box, box.dataset.preview, +box.dataset.w, +box.dataset.h)
+for (const box of document.querySelectorAll('[data-preview]')) {
+  paper(box, box.dataset.preview, +box.dataset.w, +box.dataset.h)
+}
 </script>
 
 <script type="module">
@@ -1344,73 +1432,97 @@ function show(file) {
 }
 async function load(id) {
   data = undefined
-  if (!id) return designer.setTemplate(), designer.setData()
+  if (!id) {
+    designer.setTemplate()
+    designer.setData()
+    return
+  }
   try {
-    show(await (await fetch(`templates/${id}.json`)).json())
-  } catch (err) { msg.textContent = 'Template tidak bisa dimuat: ' + err.message }
+    const res = await fetch(`templates/${id}.json`)
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    const file = await res.json()
+    show(file)
+  } catch (err) {
+    msg.textContent = 'Template tidak bisa dimuat: ' + err.message
+  }
 }
 select.onchange = () => load(select.value)
 
 // the examples in the guide: the page the library printed, then the whole JSON that printed it
 for (const box of document.querySelectorAll('[data-example]')) {
   const id = box.dataset.example
-  fetch(`examples/${id}.json`).then(r => r.text()).then(text => {
-    const file = JSON.parse(text), { width, height } = file.template.page
-    box.innerHTML = `<div class="show"><div class="paper"></div></div>
-      <div class="bar">Hasil cetak asli<span><button type="button">Buka di designer</button><a href="examples/${id}.json" download>JSON</a></span></div>
-      <pre><code></code></pre>`
-    box.querySelector('code').textContent = text
-    addCopy(box.querySelector('pre'))
-    const p = box.querySelector('.paper')
-    p.style.maxWidth = width * 96 / 72 + 'px' // never larger than the paper itself
-    paper(p, 'examples/' + id, width, height)
-    box.querySelector('button').onclick = () => {
-      select.value = ''
-      show(file)
-      document.getElementById('coba').scrollIntoView()
-    }
-  }).catch(() => { box.innerHTML = '<p class="notice warn">Contoh butuh halaman ini dibuka lewat web server (bukan <code>file://</code>).</p>' })
+  fetch(`examples/${id}.json`)
+    .then(r => {
+      if (!r.ok) throw new Error(`HTTP ${r.status}`)
+      return r.text()
+    })
+    .then(text => {
+      const file = JSON.parse(text), { width, height } = file.template.page
+      box.innerHTML = `<div class="show"><div class="paper"></div></div>
+        <div class="bar">Hasil cetak asli<span><button type="button">Buka di designer</button><a href="examples/${id}.json" download>JSON</a></span></div>
+        <pre><code></code></pre>`
+      box.querySelector('code').textContent = text
+      addCopy(box.querySelector('pre'))
+      const p = box.querySelector('.paper')
+      p.style.maxWidth = width * 96 / 72 + 'px' // never larger than the paper itself
+      paper(p, 'examples/' + id, width, height)
+      box.querySelector('button').onclick = () => {
+        select.value = ''
+        show(file)
+        document.getElementById('coba').scrollIntoView()
+      }
+    })
+    .catch(() => {
+      box.innerHTML = '<p class="notice warn">Contoh butuh halaman ini dibuka lewat web server (bukan <code>file://</code>).</p>'
+    })
 }
 
-const list = await (await fetch('previews/index.json')).json()
-select.append(...list.map(t => new Option(t.name, t.id)))
-document.getElementById('gallery').replaceChildren(...list.map(t => {
-  const card = document.createElement('div')
-  card.className = 'tcard'
-  card.innerHTML = `<div class="shot"><div class="paper"></div></div>
-    <div class="body"><h3></h3><p></p>
-      <div class="links"><button type="button">Buka di designer</button><a href="contoh/${t.id}.html">Detail</a><a href="previews/${t.id}.pdf" target="_blank" rel="noopener">PDF</a><a href="previews/${t.id}.xlsx" download>Excel</a><a href="templates/${t.id}.json" download>JSON</a></div>
-    </div>`
-  card.querySelector('h3').textContent = t.name
-  card.querySelector('p').textContent = t.description
-  if (t.author) { // from the community: who made it
-    const by = document.createElement(t.url ? 'a' : 'span')
-    by.className = 'by'
-    by.textContent = 'oleh ' + t.author
-    if (t.url) Object.assign(by, { href: t.url, target: '_blank', rel: 'noopener' })
-    card.querySelector('p').after(by)
-  }
-  // fit the paper inside the 218px tall window, whatever its shape
-  const box = card.querySelector('.paper')
-  box.style.width = Math.min(218 * t.width / t.height, 218) + 'px'
-  paper(box, t.id, t.width, t.height)
-  card.querySelector('button').onclick = () => {
-    select.value = t.id
-    load(t.id)
-    document.getElementById('coba').scrollIntoView()
-  }
-  return card
-}), Object.assign(document.createElement('div'), {
-  className: 'tcard tcard-add',
-  innerHTML: '<div class="body"><h3>Template Anda di sini</h3><p>Rancang di designer, simpan JSON-nya, lalu kirim pull request. Test otomatis mencetaknya ke setiap format sebelum digabung.</p>' +
-    '<div class="links"><a href="https://github.com/gvjavx/DdDesignReport#menyumbang-template" target="_blank" rel="noopener">Cara mengirim template</a></div></div>',
-}))
+try {
+  const res = await fetch('previews/index.json')
+  if (res.ok) {
+    const list = await res.json()
+    select.append(...list.map(t => new Option(t.name, t.id)))
+    document.getElementById('gallery').replaceChildren(...list.map(t => {
+      const card = document.createElement('div')
+      card.className = 'tcard'
+      card.innerHTML = `<div class="shot"><div class="paper"></div></div>
+        <div class="body"><h3></h3><p></p>
+          <div class="links"><button type="button">Buka di designer</button><a href="contoh/${t.id}.html">Detail</a><a href="previews/${t.id}.pdf" target="_blank" rel="noopener">PDF</a><a href="previews/${t.id}.xlsx" download>Excel</a><a href="templates/${t.id}.json" download>JSON</a></div>
+        </div>`
+      card.querySelector('h3').textContent = t.name
+      card.querySelector('p').textContent = t.description
+      if (t.author) { // from the community: who made it
+        const by = document.createElement(t.url ? 'a' : 'span')
+        by.className = 'by'
+        by.textContent = 'oleh ' + t.author
+        if (t.url) Object.assign(by, { href: t.url, target: '_blank', rel: 'noopener' })
+        card.querySelector('p').after(by)
+      }
+      // fit the paper inside the 218px tall window, whatever its shape
+      const box = card.querySelector('.paper')
+      box.style.width = Math.min(218 * t.width / t.height, 218) + 'px'
+      paper(box, t.id, t.width, t.height)
+      card.querySelector('button').onclick = () => {
+        select.value = t.id
+        load(t.id)
+        document.getElementById('coba').scrollIntoView()
+      }
+      return card
+    }), Object.assign(document.createElement('div'), {
+      className: 'tcard tcard-add',
+      innerHTML: '<div class="body"><h3>Template Anda di sini</h3><p>Rancang di designer, simpan JSON-nya, lalu kirim pull request. Test otomatis mencetaknya ke setiap format sebelum digabung.</p>' +
+        '<div class="links"><a href="https://github.com/gvjavx/DdDesignReport#menyumbang-template" target="_blank" rel="noopener">Cara mengirim template</a></div></div>',
+    }))
 
-// ?t=invoice#coba, from a template's own page: open that template in the demo
-const wanted = new URLSearchParams(location.search).get('t')
-if (list.some(t => t.id === wanted)) {
-  select.value = wanted
-  load(wanted)
+    // ?t=invoice#coba, from a template's own page: open that template in the demo
+    const wanted = new URLSearchParams(location.search).get('t')
+    if (list.some(t => t.id === wanted)) {
+      select.value = wanted
+      load(wanted)
+    }
+  }
+} catch (err) {
+  console.warn('Gagal memuat daftar template:', err)
 }
 </script>
 </body>

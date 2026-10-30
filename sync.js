@@ -50,6 +50,8 @@ fs.rmSync(path.join(site, 'contoh'), { recursive: true, force: true })
 fs.mkdirSync(path.join(site, 'contoh'))
 for (const entry of index) fs.writeFileSync(path.join(site, 'contoh', entry.id + '.html'), pages.page(entry, index))
 fs.writeFileSync(path.join(site, 'sitemap.xml'), pages.sitemap(index))
+// the integration guide, from the library's INTEGRASI.md
+fs.writeFileSync(path.join(site, 'integrasi.html'), pages.guide(fs.readFileSync(path.join(lib, 'INTEGRASI.md'), 'utf8')))
 
 // the small examples in the docs (examples/, written for this site): each is shown above its own JSON
 fs.mkdirSync(path.join(site, 'previews', 'examples'))
