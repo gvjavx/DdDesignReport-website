@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Contoh Label produk: template gratis PDF dan Excel · DdDesignReport</title>
+<meta name="description" content="Label 10 × 6 cm, satu label per baris data, dengan Code 128 dan QR. Unduh contohnya dalam PDF atau Excel, ubah di designer gratis di browser, lalu cetak dari aplikasi Anda.">
+<link rel="canonical" href="https://gvjavx.github.io/DdDesignReport-website/contoh/labels.html">
+<link rel="icon" type="image/svg+xml" href="../logo.svg">
+<style>
+  :root { --bg: #fff; --soft: #f5f7fb; --text: #162033; --muted: #5b667a; --line: #e3e8f0; --accent: #2457d6; --accent-text: #fff; --code-bg: #0f172a; --code-text: #e2e8f0; color-scheme: light }
+  @media (prefers-color-scheme: dark) { :root { --bg: #0c111b; --soft: #121a28; --text: #e6ebf4; --muted: #9aa6ba; --line: #263247; --accent: #7aa2ff; --accent-text: #0c111b; --code-bg: #070b13; --code-text: #dbe4f3; color-scheme: dark } }
+  * { box-sizing: border-box }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 16px }
+  header { border-bottom: 1px solid var(--line); padding: 12px 0 }
+  header a { color: var(--text); font-weight: 700; text-decoration: none; display: inline-flex; gap: 8px; align-items: center }
+  h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.2; margin: 32px 0 8px }
+  .lead { color: var(--muted); font-size: 18px; margin: 0 0 18px; max-width: 70ch }
+  .by { color: var(--muted); font-size: 14px; margin: -10px 0 16px }
+  .cta { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 24px }
+  .btn { display: inline-flex; padding: 10px 18px; border-radius: 10px; font-weight: 700; text-decoration: none; border: 1px solid var(--line); background: var(--soft); color: var(--text) }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text) }
+  .sheet { background: var(--soft); border: 1px solid var(--line); border-radius: 14px; padding: 12px }
+  iframe { width: 100%; height: min(80vh, 900px); max-height: min(80vh, 900px); border: 0; border-radius: 8px; background: #fff }
+  h2 { margin: 40px 0 8px; font-size: 24px }
+  pre { background: var(--code-bg); color: var(--code-text); padding: 14px 16px; border-radius: 10px; overflow-x: auto; font-size: 14px }
+  ol li { margin-bottom: 6px }
+  .others { columns: 2 180px; padding-left: 18px }
+  a { color: var(--accent) }
+  footer { border-top: 1px solid var(--line); margin-top: 48px; padding: 20px 0; color: var(--muted); font-size: 14px }
+</style>
+</head>
+<body>
+<header><div class="wrap"><a href="../"><img src="../logo.svg" alt="" width="26" height="26">DdDesignReport</a></div></header>
+<main class="wrap">
+  <h1>Contoh Label produk</h1>
+  <p class="lead">Label 10 × 6 cm, satu label per baris data, dengan Code 128 dan QR.</p>
+  
+  <div class="cta">
+    <a class="btn primary" href="../?t=labels#coba">Ubah di designer</a>
+    <a class="btn" href="../previews/labels.pdf" download>Unduh PDF</a>
+    <a class="btn" href="../previews/labels.xlsx" download>Unduh Excel</a>
+    <a class="btn" href="../templates/labels.json" download>Template JSON</a>
+  </div>
+  <div class="sheet"><iframe id="sheet" src="../previews/labels.html" title="Hasil cetak Label produk"></iframe></div>
+  <script>
+    // the printed pages are as wide as the paper: shrink them to fit a phone
+    const sheet = document.getElementById('sheet')
+    const fit = () => { const d = sheet.contentDocument?.documentElement; if (d) { d.style.zoom = 1; const z = Math.min(1, sheet.clientWidth / d.scrollWidth); d.style.zoom = z; sheet.style.height = d.scrollHeight * z + 'px' } }
+    sheet.onload = fit; addEventListener('resize', fit)
+  </script>
+  <p class="by" style="margin-top:8px">Pratinjau di atas adalah hasil cetak asli DdDesignReport dengan data contoh, bukan gambar.</p>
+
+  <h2>Pakai di aplikasi Anda</h2>
+  <ol>
+    <li>Unduh <a href="../templates/labels.json" download>labels.json</a>. Isinya <code>template</code> dan <code>data</code> contohnya.</li>
+    <li>Ubah tata letaknya di <a href="../?t=labels#coba">designer</a>, atau pasang designer-nya di aplikasi Anda agar klien bisa mengubahnya sendiri.</li>
+    <li>Cetak dari backend dengan data Anda sendiri: Go, Java, Kotlin, Node.js, atau PHP, Python, dan .NET lewat HTTP.</li>
+  </ol>
+<pre><code>ddreport -format pdf &lt; labels.json &gt; labels.pdf     # atau xlsx, xls, html, csv</code></pre>
+  <p>Langkah lengkapnya ada di <a href="../#mulai">Mulai dalam 5 menit</a>. Butuh disesuaikan dengan format perusahaan Anda, atau dipasangkan sekalian? Lihat <a href="../#jasa">jasa</a>.</p>
+
+  <h2>Template lain</h2>
+  <ul class="others"><li><a href="invoice.html">Faktur</a></li><li><a href="sales-report.html">Laporan penjualan</a></li><li><a href="receipt.html">Struk kasir</a></li><li><a href="payslip.html">Slip gaji</a></li><li><a href="certificate.html">Sertifikat</a></li><li><a href="letter.html">Surat resmi</a></li><li><a href="stock.html">Daftar stok</a></li><li><a href="kwitansi.html">Kuitansi</a></li><li><a href="surat-jalan.html">Surat jalan</a></li><li><a href="rapor.html">Rapor siswa</a></li><li><a href="daftar-hadir.html">Daftar hadir</a></li><li><a href="laba-rugi.html">Laporan laba rugi</a></li></ul>
+</main>
+<footer><div class="wrap">DdDesignReport, library reporting berlisensi MIT. <a href="https://github.com/gvjavx/DdDesignReport">GitHub</a></div></footer>
+</body>
+</html>

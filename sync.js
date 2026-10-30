@@ -32,7 +32,7 @@ fs.mkdirSync(path.join(site, 'previews'))
 const index = JSON.parse(fs.readFileSync(path.join(site, 'templates', 'index.json'), 'utf8'))
 for (const entry of index) {
   const { template, data } = JSON.parse(fs.readFileSync(path.join(site, 'templates', entry.id + '.json'), 'utf8'))
-  for (const format of ['html', 'pdf']) {
+  for (const format of ['html', 'pdf', 'xlsx']) {
     const out = execFileSync(bin, ['-format', format], { input: JSON.stringify({ template, data }), maxBuffer: Infinity })
     fs.writeFileSync(path.join(site, 'previews', `${entry.id}.${format}`), out)
   }
@@ -42,6 +42,14 @@ for (const entry of index) {
 }
 fs.writeFileSync(path.join(site, 'previews', 'index.json'), JSON.stringify(index, null, 2) + '\n')
 
+// a page of its own for every template, for people searching for "contoh kwitansi" and the like,
+// and a sitemap of them for search engines
+const pages = require('./pages.js')
+fs.rmSync(path.join(site, 'contoh'), { recursive: true, force: true })
+fs.mkdirSync(path.join(site, 'contoh'))
+for (const entry of index) fs.writeFileSync(path.join(site, 'contoh', entry.id + '.html'), pages.page(entry, index))
+fs.writeFileSync(path.join(site, 'sitemap.xml'), pages.sitemap(index))
+
 // the small examples in the docs (examples/, written for this site): each is shown above its own JSON
 fs.mkdirSync(path.join(site, 'previews', 'examples'))
 const examples = fs.readdirSync(path.join(site, 'examples')).filter(f => f.endsWith('.json'))
@@ -49,4 +57,4 @@ for (const f of examples) {
   const out = execFileSync(bin, ['-format', 'html'], { input: fs.readFileSync(path.join(site, 'examples', f)), maxBuffer: Infinity })
   fs.writeFileSync(path.join(site, 'previews', 'examples', f.replace(/\.json$/, '.html')), out)
 }
-console.log(`synced designer.js, the schema, llms.txt, fonts, ${index.length} templates and ${examples.length} examples from ${lib}`)
+console.log(`synced designer.js, the schema, llms.txt, fonts, ${index.length} templates (each with its page) and ${examples.length} examples from ${lib}`)
