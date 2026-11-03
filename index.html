@@ -98,7 +98,7 @@
   .demo-bar span { color: var(--muted); font-size: 14px }
   .demo { height: min(760px, 86vh); border-radius: 12px; box-shadow: var(--shadow) }
   .demo > div { height: 100% }
-  .explainer { display: block; width: 100%; max-width: 960px; height: auto; margin: 0 auto; border-radius: 12px; box-shadow: var(--shadow); background: #fff }
+  .explainer { display: block; width: 100%; max-width: 960px; aspect-ratio: 16 / 9; height: auto; margin: 0 auto; border: 0; border-radius: 12px; box-shadow: var(--shadow); background: #000 }
 
   /* docs layout */
   .docs { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 48px; padding-top: 56px; padding-bottom: 96px }
@@ -258,10 +258,7 @@
     <span class="kicker">Kenalan dalam 90 detik</span>
     <h2>Apa itu DdDesignReport?</h2>
     <p class="sub">Penjelasan singkat untuk yang belum pernah memprogram: dari desain di browser sampai PDF, Excel, dan struk kasir.</p>
-    <video class="explainer" controls preload="none" playsinline poster="video/dddesignreport.jpg" width="1920" height="1080">
-      <source src="video/dddesignreport.mp4" type="video/mp4">
-      <a href="video/dddesignreport.mp4">Unduh videonya</a>
-    </video>
+    <iframe class="explainer" src="https://www.youtube-nocookie.com/embed/T8NjOgX-gBY?rel=0" title="Apa itu DdDesignReport?" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
   </div>
 </div>
 
