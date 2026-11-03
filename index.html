@@ -98,7 +98,19 @@
   .demo-bar span { color: var(--muted); font-size: 14px }
   .demo { height: min(760px, 86vh); border-radius: 12px; box-shadow: var(--shadow) }
   .demo > div { height: 100% }
-  .explainer { display: block; width: 100%; max-width: 960px; aspect-ratio: 16 / 9; height: auto; margin: 0 auto; border: 0; border-radius: 12px; box-shadow: var(--shadow); background: #000 }
+  /* explainer video */
+  .player { position: relative; max-width: 960px; margin: 0 auto; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); background: #fff }
+  .player video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; cursor: pointer }
+  .player .big { position: absolute; inset: 0; margin: auto; width: 76px; height: 76px; border: 0; border-radius: 50%; background: var(--accent); color: var(--accent-text); box-shadow: var(--shadow); cursor: pointer; display: grid; place-items: center; transition: transform .15s }
+  .player .big:hover { transform: scale(1.06) }
+  .player.playing .big { display: none }
+  .player .bar { position: absolute; left: 12px; right: 12px; bottom: 12px; display: flex; align-items: center; gap: 12px; padding: 6px 14px 6px 6px; border-radius: 999px; background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow); transition: opacity .2s }
+  .player.playing:not(:hover):not(:focus-within) .bar { opacity: 0 }
+  .player .bar button { flex: none; width: 34px; height: 34px; border: 0; border-radius: 50%; background: var(--accent); color: var(--accent-text); cursor: pointer; display: grid; place-items: center }
+  .player .bar input { flex: 1; min-width: 0; accent-color: var(--accent); cursor: pointer }
+  .player .bar span { flex: none; color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums }
+  .player .pause, .player.playing .play { display: none }
+  .player.playing .pause { display: block }
 
   /* docs layout */
   .docs { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 48px; padding-top: 56px; padding-bottom: 96px }
@@ -258,7 +270,16 @@
     <span class="kicker">Kenalan dalam 90 detik</span>
     <h2>Apa itu DdDesignReport?</h2>
     <p class="sub">Penjelasan singkat untuk yang belum pernah memprogram: dari desain di browser sampai PDF, Excel, dan struk kasir.</p>
-    <iframe class="explainer" src="https://www.youtube-nocookie.com/embed/T8NjOgX-gBY?rel=0" title="Apa itu DdDesignReport?" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    <div class="player" id="player">
+      <video src="video/dddesignreport.mp4" poster="video/dddesignreport.jpg" preload="none" playsinline width="1280" height="720" aria-label="Video: Apa itu DdDesignReport?"></video>
+      <button class="big" type="button" aria-label="Putar video"><svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></button>
+      <div class="bar">
+        <button type="button" aria-label="Putar / jeda"><svg class="play" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg><svg class="pause" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></button>
+        <input type="range" min="0" max="1000" value="0" step="1" aria-label="Posisi video">
+        <span>0:00 / 1:30</span>
+      </div>
+    </div>
+    <p class="sub" style="text-align:center;margin:12px auto 0">Juga ada di <a href="https://youtu.be/T8NjOgX-gBY" target="_blank" rel="noopener">YouTube</a>.</p>
   </div>
 </div>
 
@@ -1534,6 +1555,24 @@ try {
   }
 } catch (err) {
   console.warn('Gagal memuat daftar template:', err)
+}
+</script>
+<script>
+// Explainer video: own play/pause button and progress bar, in the site's theme.
+{
+  const p = document.getElementById('player'), v = p.querySelector('video'), seek = p.querySelector('input'), time = p.querySelector('.bar span')
+  const fmt = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0')
+  const toggle = () => v.paused ? v.play() : v.pause()
+  v.onclick = toggle
+  p.querySelectorAll('button').forEach(b => b.onclick = toggle)
+  v.onplay = () => p.classList.add('playing')
+  v.onpause = v.onended = () => p.classList.remove('playing')
+  v.ontimeupdate = () => {
+    if (!v.duration) return
+    seek.value = v.currentTime / v.duration * 1000
+    time.textContent = fmt(v.currentTime) + ' / ' + fmt(v.duration)
+  }
+  seek.oninput = () => { if (v.duration) v.currentTime = seek.value / 1000 * v.duration }
 }
 </script>
 </body>
