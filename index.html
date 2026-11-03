@@ -108,6 +108,12 @@
   .player.playing:not(:hover):not(:focus-within) .bar { opacity: 0 }
   .player .bar button { flex: none; width: 34px; height: 34px; border: 0; border-radius: 50%; background: var(--accent); color: var(--accent-text); cursor: pointer; display: grid; place-items: center }
   .player .bar input { flex: 1; min-width: 0; accent-color: var(--accent); cursor: pointer }
+  .player .bar .mute { background: transparent; color: var(--accent); margin-right: -8px }
+  .player .bar .mute:hover { background: var(--accent-soft) }
+  .player .bar .vol { flex: 0 1 80px }
+  .player .off, .player.muted .on { display: none }
+  .player.muted .off { display: block }
+  @media (max-width: 560px) { .player .bar .vol { display: none } }
   .player .bar span { flex: none; color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums }
   .player .pause, .player.playing .play { display: none }
   .player.playing .pause { display: block }
@@ -267,7 +273,7 @@
 <!-- ============================ VIDEO ============================ -->
 <div class="strip" id="video">
   <div class="wrap">
-    <span class="kicker">Kenalan dalam 90 detik</span>
+    <span class="kicker">Kenalan dalam 30 detik</span>
     <h2>Apa itu DdDesignReport?</h2>
     <p class="sub">Penjelasan singkat untuk yang belum pernah memprogram: dari desain di browser sampai PDF, Excel, dan struk kasir.</p>
     <div class="player" id="player">
@@ -275,8 +281,10 @@
       <button class="big" type="button" aria-label="Putar video"><svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></button>
       <div class="bar">
         <button type="button" aria-label="Putar / jeda"><svg class="play" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg><svg class="pause" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></button>
-        <input type="range" min="0" max="1000" value="0" step="1" aria-label="Posisi video">
-        <span>0:00 / 1:30</span>
+        <input class="seek" type="range" min="0" max="1000" value="0" step="1" aria-label="Posisi video">
+        <span>0:00 / 0:28</span>
+        <button class="mute" type="button" aria-label="Suara aktif / bisu"><svg class="on" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg><svg class="off" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9zm12.6 3 2.4-2.4-1.1-1.1-2.4 2.4-2.4-2.4-1.1 1.1 2.4 2.4-2.4 2.4 1.1 1.1 2.4-2.4 2.4 2.4 1.1-1.1z"/></svg></button>
+        <input class="vol" type="range" min="0" max="1" value="1" step="0.05" aria-label="Volume">
       </div>
     </div>
     <p class="sub" style="text-align:center;margin:12px auto 0">Juga ada di <a href="https://youtu.be/T8NjOgX-gBY" target="_blank" rel="noopener">YouTube</a>.</p>
@@ -1558,13 +1566,16 @@ try {
 }
 </script>
 <script>
-// Explainer video: own play/pause button and progress bar, in the site's theme.
+// Explainer video: own play/pause, progress bar and volume, in the site's theme.
 {
-  const p = document.getElementById('player'), v = p.querySelector('video'), seek = p.querySelector('input'), time = p.querySelector('.bar span')
+  const p = document.getElementById('player'), v = p.querySelector('video'), seek = p.querySelector('.seek'), vol = p.querySelector('.vol'), time = p.querySelector('.bar span')
   const fmt = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0')
   const toggle = () => v.paused ? v.play() : v.pause()
   v.onclick = toggle
-  p.querySelectorAll('button').forEach(b => b.onclick = toggle)
+  p.querySelectorAll('button:not(.mute)').forEach(b => b.onclick = toggle)
+  p.querySelector('.mute').onclick = () => { v.muted = !v.muted; if (!v.muted && !v.volume) v.volume = vol.value = .5 }
+  vol.oninput = () => { v.volume = +vol.value; v.muted = !v.volume }
+  v.onvolumechange = () => { p.classList.toggle('muted', v.muted || !v.volume); vol.value = v.muted ? 0 : v.volume }
   v.onplay = () => p.classList.add('playing')
   v.onpause = v.onended = () => p.classList.remove('playing')
   v.ontimeupdate = () => {
