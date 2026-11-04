@@ -575,6 +575,7 @@ Kepada: {{customer.name}}
     <tr><td>Teks sesuai kondisi</td><td><code>{{if(paid, 'LUNAS', 'BELUM LUNAS')}}</code> · <code>{{if(stock &lt; minimum, 'Pesan ulang')}}</code></td></tr>
     <tr><td>Huruf besar, pembulatan</td><td><code>{{upper(name)}}</code> · <code>{{round(price / 3, 2)}}</code></td></tr>
     <tr><td>Angka dalam kata (terbilang)</td><td><code>{{terbilang(total)}}</code> → dua juta tujuh ratus lima puluh ribu · <code>{{upper(terbilang(total))}} RUPIAH</code></td></tr>
+    <tr><td>QRIS dinamis (isi barcode <code>qr</code>), versi setelah 0.4.3</td><td><code>{{qris(toko.qris, sum(qty * price))}}</code> → kode QRIS statis toko menjadi QRIS dengan nominal itu, jadi pembeli tidak perlu mengetik nominal</td></tr>
     <tr><td>Nomor urut baris</td><td><code>{{index}}</code> di band detail: 1, 2, 3, …, mulai lagi dari 1 di setiap kelompok</td></tr>
     <tr><td>Tanggal</td><td><code>{{date:dd MMMM yyyy}}</code> → 19 Oktober 2026 · <code>{{now:dd/MM/yyyy HH:mm}}</code> (waktu cetak)</td></tr>
   </table></div>
@@ -583,7 +584,7 @@ Kepada: {{customer.name}}
   <ul>
     <li>Operator: <code>+</code> <code>-</code> <code>*</code> <code>/</code> dan kurung. Perkalian dan pembagian dihitung lebih dulu.</li>
     <li>Perbandingan <code>=</code> <code>!=</code> <code>&lt;</code> <code>&gt;</code> <code>&lt;=</code> <code>&gt;=</code>, digabung dengan <code>and</code>, <code>or</code>, <code>not</code>. Teks ditulis dalam kutip tunggal: <code>status = 'lunas'</code>.</li>
-    <li>Fungsi <code>if(kondisi, jika ya, jika tidak)</code>, <code>upper</code>, <code>lower</code>, <code>round(x, desimal)</code>, dan <code>terbilang(x)</code> (bahasa Indonesia, desimal dibulatkan; dipakai template <b>Kuitansi</b>).</li>
+    <li>Fungsi <code>if(kondisi, jika ya, jika tidak)</code>, <code>upper</code>, <code>lower</code>, <code>round(x, desimal)</code>, <code>terbilang(x)</code> (bahasa Indonesia, desimal dibulatkan; dipakai template <b>Kuitansi</b>), dan, versi setelah 0.4.3, <code>qris(kode, nominal)</code>: kode QRIS statis dari bank atau penyedia pembayaran menjadi QRIS dinamis (tag 01 <code>12</code>, nominal di tag 54, CRC dihitung ulang). Kode yang bukan QRIS atau CRC-nya salah, dan nominal nol atau minus, tercetak kosong, jadi tidak ada kode yang ditolak aplikasi pembayaran. Simpan kode statisnya di data, bukan di template.</li>
     <li>Pola tanggal: <code>yyyy</code> <code>yy</code> <code>MMMM</code> <code>MMM</code> <code>MM</code> <code>M</code> <code>dd</code> <code>d</code> <code>EEEE</code> <code>EEE</code> <code>HH</code> <code>mm</code> <code>ss</code>; teks lain dalam <code>'kutip'</code>. Nama bulan dan hari berbahasa Indonesia dengan <b>Dates in: Indonesian</b> di tab Layout (<code>"locale": "id"</code>). Tanggal dibaca dari teks ISO (<code>2026-10-19</code>, <code>2026-10-19T08:30:00Z</code>) atau Unix time.</li>
     <li>Fungsi <code>sum</code>, <code>avg</code>, <code>min</code>, <code>max</code>, <code>count</code> menghitung atas banyak baris. Isinya boleh berupa perhitungan.</li>
     <li><code>count()</code> menghitung semua baris; <code>count(f)</code> hanya baris yang <code>f</code>-nya berupa angka.</li>
