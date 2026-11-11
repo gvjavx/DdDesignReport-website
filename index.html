@@ -411,7 +411,7 @@ go build -o ddreport ./cmd/ddreport</code></pre>
     </li>
     <li>
       <h3>Lihat hasilnya</h3>
-      <p>Buka tab <b>View → Preview</b>. Data contohnya ada di <b>Sample data for preview and export</b> dan bisa Anda ganti. Tombol <b>PDF / HTML / XLSX / XLS / CSV</b> mengunduh hasilnya langsung.</p>
+      <p>Klik <b>Preview</b>, tombol pertama di tab Home (sampai versi 0.4.3: tab View). Data contohnya ada di <b>Sample data for preview and export</b> dan bisa Anda ganti. Tombol <b>PDF / HTML / XLSX / XLS / CSV</b> mengunduh hasilnya langsung.</p>
     </li>
     <li>
       <h3>Simpan template</h3>
@@ -475,10 +475,10 @@ fs.writeFileSync('report.pdf', pdf)</code></pre></div>
   <h3>Isi ribbon</h3>
   <div class="scroll"><table>
     <tr><th>Tab</th><th>Isi</th></tr>
-    <tr><td><b>Home</b></td><td>Undo/redo; cut, copy, paste, duplicate, delete; font, ukuran, bold, italic, underline, warna teks, highlight; rata kiri/tengah/kanan, spasi baris, wrap; perataan dan distribusi elemen, bawa ke depan/belakang.</td></tr>
+    <tr><td><b>Home</b></td><td>Preview (sampai versi 0.4.3 di tab View); undo/redo; cut, copy, paste, duplicate, delete; font, ukuran, bold, italic, underline, warna teks, highlight; rata kiri/tengah/kanan, spasi baris, wrap; perataan dan distribusi elemen, bawa ke depan/belakang.</td></tr>
     <tr><td><b>Insert</b></td><td>Text box, tabel (baris × kolom), gambar, kotak, garis, chart, barcode, dan daftar field siap sisip.</td></tr>
     <tr><td><b>Layout</b></td><td>Kertas (A4, A5, Letter, Legal, F4, custom), orientasi, margin per sisi, latar, pengelompokan, halaman baru per kelompok, pemisah angka.</td></tr>
-    <tr><td><b>View</b></td><td>Penggaris, snap, Preview. Zoom (25–300%) ada di bilah status, dan bisa langsung di kanvas dengan <code>Ctrl</code> + scroll, pinch di trackpad, atau cubit dua jari di layar sentuh.</td></tr>
+    <tr><td><b>View</b></td><td>Penggaris dan snap; di mode sederhana tab ini tidak tampil. Zoom (25–300%) ada di bilah status, dan bisa langsung di kanvas dengan <code>Ctrl</code> + scroll, pinch di trackpad, atau cubit dua jari di layar sentuh.</td></tr>
   </table></div>
   <h3>Pintasan keyboard</h3>
   <div class="scroll"><table>
@@ -854,7 +854,7 @@ data := map[string]any{
 
 // "pdf" | "html" | "xlsx" | "xls" | "csv"
 pdf, err := ddreport.Render(template, data, "pdf")</code></pre>
-      <p><code>data</code> boleh berupa apa pun yang bisa di-marshal ke JSON: map, struct dengan tag <code>json</code>, atau <code>json.RawMessage</code>. Nama field di placeholder mengikuti nama JSON-nya.</p>
+      <p><code>data</code> boleh berupa apa pun yang bisa di-marshal ke JSON: map, struct dengan tag <code>json</code>, atau <code>json.RawMessage</code>; versi setelah 0.4.3 juga <code>[]byte</code> berisi JSON (sebelumnya <code>[]byte</code> menghasilkan laporan kosong, jadi bungkus dengan <code>json.RawMessage</code>). Nama field di placeholder mengikuti nama JSON-nya.</p>
     </div>
     <div role="tabpanel" data-panel="java">
       <p>Dari Maven Central (<code>io.github.gvjavx:ddreport</code>): tambahkan wrapper-nya dan binary untuk sistem tempat aplikasi berjalan, dengan classifier <code>linux-x64</code>, <code>linux-arm64</code>, <code>windows-x64</code>, <code>windows-arm64</code>, <code>darwin-x64</code>, atau <code>darwin-arm64</code>. Tidak ada dependency lain; <code>DDREPORT_BIN</code> menunjuk <a href="#ref-binary">binary ddreport</a> lain bila perlu.</p>
@@ -993,7 +993,7 @@ designer.destroy()          // saat designer dilepas dari halaman</code></pre>
     <tr><td><code>fontBase</code></td><td>Opsional. URL tempat font bundel disajikan, misalnya <code>'/fonts/'</code> (<code>ddreport -serve</code> menyajikannya di sana; di Go, sajikan <code>ddreport.BundledFonts</code>). Tanpa ini kanvas memakai font yang terpasang di perangkat; hasil cetak tidak terpengaruh.</td></tr>
     <tr><td><code>data</code></td><td>Opsional. Data contoh (field dan baris): chart di kanvas digambar darinya, menu Field berisi field-nya bila <code>fields</code> tidak diisi, dan Preview menyebut field di template yang tidak ada di data ("Tidak ada di data contoh, tercetak kosong: ..."). Ubah dengan <code>designer.setData(data)</code>.</td></tr>
     <tr><td><code>fonts</code></td><td>Opsional. Nama font tambahan yang Anda daftarkan di backend, misalnya <code>['Inter']</code>, agar muncul di pilihan font.</td></tr>
-    <tr><td><code>preview(template)</code></td><td>Opsional. Fungsi async yang mengembalikan HTML hasil cetak (format <code>"html"</code> dari backend Anda). Jika diisi, tombol Preview muncul di tab View dan di bilah status. Hasilnya tampil per halaman, dipaskan ke lebar dialog, dengan jumlah halaman; jika fungsi ini melempar error, pesannya ditampilkan di dialog.</td></tr>
+    <tr><td><code>preview(template)</code></td><td>Opsional. Fungsi async yang mengembalikan HTML hasil cetak (format <code>"html"</code> dari backend Anda). Jika diisi, tombol Preview muncul sebagai tombol pertama di tab Home (sampai versi 0.4.3: tab View) dan di bilah status. Hasilnya tampil per halaman, dipaskan ke lebar dialog, dengan jumlah halaman; jika fungsi ini melempar error, pesannya ditampilkan di dialog.</td></tr>
     <tr><td><code>simple</code></td><td>Opsional. <code>true</code> untuk mode mudah: grup Arrange, Margins, Grouping, sub-laporan, dan properti lanjutan (posisi, garis tabel, <code>showIf</code>, ...) disembunyikan; setiap tombol ribbon diberi nama; band grup baru muncul setelah Group by diisi.</td></tr>
     <tr><td><code>hide</code></td><td>Opsional. Daftar nama yang disembunyikan: tab (<code>'Layout'</code>), grup ribbon (<code>'Arrange'</code>, atau <code>'Layout.Data'</code> untuk grup di satu tab saja), perintah (<code>'delete'</code>, <code>'preview'</code>), elemen (<code>'chart'</code>, <code>'subreport'</code>), atau pengaturan di ribbon dan panel properti (<code>'sortBy'</code>, <code>'showIf'</code>). Perintah yang disembunyikan juga tidak jalan lewat pintasan keyboard.</td></tr>
     <tr><td><code>messages</code></td><td>Opsional. Teks antarmuka versi Anda sendiri, dengan teks Inggrisnya sebagai kunci: <code>{ 'Text box': 'Label' }</code>. Bisa untuk mengganti istilah atau menerjemahkan ke bahasa lain; daftar teksnya ada di objek <code>ID</code> di <code>designer.js</code>.</td></tr>
@@ -1097,7 +1097,7 @@ export DDREPORT_FONT_BOLD=/fonts/NotoSans-Bold.ttf</code></pre></div>
 <section id="referensi">
   <div class="chapter"><span class="kicker">Referensi</span><h2>Template JSON</h2><p>Template adalah JSON biasa, jadi bisa juga dibuat atau diubah lewat kode.</p></div>
   <p><a href="template.schema.json">JSON Schema</a>-nya (juga di paket npm <code>ddreport-designer/template.schema.json</code> dan di <code>/template.schema.json</code> pada <code>ddreport -serve</code>) memeriksa template di editor seperti VS Code (<code>"$schema"</code> tidak perlu ditulis di template; pasang lewat pengaturan <code>json.schemas</code> editor) dan menangkap salah ketik: properti yang tidak dikenal adalah kesalahan. Designer menulis <code>"version": 1</code> (versi format template); ddreport menolak template yang versinya lebih baru dari yang bisa dibacanya, alih-alih mencetaknya tidak lengkap, jadi perbarui backend bersamaan dengan atau sebelum designer. Untuk asisten AI, <a href="llms.txt">llms.txt</a> berisi ringkasan cara menulis template beserta contoh yang dicek oleh test library.</p>
-  <p><b>Asisten AI dengan MCP.</b> <code>ddreport -mcp</code> menjadikan binary-nya server MCP, sehingga asisten AI (Claude, Cursor, dan lainnya) bisa membaca panduan dan schema (<code>template_guide</code>), memeriksa template yang ditulisnya (<code>check_template</code>: properti yang salah ketik, yang diam-diam diabaikan saat mencetak, lalu dicoba dicetak), dan mencetaknya ke file (<code>render_template</code>). Misalnya: minta asisten membuat template dari foto faktur lama Anda, dan biarkan ia memeriksanya sendiri sampai valid.</p>
+  <p><b>Asisten AI dengan MCP.</b> <code>ddreport -mcp</code> menjadikan binary-nya server MCP, sehingga asisten AI (Claude, Cursor, dan lainnya) bisa membaca panduan dan schema (<code>template_guide</code>), memeriksa template yang ditulisnya (<code>check_template</code>: properti yang salah ketik, yang diam-diam diabaikan saat mencetak, lalu dicoba dicetak), dan mencetaknya ke file (<code>render_template</code>; versi setelah 0.4.3 hanya menulis file yang berakhiran format-nya, misalnya <code>.pdf</code>). Misalnya: minta asisten membuat template dari foto faktur lama Anda, dan biarkan ia memeriksanya sendiri sampai valid.</p>
 <pre><code>claude mcp add ddreport -- /path/ke/ddreport -mcp     # Claude Code; aplikasi lain: perintah ddreport, argumen -mcp</code></pre>
 <pre><code>{
   "page": {
