@@ -864,12 +864,12 @@ pdf, err := ddreport.Render(template, data, "pdf")</code></pre>
 <pre><code>&lt;dependency&gt;
   &lt;groupId&gt;io.github.gvjavx&lt;/groupId&gt;
   &lt;artifactId&gt;ddreport&lt;/artifactId&gt;
-  &lt;version&gt;0.4.5&lt;/version&gt;
+  &lt;version&gt;0.4.6&lt;/version&gt;
 &lt;/dependency&gt;
 &lt;dependency&gt;
   &lt;groupId&gt;io.github.gvjavx&lt;/groupId&gt;
   &lt;artifactId&gt;ddreport&lt;/artifactId&gt;
-  &lt;version&gt;0.4.5&lt;/version&gt;
+  &lt;version&gt;0.4.6&lt;/version&gt;
   &lt;classifier&gt;linux-x64&lt;/classifier&gt;
 &lt;/dependency&gt;</code></pre>
 <pre><code>import io.ddreport.DdReport;
@@ -884,7 +884,7 @@ Files.write(Path.of("report.pdf"), pdf);</code></pre>
       <p>Beberapa thread memakai satu <code>Renderer</code> secara bergantian; untuk mencetak paralel, buat satu per thread. Laporan yang gagal atau terlalu lama hanya menggagalkan laporan itu sendiri.</p>
     </div>
     <div role="tabpanel" data-panel="kotlin">
-      <p>Kotlin memakai class Java yang sama dari Maven Central: <code>implementation("io.github.gvjavx:ddreport:0.4.5")</code> dan <code>runtimeOnly("io.github.gvjavx:ddreport:0.4.5:linux-x64")</code>, dengan classifier untuk sistem tempat aplikasi berjalan.</p>
+      <p>Kotlin memakai class Java yang sama dari Maven Central: <code>implementation("io.github.gvjavx:ddreport:0.4.6")</code> dan <code>runtimeOnly("io.github.gvjavx:ddreport:0.4.5:linux-x64")</code>, dengan classifier untuk sistem tempat aplikasi berjalan.</p>
 <pre><code>import io.ddreport.DdReport
 
 val xlsx = DdReport.render(templateJson, dataJson, "xlsx")
@@ -1226,6 +1226,11 @@ java -cp out DdReportTest             # wrapper Java</code></pre>
 <section id="versi">
   <h2>Riwayat versi</h2>
   <p>Daftar lengkapnya ada di <a href="https://github.com/gvjavx/DdDesignReport/blob/main/CHANGELOG.md">CHANGELOG.md</a>.</p>
+  <h3>0.4.6 · 11 Nov 2026</h3>
+  <ul>
+    <li><b>Template:</b> boleh berisi <code>"$schema"</code> agar editor seperti VS Code langsung memeriksa dan melengkapinya; sebelumnya JSON Schema dan <code>check_template</code> menganggapnya salah ketik. Schema-nya juga diajukan ke SchemaStore.</li>
+    <li><code>golang.org/x/image</code> v0.41.0 (peringatan Dependabot untuk dekoder TIFF, yang tidak dipakai ddreport).</li>
+  </ul>
   <h3>0.4.5 · 11 Nov 2026</h3>
   <ul>
     <li><b>Keamanan:</b> dibangun dengan Go 1.26.11, yang menutup GO-2026-6859 di <code>net/http</code> (dipakai <code>ddreport -serve</code>). Perbarui dari 0.4.4 bila menjalankan server.</li>
